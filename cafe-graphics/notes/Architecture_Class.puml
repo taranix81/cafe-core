@@ -1,0 +1,65 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+interface Component{
+    + getId() : UUID
+    + getParent() : UUID
+    --
+    + sendMessage(Message message)
+}
+note right
+    * Should be able to register itself to EventBus
+    * Should be able to catch Messages/Event and handle them
+end note
+
+interface ViewComponent{
+    + getName() : String
+    --
+    + init(Control parent)
+    + createWidget(Control parent) : Widget
+    + shutDown()
+}
+note right
+* recommended annotation : @CafeService - Prototype
+* should be able to register itself and widget in EventBus
+end note
+
+
+interface ApplicationComponent{
+
+}
+note right
+@CafeService - Singleton
+end note
+
+interface MenuBarComponent{
+}
+ViewComponent <|--MenuBarComponent
+
+interface Viewer{
+}
+ViewComponent <|--Viewer
+
+interface Editor{
+}
+Viewer <|--Editor
+
+
+interface ComponentContainer{
+  + closeChild(ViewComponent pageComponent);
+  + openChild(String name) : ViewComponent
+  + dockChild(ViewComponent child);
+  + beforeChildClose(ViewComponent child));
+  + getChildComponentType() : Class<? extends ViewComponent>
+}
+note right
+@CafeService - Singleton
+end note
+
+
+Component <|-- ViewComponent
+Component <|-- ApplicationComponent
+ViewComponent <|-- ComponentContainer
+
+@enduml

@@ -1,0 +1,22 @@
+@startuml
+
+
+
+[MainShell Component] as MainShell
+() "SWT Shell" as swtShell
+MainShell ..> swtShell : use
+
+[MenuBar Component] as MenuBar
+() "SWT Menu" as swtMenu
+() "SWT MenuItem" as swtMenuItem
+MenuBar ..> swtMenu : use
+swtMenu-->swtMenuItem: contains
+
+[EventBus]
+
+EventBus <--> MainShell : Message
+EventBus <--> MenuBar : Message
+swtShell --> EventBus : SWT Event
+swtMenu --> EventBus : SWT Event
+swtMenuItem--> EventBus : SWT Event
+@enduml

@@ -1,0 +1,30 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+() title
+
+node Data{
+}
+node View{
+}
+
+node "CTabFolderViewContainer" {
+  node CTabFolder{
+    node CTabItem{
+
+    }
+
+     node Form{
+     }
+  }
+}
+CTabItem --> View
+View --> Form
+View --> Data
+Form --> Data
+
+View --> title
+title -> CTabItem
+
+
+@enduml

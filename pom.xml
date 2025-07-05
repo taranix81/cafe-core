@@ -12,6 +12,7 @@
     <modules>
         <module>cafe-beans</module>
         <module>cafe-shell</module>
+	<module>cafe-graphics</module>
     </modules>
 
 

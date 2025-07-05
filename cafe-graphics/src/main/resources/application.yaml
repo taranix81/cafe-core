@@ -1,0 +1,31 @@
+cafe:
+  application:
+    promptOnQuit: true
+    name: Application
+    container:
+      newPageTitle: "new"
+    menu: #menuBar
+      items:
+        - id: menu.file
+          name: "File"
+          menu:
+            items:
+              - id: menu.file.new
+                name: "New"
+              - id: menu.file.open
+                name: "Open"
+              - id: separatorId
+              - id: menu.file.save
+                name: "Save"
+              - id: menu.file.save.as
+                name: "Save as"
+              - id: separatorId
+              - id: propertiesId
+                name: "Settings"
+              #                onSelection: "MENU_OPEN_SETTINGS"
+              - id: separatorId
+              - id: quitId
+                name: "Quit"
+        #                onSelection: "MENU_CLOSE"
+
+

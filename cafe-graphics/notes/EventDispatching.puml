@@ -1,0 +1,15 @@
+@startuml
+
+autonumber
+
+Widget -> EventBus: SWT Event
+EventBus -> EventBus : check if widget is bind with controller
+EventBus -> Widget : get controller
+Widget -> EventBus: controller
+EventBus -> EventBus : check if controller has handler
+EventBus -> ControllerA : call handler
+ControllerA -> ControllerA : prepare Action/Message
+ControllerA -> EventBus : send message
+EventBus -> EventBus : get listeners of message
+EventBus -> ControllerB
+@enduml

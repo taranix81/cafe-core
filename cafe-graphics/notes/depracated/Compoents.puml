@@ -1,0 +1,66 @@
+@startuml
+'https://plantuml.com/object-diagram
+
+object Application
+object Shell
+object MenuBar
+object ToolBar
+object StatusBar
+object CustomBar
+object Container
+object Layout
+
+'object Document{
+'    save()
+'    open()
+'    read()
+'}
+'object FileDocument{
+'    File: file
+'}
+'object DBDocument{
+'    JDBC connection
+'}
+
+'object TextDocument
+'object PdfDocument
+'object CsvDocument
+'object JSONDocument
+object ViewManager{
+    ControlContainer
+    --
+    currentView()
+    createView()
+    closeView()
+}
+
+object View{
+    id()
+    createControl()
+}
+
+object Editor{
+    save()
+    isDirty()
+}
+
+Application o-- Shell
+Application o-- ViewManager
+Shell -- MenuBar
+Shell -- ToolBar
+Shell -- StatusBar
+Shell -- CustomBar
+Shell -- Container
+Shell -- Layout
+
+ViewManager--View
+View <|-- Editor
+Shell ..> Editor: closing Shell event
+Shell ..> Application: closing Shell event
+'Document <|-- FileDocument
+'Document <|-- DBDocument
+'FileDocument <|-- TextDocument
+'FileDocument <|-- PdfDocument
+'FileDocument <|-- CsvDocument
+'FileDocument <|-- JSONDocument
+@enduml

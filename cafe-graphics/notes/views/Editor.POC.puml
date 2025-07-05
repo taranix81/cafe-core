@@ -1,0 +1,29 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+interface DataSource<TData>{
+    get() : TData
+    set(data : TData)
+}
+
+interface FileDataSource<FileName, TData>{
+}
+DataSource <|-- FileDataSource
+FileDataSource ..> File
+
+interface DbDataSource<TEntity>{
+}
+DataSource <|-- DbDataSource
+DbDataSource .. Repository
+
+abstract class Editor<TData>{
+    - TData data
+
+    + init( dataSource: DataSource<TData>)
+    + save()
+    + read() - read data from DS and store locally
+    + get() : TData
+}
+
+@enduml

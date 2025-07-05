@@ -1,0 +1,102 @@
+@startuml
+
+interface @CafeView{
+}
+interface @CafeEvent{
+}
+
+interface @CafeModel{
+}
+
+
+class CafeEventHub{
+}
+
+interface CafeController{
+    + configure() : void
+    + getControl() : Control
+
+    + isFocus() : boolean
+    + onClose() : void
+    + onShow(): void
+    + onHide(): void
+    + onResize() : void
+    + onFocus(): void
+    + onRefresh() : void
+    + onDragDrop() : void
+}
+
+class CafeStatusController{
+    - status : TBC
+}
+CafeController <|-- CafeStatusController
+
+class CafeMenuController{
+    - menu : Menu
+}
+CafeController <|-- CafeMenuController
+
+interface CafeView{
+    +create(CafeDesigner)
+}
+
+interface CafeViewController{
+    + getModel() : Object
+    + getView() : CafeView
+}
+CafeController <|-- CafeViewController
+CafeViewController -- CafeView
+
+
+
+abstract class CafeEditorController{
+    + save(): abstract void
+    + isDirty() : boolean
+    + isReadOnly() : boolean
+}
+CafeViewController <|-- CafeEditorController
+
+class CafeTextController{
+}
+CafeEditorController  <|-- CafeTextController
+
+class CafeTableController{
+}
+CafeEditorController  <|-- CafeTableController
+
+class CafeListController{
+}
+CafeEditorController  <|-- CafeListController
+
+class CafeTreeController{
+}
+CafeEditorController  <|-- CafeTreeController
+
+class CafeTreeNavigatorController{
+}
+CafeTreeController  <|-- CafeTreeNavigatorController
+
+interface CafeViewContainerController{
+    + getActive(): CafeViewController
+    + setActive(CafeViewController)
+}
+CafeViewController  <|-- CafeViewContainerController
+
+class CafeTabbedContainerViewController{
+}
+CafeViewContainerController <|-- CafeTabbedContainerViewController
+
+class CafeSingleViewContainerViewController{
+}
+CafeViewContainerController <|-- CafeSingleViewContainerViewController
+
+
+class CafeApplication{
+    - shell : Shell
+    - controllers : Collection<CafeMenuController>
+}
+
+CafeApplication -- CafeController
+
+
+@enduml

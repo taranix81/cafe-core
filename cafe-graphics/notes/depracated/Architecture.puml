@@ -1,0 +1,22 @@
+@startwbs
+'https://plantuml.com/wbs-diagram
+
+* Cafe-GUI
+** Buiseness Layer
+*** Application
+**** View / Page
+***** Editor
+****** FileEditor
+****** DBEditor
+***** Image
+***** Custom
+**** Menu Stucture
+** Communication
+*** SWT Event
+*** Binder
+** Graphics Components
+*** Shell
+**** Control
+*** Menu
+**** MenuItem
+@endwbs
