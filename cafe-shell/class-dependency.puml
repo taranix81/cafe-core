@@ -1,0 +1,6 @@
+@startuml
+[class org.taranix.cafe.shell.commands.PrintHelpCommand]-->[class org.taranix.cafe.shell.configuration.CafeShellFactory]
+[class org.taranix.cafe.shell.services.CafeCommandRuntimeService]-->[class org.taranix.cafe.shell.services.CafeCommandBindingService]
+[class org.taranix.cafe.shell.services.CafeCommandRuntimeService]-->[class org.taranix.cafe.shell.services.CafeCommandRuntimeOrderService]
+@enduml
+

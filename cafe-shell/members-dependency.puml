@@ -1,0 +1,81 @@
+@startuml
+package org.taranix.cafe.shell.commands.PrintHelpCommand {
+["(Constructor) org.taranix.cafe.shell.commands.PrintHelpCommand()"] as org.taranix.cafe.shell.commands.PrintHelpCommand.org.taranix.cafe.shell.commands.PrintHelpCommand.Constructor
+["(Field) formatter"] as org.taranix.cafe.shell.commands.PrintHelpCommand.formatter.Field
+["(Field) applicationName"] as org.taranix.cafe.shell.commands.PrintHelpCommand.applicationName.Field
+["(Field) options"] as org.taranix.cafe.shell.commands.PrintHelpCommand.options.Field
+}
+
+package org.taranix.cafe.beans.converters.StringToDoubleConverter {
+["(Constructor) org.taranix.cafe.beans.converters.StringToDoubleConverter()"] as org.taranix.cafe.beans.converters.StringToDoubleConverter.org.taranix.cafe.beans.converters.StringToDoubleConverter.Constructor
+}
+
+package org.taranix.cafe.shell.commands.CafeCommandArguments {
+["(Constructor) org.taranix.cafe.shell.commands.CafeCommandArguments()"] as org.taranix.cafe.shell.commands.CafeCommandArguments.org.taranix.cafe.shell.commands.CafeCommandArguments.Constructor
+}
+
+package org.taranix.cafe.shell.commands.UUIDConsumerCommand {
+["(Constructor) org.taranix.cafe.shell.commands.UUIDConsumerCommand()"] as org.taranix.cafe.shell.commands.UUIDConsumerCommand.org.taranix.cafe.shell.commands.UUIDConsumerCommand.Constructor
+}
+
+package org.taranix.cafe.beans.converters.StringToBooleanConverter {
+["(Constructor) org.taranix.cafe.beans.converters.StringToBooleanConverter()"] as org.taranix.cafe.beans.converters.StringToBooleanConverter.org.taranix.cafe.beans.converters.StringToBooleanConverter.Constructor
+}
+
+package org.taranix.cafe.shell.configuration.CafeShellFactory {
+["(Constructor) org.taranix.cafe.shell.configuration.CafeShellFactory()"] as org.taranix.cafe.shell.configuration.CafeShellFactory.org.taranix.cafe.shell.configuration.CafeShellFactory.Constructor
+["(Method) getOptions()"] as org.taranix.cafe.shell.configuration.CafeShellFactory.getOptions.Method
+["(Method) getHelpFormatter()"] as org.taranix.cafe.shell.configuration.CafeShellFactory.getHelpFormatter.Method
+["(Method) getCommandLineParser()"] as org.taranix.cafe.shell.configuration.CafeShellFactory.getCommandLineParser.Method
+}
+
+package org.taranix.cafe.shell.app.TestShellApplication {
+["(Constructor) org.taranix.cafe.shell.app.TestShellApplication()"] as org.taranix.cafe.shell.app.TestShellApplication.org.taranix.cafe.shell.app.TestShellApplication.Constructor
+}
+
+package org.taranix.cafe.shell.services.CafeCommandRuntimeService {
+["(Constructor) org.taranix.cafe.shell.services.CafeCommandRuntimeService()"] as org.taranix.cafe.shell.services.CafeCommandRuntimeService.org.taranix.cafe.shell.services.CafeCommandRuntimeService.Constructor
+["(Field) cafeShell"] as org.taranix.cafe.shell.services.CafeCommandRuntimeService.cafeShell.Field
+["(Field) cafeCommandBindingService"] as org.taranix.cafe.shell.services.CafeCommandRuntimeService.cafeCommandBindingService.Field
+["(Field) orderService"] as org.taranix.cafe.shell.services.CafeCommandRuntimeService.orderService.Field
+}
+
+package org.taranix.cafe.shell.commands.RandomUUIDCommand {
+["(Constructor) org.taranix.cafe.shell.commands.RandomUUIDCommand()"] as org.taranix.cafe.shell.commands.RandomUUIDCommand.org.taranix.cafe.shell.commands.RandomUUIDCommand.Constructor
+}
+
+package org.taranix.cafe.shell.services.CafeCommandBindingService {
+["(Constructor) org.taranix.cafe.shell.services.CafeCommandBindingService()"] as org.taranix.cafe.shell.services.CafeCommandBindingService.org.taranix.cafe.shell.services.CafeCommandBindingService.Constructor
+["(Field) cafeShell"] as org.taranix.cafe.shell.services.CafeCommandBindingService.cafeShell.Field
+}
+
+package org.taranix.cafe.shell.services.CafeCommandRuntimeOrderService {
+["(Constructor) org.taranix.cafe.shell.services.CafeCommandRuntimeOrderService()"] as org.taranix.cafe.shell.services.CafeCommandRuntimeOrderService.org.taranix.cafe.shell.services.CafeCommandRuntimeOrderService.Constructor
+}
+
+package org.taranix.cafe.beans.converters.StringToIntegerConverter {
+["(Constructor) org.taranix.cafe.beans.converters.StringToIntegerConverter()"] as org.taranix.cafe.beans.converters.StringToIntegerConverter.org.taranix.cafe.beans.converters.StringToIntegerConverter.Constructor
+}
+
+package org.taranix.cafe.beans.converters.StringToLongConverter {
+["(Constructor) org.taranix.cafe.beans.converters.StringToLongConverter()"] as org.taranix.cafe.beans.converters.StringToLongConverter.org.taranix.cafe.beans.converters.StringToLongConverter.Constructor
+}
+
+
+org.taranix.cafe.shell.services.CafeCommandBindingService.cafeShell.Field-->org.taranix.cafe.shell.services.CafeCommandBindingService.org.taranix.cafe.shell.services.CafeCommandBindingService.Constructor
+org.taranix.cafe.shell.commands.PrintHelpCommand.formatter.Field-->org.taranix.cafe.shell.commands.PrintHelpCommand.org.taranix.cafe.shell.commands.PrintHelpCommand.Constructor
+org.taranix.cafe.shell.commands.PrintHelpCommand.formatter.Field-->org.taranix.cafe.shell.configuration.CafeShellFactory.getHelpFormatter.Method
+org.taranix.cafe.shell.configuration.CafeShellFactory.getOptions.Method-->org.taranix.cafe.shell.configuration.CafeShellFactory.org.taranix.cafe.shell.configuration.CafeShellFactory.Constructor
+org.taranix.cafe.shell.services.CafeCommandRuntimeService.cafeShell.Field-->org.taranix.cafe.shell.services.CafeCommandRuntimeService.org.taranix.cafe.shell.services.CafeCommandRuntimeService.Constructor
+org.taranix.cafe.shell.commands.PrintHelpCommand.applicationName.Field-->org.taranix.cafe.shell.commands.PrintHelpCommand.org.taranix.cafe.shell.commands.PrintHelpCommand.Constructor
+org.taranix.cafe.shell.configuration.CafeShellFactory.getHelpFormatter.Method-->org.taranix.cafe.shell.configuration.CafeShellFactory.org.taranix.cafe.shell.configuration.CafeShellFactory.Constructor
+org.taranix.cafe.shell.commands.PrintHelpCommand.options.Field-->org.taranix.cafe.shell.commands.PrintHelpCommand.org.taranix.cafe.shell.commands.PrintHelpCommand.Constructor
+org.taranix.cafe.shell.commands.PrintHelpCommand.options.Field-->org.taranix.cafe.shell.configuration.CafeShellFactory.getOptions.Method
+org.taranix.cafe.shell.services.CafeCommandRuntimeService.cafeCommandBindingService.Field-->org.taranix.cafe.shell.services.CafeCommandBindingService.org.taranix.cafe.shell.services.CafeCommandBindingService.Constructor
+org.taranix.cafe.shell.services.CafeCommandRuntimeService.cafeCommandBindingService.Field-->org.taranix.cafe.shell.services.CafeCommandRuntimeService.org.taranix.cafe.shell.services.CafeCommandRuntimeService.Constructor
+org.taranix.cafe.shell.configuration.CafeShellFactory.getCommandLineParser.Method-->org.taranix.cafe.shell.configuration.CafeShellFactory.org.taranix.cafe.shell.configuration.CafeShellFactory.Constructor
+org.taranix.cafe.shell.services.CafeCommandRuntimeService.orderService.Field-->org.taranix.cafe.shell.services.CafeCommandRuntimeService.org.taranix.cafe.shell.services.CafeCommandRuntimeService.Constructor
+org.taranix.cafe.shell.services.CafeCommandRuntimeService.orderService.Field-->org.taranix.cafe.shell.services.CafeCommandRuntimeOrderService.org.taranix.cafe.shell.services.CafeCommandRuntimeOrderService.Constructor
+
+@enduml
+

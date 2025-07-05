@@ -1,0 +1,13 @@
+build
+bin
+.gradle
+.idea
+/cafe-annotations/target/
+/cafe-beans/target/
+/cafe-shell/target/
+/cafe-visuals/target/
+/cafe-visuals-annotations/target/
+/cafe-visuals-examples/target/
+/target/
+/cafe-shell-examples/target/
+*.iml

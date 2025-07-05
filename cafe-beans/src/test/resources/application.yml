@@ -1,0 +1,11 @@
+family:
+  dad: Richard
+  mam: Margaret
+  children:
+    son: Eric
+    daughter: Monica
+  pets:
+    - dog:
+      name: x
+    - cat:
+      name: y

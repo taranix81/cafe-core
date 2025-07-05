@@ -1,0 +1,165 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+abstract class TypeKey{
+}
+'--------------------'
+class BeanTypeKey{
+}
+TypeKey <|-- BeanTypeKey : extends
+'--------------------'
+class PropertyTypeKey{
+}
+TypeKey <|-- PropertyTypeKey : extends
+'--------------------'
+
+abstract class CafeMemberDescriptor{
+    - cafeClassDescriptor : CafeClassDescriptor
+    + declaringTypeKey() : BeanTypeKey
+    + declaringClass() : Class<?>
+    + getMember() : Member
+    + isConstructor() : boolean
+    + isField() : boolean
+    + isMethod() : boolean
+    + hasDependencies() : boolean
+    + hasDependencies(typeKey : BeanTypeKey) : boolean
+    + dependencies() : List<BeanTypeKey>
+    + propertyDependencies() : List<PropertyTypeKey>
+    + provides() : Set<BeanTypeKey>
+    + hasSameDeclaringClass(other : CafeMemberDescriptor): boolean
+}
+CafeMemberDescriptor --> CafeClassDescriptor : reference
+CafeMemberDescriptor ..> BeanTypeKey : use
+CafeMemberDescriptor ..> PropertyTypeKey : use
+'--------------------'
+class CafeConstructorDescriptor{
+    - constructor: Constructor<?>
+    + getConstructor() : Constructor<?>
+    + getConstructorAnnotations() : Set<Annotation>
+}
+CafeMemberDescriptor <|-- CafeConstructorDescriptor : extends
+'--------------------'
+class CafeMethodDescriptor{
+    - method : Method
+    + getMethod() : Method
+    + getMethodAnnotations() : Collection<Annotation>
+    + getMethodReturnTypeKey() : BeanTypeKey
+}
+CafeMemberDescriptor <|-- CafeMethodDescriptor : extends
+'--------------------'
+class CafeFieldDescriptor{
+    - field : Field
+    + getField() : Field
+    + getFieldTypeKey() : BeanTypeKey
+    + getFieldAnnotations() : Collection<Annotation>
+}
+CafeMemberDescriptor <|-- CafeFieldDescriptor : extends
+'--------------------'
+class CafeClassDescriptor{
+    -  inspectedClass : Class<?>
+    -  members : Set<CafeMemberDescriptor>
+    +  getClassAnnotations() : Set<Annotation>
+    + provides() : Set<BeanTypeKey>
+    + allMembers() : Set<CafeMemberDescriptor>
+    + constructor() : CafeConstructorDescriptor
+    + methods() : Set<CafeMethodDescriptor>
+    + fields() : Set<CafeFieldDescriptor>
+    + typeKey() : BeanTypeKey
+    + hasDependencies() : boolean
+    + dependencies() : Set<BeanTypeKey>
+}
+CafeClassDescriptor o--- CafeMemberDescriptor : aggregation
+CafeClassDescriptor ...> BeanTypeKey : use
+'--------------------'
+class CafeClassDescriptors{
+ - cafeClassDescriptors : Set<CafeClassDescriptor>
+ - annotations : Set<Class<? extends Annotation>>
+ + provides() : Set<BeanTypeKey>
+ + allMembers() : Set<CafeMemberDescriptor>
+ + constructors() : Set<CafeConstructorDescriptor>
+ + methods() : Set<CafeMethodDescriptor>
+ + fields() : Set<CafeFieldDescriptor>
+ + descriptors() : Set<CafeClassDescriptor>
+ + beansDescriptor() : CafeBeansDescriptor
+}
+CafeClassDescriptors o- CafeClassDescriptor : aggregation
+CafeClassDescriptors --> CafeBeansDescriptor : creates
+CafeClassDescriptors ..> BeanTypeKey : use
+'--------------------'
+class CafeDependencyDescriptor{
+}
+'--------------------'
+class CafeResolvableDescriptor{
+}
+'--------------------'
+class CafeOrderDescriptor{
+}
+'--------------------'
+
+class CafeBeansDescriptor{
+    - cafeClassDescriptors : CafeClassDescriptors
+    - cafeDependencyDescriptor : CafeDependencyDescriptor
+    - cafeResolvableDescriptor : CafeResolvableDescriptor
+    - cafeOrderDescriptor : CafeOrderDescriptor
+    + isResolvable() : boolean
+    + hasDependencyCycle() : boolean
+    + orderedClasses() : List<CafeClassDescriptor>
+    + orderedMembers(clazz : Class<?>) : List<CafeMemberDescriptor>
+    + allMembers() : Set<CafeMemberDescriptor>
+    + membersWhichProvides(typeKey : BeanTypeKey ) : Set<CafeMemberDescriptor>
+    + getAnnotations() : Set<Class<? extends Annotation>>
+    + descriptor(clz : Class<?>) : CafeClassDescriptor
+}
+
+CafeBeansDescriptor o-- CafeClassDescriptors
+CafeBeansDescriptor o-- CafeDependencyDescriptor
+CafeBeansDescriptor o-- CafeResolvableDescriptor
+CafeBeansDescriptor o-- CafeOrderDescriptor
+CafeBeansDescriptor ..> BeanTypeKey : use
+CafeBeansDescriptor ..> CafeMemberDescriptor : use
+'--------------------'
+interface OneToManyRepository<TKey, TValue>{
+}
+'--------------------'
+
+abstract class AbstractOneToManyRepository<TypeKey, Object>{
+}
+OneToManyRepository <|-- AbstractOneToManyRepository
+'--------------------'
+
+class BeansInstancesRepository{
+}
+AbstractOneToManyRepository <|-- BeansInstancesRepository
+'--------------------'
+interface CafeResolver{
+    + getBeans() : ContextRepository<TypeKey, Object>
+    + orderMembers(CafeClassDescriptor classDescriptor): List<CafeMemberDescriptor>
+    + getConverter(Class<<S>> source, Class<<T>> target):  CafeConverter<<S, T>>
+    + getOrResolve(BeanTypeKey typeKey):Object
+    + resolve(CafeConstructorDescriptor classDescriptor):Object
+    + resolve(Object owner, CafeMethodDescriptor method):Object
+    + resolve(Object owner, CafeFieldDescriptor field):Object
+    + store(TypeKey typeKey, Object instance);
+    + getProperty(String key): String
+    + refresh(Object instance)
+}
+
+class CafeDefaultResolver{
+}
+CafeResolver <|-- CafeDefaultResolver
+CafeDefaultResolver o-- BeansInstancesRepository : aggregation
+CafeDefaultResolver .> CafeBeansDescriptor : use
+
+class CafeApplicationContext{
+    - beans : BeansInstancesRepository
+    - resolvers : BeansInstancesRepository
+    - resolver : CafeResolver
+    + resolveAll()
+    + resetContext()
+    + getResolver() : CafeResolver
+    + createResolver(ContextRepository<TypeKey, Object> customRepository) : CafeResolver
+}
+CafeApplicationContext o-- CafeResolver : aggregation
+CafeApplicationContext o-- BeansInstancesRepository : aggregation
+CafeApplicationContext .> CafeBeansDescriptor : use
+@enduml

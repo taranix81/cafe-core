@@ -1,0 +1,4 @@
+@startuml
+[class org.taranix.cafe.beans.scanner.ServiceClass]-->[class org.taranix.cafe.beans.scanner.FactoryClass]
+@enduml
+
