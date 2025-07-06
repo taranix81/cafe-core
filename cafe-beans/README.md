@@ -10,6 +10,11 @@ Cafe-Beans is a lightweight Java library implementing Inversion of Control (IoC)
 2. [Features](#features)
 3. [Installation](#installation)
 4. [Getting Started](#getting-started)
+    1. [Define a Service](#1-define-a-service)
+    2. [Create a beans Factory configuration](#2-create-a-beans-factory-configuration)
+    3. [Provide Application Properties](#3-provide-application-properties)
+    4. [Create a root application configuration class](#4-create-a-root-application-configuration-class)
+    5. [Application Entry Point](#5-application-entry-point)
 5. [Annotations](#annotations)
 6. [Examples](#examples)
 7. [Configuration](#configuration)
@@ -23,6 +28,8 @@ Cafe-Beans is a lightweight Java library implementing Inversion of Control (IoC)
 
 Cafe-Beans provides a simple, annotation-driven IoC framework for Java. It manages the lifecycle and dependencies of your components, making your application easier to maintain, configure, and extend.
 
+The central engine of the framework is the `CafeApplication` class. `CafeApplication` is a stub class designed to be extended by users to define their own application logic. Each extension of `CafeApplication` can be run using a different application configuration class (a class annotated with `@CafeApplication`), providing flexibility for various setups and environments.
+
 ---
 
 ## Features
@@ -32,7 +39,9 @@ Cafe-Beans provides a simple, annotation-driven IoC framework for Java. It manag
 - **Configuration File Support**: Load values from `application.properties` or YAML automatically.
 - **Lightweight**: No heavy dependencies or XML configuration required.
 - **Extensible**: Create custom annotations and providers.
-
+- **Customizable Application Engine:** The `CafeApplication` class is a stub meant to be extended. Users define their own application logic by overriding its methods.
+- **Flexible Configuration:** Each extension of `CafeApplication` can be initialized with a different root configuration class (annotated with `@CafeApplication`), allowing easy reuse and modular configuration for different environments or application modes.
+- **Custom Injection Mechanisms:** Easily extend the framework by creating your own injection logic. Cafe-Beans provides a set of resolvers for different class elements—such as constructors, fields, and methods—allowing advanced users to implement custom dependency resolution strategies.
 ---
 
 ## Installation
@@ -81,7 +90,7 @@ public class AppSettings {
 }
 ```
 
-### 2. Create a Configuration Class
+### 2. Create a beans Factory configuration
 
 Use `@CafeFactory` for configuration providers.
 
@@ -111,22 +120,28 @@ app.environment=production
 
 ### 4. Create a root application configuration class
 
-Every Cafe-Beans application requires a class annotated with `@CafeApplication`.  
+Every Cafe-Beans application requires a class annotated with `@CafeApplication`.
 This class acts as the root for component scanning and initialization.
 
 ```java
 @CafeApplication
 public class MainConfigApp {
     // You can declare additional configuration or leave empty.
+
+    @CafePostInit
+    public void afterInit() {
+        System.out.println("Application context initialized!");
+    }
 }
 ```
 
 - Annotate your configuration class with `@CafeApplication`.
-- Pass this class to your application entry point (see MainApp example above).
+- Pass this class to your application entry point (see MainApp example below).
 
 ### 5. Application Entry Point
 
-Extend `CafeApplication` in your main class:
+**CafeApplication is the engine of the framework.**  
+To start your application, extend `CafeApplication` and implement your business logic in the `execute` method. Pass your root configuration class (annotated with `@CafeApplication`) to the constructor.
 
 ```java
 public class MainApp extends CafeApplication {
@@ -140,6 +155,7 @@ public class MainApp extends CafeApplication {
     }
 
     public static void main(String[] args) {
+        // You can provide a different configuration class as needed
         MainApp mainApp = new MainApp(MainConfigApp.class);
         mainApp.run(args);
     }
@@ -150,16 +166,27 @@ public class MainApp extends CafeApplication {
 
 ## Annotations
 
-- `@CafeService`: Marks a class as a service/component. There are 2 scopes: Singleton/ Prototype
-- `@CafeInject`: Field  injection.
+- `@CafeService`: Marks a class as a service/component. Supported scopes: singleton and prototype.
+- `@CafeInject`: Field injection.
 - `@CafeProperty(name = "...")`: Injects a property value.
 - `@CafeFactory`: Marks a configuration/provider class.
 - `@CafeProvider`: Marks a bean provider method.
 - `@CafeName(name = "...")`: Assigns a custom bean ID.
 - `@CafePrimary`: Marks a bean as the primary instance for its type.
 - `@CafeApplication`: Marks the root configuration class.
-- `@CafeOptional` : Marks field that injection can be null
-- `@CafePostInit` : Marks method in root application configuration class to be executed after application context is initialized
+- `@CafeOptional`: Marks a field as optional for injection (can be null).
+    ```java
+    @CafeInject
+    @CafeOptional
+    private OptionalDependency optionalDependency;
+    ```
+- `@CafePostInit`: Marks a method in the root application configuration class to be executed after the application context is initialized.
+    ```java
+    @CafePostInit
+    public void afterInit() {
+        // logic to run post-initialization
+    }
+    ```
 
 ---
 
@@ -181,20 +208,26 @@ See [Getting Started](#getting-started).
 ```
 Username: admin
 Environment: production
+Application context initialized!
 ```
 
 ---
 
 ## Configuration
 
-By default, Cafe-Beans loads `application.properties` from the classpath. 
+By default, Cafe-Beans loads `application.properties` from the classpath.
+
+You can override this behavior by providing custom logic in your `CafeApplication` extension or configuration.
+
+---
 
 ## Advanced Features
 
 - **Custom Annotations**: Extend Cafe-Beans with your own injection logic.
 - **Mixed Injection**: Combine property and object injection.
-- **Scope Management**: (Upcoming) Support for singleton/prototype scopes.
-
+- **Scope Management**: Support for singleton/prototype scopes.
+- **Custom Injection Resolvers**: The framework includes resolver interfaces for constructors, fields, and methods. 
+ Developers can implement and register their own resolvers to customize how dependencies are injected for different class elements.
 ---
 
 ## License
