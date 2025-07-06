@@ -11,3 +11,5 @@ bin
 /target/
 /cafe-shell-examples/target/
 *.iml
+/cafe-beans/class-dependency.puml
+/cafe-beans/members-dependency.puml

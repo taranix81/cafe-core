@@ -1,4 +1,4 @@
-# Library Documentation: Java Dependency Injection Library (IOC with Property Injection)
+# Cafe-Beans Documentation: Java Dependency Injection Library (IOC with Property Injection)
 
 This document describes a Java-based library designed to implement Inversion of Control (IoC), with support for injecting properties into classes using annotations. The library simplifies dependency injection for Java applications and promotes loose coupling between components.
 
@@ -41,9 +41,9 @@ Add the following dependency to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>com.example</groupId>
-    <artifactId>ioc-library</artifactId>
-    <version>1.0.0</version>
+    <artifactId>cafe-beans</artifactId>
+    <groupId>org.taranix.cafe</groupId>
+    <version>0.0.4-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -52,71 +52,100 @@ Add the following dependency to your `pom.xml`:
 Add the following to your `build.gradle`:
 
 ```gradle
-implementation 'com.example:ioc-library:1.0.0'
+implementation 'org.taranix.cafe:cafe-beans:0.0.4-SNAPSHOT'
 ```
 
 ### Manual Download
 
-Download the compiled library JAR from [here](https://example.com/download) and include it in your classpath.
+Download the compiled library JAR from [here]() and include it in your classpath.
 
 ---
 
 ## Getting Started
 
-### 1. Define a Class with Dependencies
-Create a class and annotate fields with `@Inject` to specify the dependent values. Use `@Value` for property injection.
+### 1. Service Class with Dependencies
+Create a class and annotate it by `@CafeService`. 
+- Annotate fields with `@CafeInject` to specify the dependent values. 
+- Annotate fields with `@CafeProperty` for property injection.
+- Annotate fields with `@CafeName` to specify bean id (works with `@CafeInject`).
 
-### 2. Configure the Properties
-Define a properties file (`application.properties`) that contains the configuration values needed by your application.
 
-### 3. Bootstrap the IoC Container
-Initialize the IoC container to scan and manage your classes and dependencies.
+### 2. Configuration Class with Providers
+Create a class and annotate it by `@CafeFactory`. 
+- Annotate fields with `@CafeInject` to specify the dependent values.
+- Annotate fields with `@CafeProperty` for property injection.
+- Annotate methods with `@CafeProvider` to specify bean creation.
+- Annotate methods with `@CafeName` to specify bean id (works with `@CafeProvider`).
+- Annotate methods with `@CafePrimary` to specify bean which should be dominant between many instances of the same type (works with `@CafeProvider`).
+
+
+
+### 3. Configure the Properties
+Define a properties file (`application.properties` or `application.yaml`) that contains the configuration values needed by your application.
+
+### 4. Application Class
+Create a class which extends `org.taranix.cafe.beans.CafeApplication`.  
+This class will contain main logic of you application
+
+### 5. Application configuration Class 
+Create a class and annotate it `@CafeApplication`.   
+This class is a root for scanning and initialize components by Cafe-Beans
+
 
 ---
 
 ## Annotations
 
-### 1. `@Inject`
+### 1. `@CafeInject`
 
 Indicates that a field or constructor should be injected with a dependency.
 
 Example:
 ```java
-@Inject
+@CafeInject
 private ServiceClass service;
 ```
 
-### 2. `@Value`
+### 2. `@CafeProperty`
 
 Used to inject a property value into a field. The property key is specified as the annotation value.
 
 Example:
 ```java
-@Value("app.username")
+@CafeProperty(name="app.username")
 private String username;
 ```
 
-### 3. `@Component`
+### 3. `@CafeService`
 
 Marks a class as a managed component. These classes are scanned and instantiated by the IoC container.
 
 Example:
 ```java
-@Component
+@CafeService
 public class MyComponent {
     // ...
 }
 ```
 
-### 4. `@Configuration`
-
-Indicates a configuration class that provides bean definitions or other settings.
+### 4. `@CafeFactory`
+Indicates a configuration class that provides bean definitions or other settings. Annotate method with `@CafeProvider` to initialize and manage beans
 
 Example:
 ```java
-@Configuration
+@CafeFactory
 public class AppConfig {
     // Bean definitions
+    @CafeProvider
+    Double primeNumber(){
+        return 13.0d;
+    }
+
+    @CafeProvider
+    @CafeName(name="second")
+    Double primeNumber(){
+        return 17.0d;
+    }
 }
 ```
 
@@ -137,13 +166,13 @@ app.environment=production
 
 #### 2. Create a Class with Dependencies
 ```java
-@Component
+@CafeService
 public class AppSettings {
 
-    @Value("app.username")
+    @CafeProperty(name="app.username")
     private String username;
 
-    @Value("app.environment")
+    @CafeProperty(name="app.environment")
     private String environment;
 
     public void printSettings() {
@@ -152,16 +181,28 @@ public class AppSettings {
     }
 }
 ```
-
-#### 3. Main Application
+#### 3. Main Application Config Class
 ```java
-public class MainApp {
-    public static void main(String[] args) {
-        IoCContainer container = new IoCContainer("application.properties");
-        
-        // Retrieve managed component
-        AppSettings appSettings = container.getBean(AppSettings.class);
+@CafeApplication
+public class MainConfigApp{
+    
+}
+
+```
+
+#### 4. Main Application
+```java
+public class MainApp extends CafeApplication{
+    @CafInject
+    private AppSettings appSettings;
+    
+    protected int execute(String[] args){
         appSettings.printSettings();
+    }
+    
+    public static void main(String[] args) {
+        MainApp mainApp = new MainApp(MainConfigApp.class);
+        mainApp.run(new String[]{});
     }
 }
 ```
