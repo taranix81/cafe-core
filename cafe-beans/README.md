@@ -1,10 +1,11 @@
-# Cafe-Beans Documentation: Java Dependency Injection Library (IOC with Property Injection)
+# Cafe-Beans: Lightweight Java IoC with Annotation-based Property Injection
 
-This document describes a Java-based library designed to implement Inversion of Control (IoC), with support for injecting properties into classes using annotations. The library simplifies dependency injection for Java applications and promotes loose coupling between components.
+Cafe-Beans is a lightweight Java library implementing Inversion of Control (IoC) and dependency injection using annotations. It supports property injection, allowing you to easily inject configuration values directly into your classes.
 
 ---
 
 ## Table of Contents
+
 1. [Introduction](#introduction)
 2. [Features](#features)
 3. [Installation](#installation)
@@ -12,24 +13,25 @@ This document describes a Java-based library designed to implement Inversion of 
 5. [Annotations](#annotations)
 6. [Examples](#examples)
 7. [Configuration](#configuration)
-8. [License](#license)
+8. [Advanced Features](#advanced-features)
+9. [License](#license)
+10. [Support](#support)
 
 ---
 
 ## Introduction
 
-This library provides a lightweight IoC framework for Java, enabling dependency injection through annotations. It includes property injection, which allows easy assignment of configuration values (e.g., from a configuration file) to fields in a class.
-
-With IoC, the lifecycle and dependencies of objects are managed by the framework. This makes applications easier to maintain and extend.
+Cafe-Beans provides a simple, annotation-driven IoC framework for Java. It manages the lifecycle and dependencies of your components, making your application easier to maintain, configure, and extend.
 
 ---
 
 ## Features
 
-- **Annotation-based Dependency Injection**: Annotate fields, constructors, and classes for dependency injection.
-- **Property Injection**: Inject values like strings, numbers, and environmental properties into fields.
-- **Configuration Support**: Load properties from external configuration files into your Java components automatically.
-- **Lightweight Design**: No large dependencies or complex configurations—easy to add to any Java project.
+- **Annotation-based Dependency Injection**: Use annotations for cleaner, boilerplate-free DI.
+- **Property Injection**: Inject configuration values (strings, numbers, etc.) directly from properties files.
+- **Configuration File Support**: Load values from `application.properties` or YAML automatically.
+- **Lightweight**: No heavy dependencies or XML configuration required.
+- **Extensible**: Create custom annotations and providers.
 
 ---
 
@@ -37,19 +39,15 @@ With IoC, the lifecycle and dependencies of objects are managed by the framework
 
 ### Maven
 
-Add the following dependency to your `pom.xml`:
-
 ```xml
 <dependency>
-    <artifactId>cafe-beans</artifactId>
     <groupId>org.taranix.cafe</groupId>
+    <artifactId>cafe-beans</artifactId>
     <version>0.0.4-SNAPSHOT</version>
 </dependency>
 ```
 
 ### Gradle
-
-Add the following to your `build.gradle`:
 
 ```gradle
 implementation 'org.taranix.cafe:cafe-beans:0.0.4-SNAPSHOT'
@@ -57,122 +55,23 @@ implementation 'org.taranix.cafe:cafe-beans:0.0.4-SNAPSHOT'
 
 ### Manual Download
 
-Download the compiled library JAR from [here]() and include it in your classpath.
+Download the latest JAR from the [Releases page](https://github.com/taranix81/cafe-core/releases) and add it to your classpath.
 
 ---
 
 ## Getting Started
 
-### 1. Service Class with Dependencies
-Create a class and annotate it by `@CafeService`. 
-- Annotate fields with `@CafeInject` to specify the dependent values. 
-- Annotate fields with `@CafeProperty` for property injection.
-- Annotate fields with `@CafeName` to specify bean id (works with `@CafeInject`).
+### 1. Define a Service
 
+Annotate your service class with `@CafeService` and its dependencies with `@CafeInject` or `@CafeProperty`.
 
-### 2. Configuration Class with Providers
-Create a class and annotate it by `@CafeFactory`. 
-- Annotate fields with `@CafeInject` to specify the dependent values.
-- Annotate fields with `@CafeProperty` for property injection.
-- Annotate methods with `@CafeProvider` to specify bean creation.
-- Annotate methods with `@CafeName` to specify bean id (works with `@CafeProvider`).
-- Annotate methods with `@CafePrimary` to specify bean which should be dominant between many instances of the same type (works with `@CafeProvider`).
-
-
-
-### 3. Configure the Properties
-Define a properties file (`application.properties` or `application.yaml`) that contains the configuration values needed by your application.
-
-### 4. Application Class
-Create a class which extends `org.taranix.cafe.beans.CafeApplication`.  
-This class will contain main logic of you application
-
-### 5. Application configuration Class 
-Create a class and annotate it `@CafeApplication`.   
-This class is a root for scanning and initialize components by Cafe-Beans
-
-
----
-
-## Annotations
-
-### 1. `@CafeInject`
-
-Indicates that a field or constructor should be injected with a dependency.
-
-Example:
-```java
-@CafeInject
-private ServiceClass service;
-```
-
-### 2. `@CafeProperty`
-
-Used to inject a property value into a field. The property key is specified as the annotation value.
-
-Example:
-```java
-@CafeProperty(name="app.username")
-private String username;
-```
-
-### 3. `@CafeService`
-
-Marks a class as a managed component. These classes are scanned and instantiated by the IoC container.
-
-Example:
-```java
-@CafeService
-public class MyComponent {
-    // ...
-}
-```
-
-### 4. `@CafeFactory`
-Indicates a configuration class that provides bean definitions or other settings. Annotate method with `@CafeProvider` to initialize and manage beans
-
-Example:
-```java
-@CafeFactory
-public class AppConfig {
-    // Bean definitions
-    @CafeProvider
-    Double primeNumber(){
-        return 13.0d;
-    }
-
-    @CafeProvider
-    @CafeName(name="second")
-    Double primeNumber(){
-        return 17.0d;
-    }
-}
-```
-
----
-
-## Examples
-
-### Define a Component with Property Injection
-
-Here's an example of injecting properties into a class using annotations:
-
-#### 1. Application Properties
-Define the properties in a file named `application.properties`:
-```properties
-app.username=admin
-app.environment=production
-```
-
-#### 2. Create a Class with Dependencies
 ```java
 @CafeService
 public class AppSettings {
-
-    @CafeProperty(name="app.username")
+    @CafeProperty(name = "app.username")
     private String username;
 
-    @CafeProperty(name="app.environment")
+    @CafeProperty(name = "app.environment")
     private String environment;
 
     public void printSettings() {
@@ -181,33 +80,104 @@ public class AppSettings {
     }
 }
 ```
-#### 3. Main Application Config Class
+
+### 2. Create a Configuration Class
+
+Use `@CafeFactory` for configuration providers.
+
+```java
+@CafeFactory
+public class AppConfig {
+    @CafeProvider
+    public Double primeNumber() {
+        return 13.0d;
+    }
+
+    @CafeProvider
+    @CafeName(name = "second")
+    public Double secondPrime() {
+        return 17.0d;
+    }
+}
+```
+
+### 3. Provide Application Properties
+
+Create `application.properties`:
+```properties
+app.username=admin
+app.environment=production
+```
+
+### 4. Create a root application configuration class
+
+Every Cafe-Beans application requires a class annotated with `@CafeApplication`.  
+This class acts as the root for component scanning and initialization.
+
 ```java
 @CafeApplication
-public class MainConfigApp{
-    
+public class MainConfigApp {
+    // You can declare additional configuration or leave empty.
 }
-
 ```
 
-#### 4. Main Application
+- Annotate your configuration class with `@CafeApplication`.
+- Pass this class to your application entry point (see MainApp example above).
+
+### 5. Application Entry Point
+
+Extend `CafeApplication` in your main class:
+
 ```java
-public class MainApp extends CafeApplication{
-    @CafInject
+public class MainApp extends CafeApplication {
+    @CafeInject
     private AppSettings appSettings;
-    
-    protected int execute(String[] args){
+
+    @Override
+    protected int execute(String[] args) {
         appSettings.printSettings();
+        return 0;
     }
-    
+
     public static void main(String[] args) {
         MainApp mainApp = new MainApp(MainConfigApp.class);
-        mainApp.run(new String[]{});
+        mainApp.run(args);
     }
 }
 ```
 
-#### Output
+---
+
+## Annotations
+
+- `@CafeService`: Marks a class as a service/component. There are 2 scopes: Singleton/ Prototype
+- `@CafeInject`: Field  injection.
+- `@CafeProperty(name = "...")`: Injects a property value.
+- `@CafeFactory`: Marks a configuration/provider class.
+- `@CafeProvider`: Marks a bean provider method.
+- `@CafeName(name = "...")`: Assigns a custom bean ID.
+- `@CafePrimary`: Marks a bean as the primary instance for its type.
+- `@CafeApplication`: Marks the root configuration class.
+- `@CafeOptional` : Marks field that injection can be null
+- `@CafePostInit` : Marks method in root application configuration class to be executed after application context is initialized
+
+---
+
+## Examples
+
+### application.properties
+
+```properties
+app.username=admin
+app.environment=production
+```
+
+### Service and Application Classes
+
+See [Getting Started](#getting-started).
+
+#### Example Output
+
 ```
 Username: admin
 Environment: production
@@ -217,33 +187,24 @@ Environment: production
 
 ## Configuration
 
-### Property Loader
-The library utilizes a properties file (e.g., `application.properties`) to load configuration values. The default file name is `application.properties`, but you can specify a custom file name when initializing the IoC container.
-
-### IoCContainer Initialization
-To initialize the IoC container, provide a base package for component scanning and a path to the properties file.
-
-Example:
-```java
-IoCContainer container = new IoCContainer("com.example.myapp", "config/settings.properties");
-```
-
----
+By default, Cafe-Beans loads `application.properties` from the classpath. 
 
 ## Advanced Features
 
-1. **Custom Annotations**: Extend the library by creating custom annotations for additional configuration or injection logic.
-2. **Mixed Configurations**: Mix property injection and object injection seamlessly.
-3. **Scope Management**: (Upcoming) Add support for different bean scopes (e.g., singleton, prototype).
+- **Custom Annotations**: Extend Cafe-Beans with your own injection logic.
+- **Mixed Injection**: Combine property and object injection.
+- **Scope Management**: (Upcoming) Support for singleton/prototype scopes.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See [LICENSE](../LICENSE) for details.
 
 ---
 
-For any questions, visit our [GitHub Repository](https://github.com/example/ioc-library) or contact support@example.com.
+## Support
 
-Enjoy coding with simplicity! ❤️
+For questions, open an issue in the [GitHub repository](https://github.com/taranix81/cafe-core/issues) or contact support@example.com.
+
+Enjoy building with Cafe-Beans! ☕️
