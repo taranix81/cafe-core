@@ -1,3 +1,113 @@
+# Cafe Shell
+
+Cafe Shell is a lightweight, annotation-driven command-line framework built on top of [Cafe Beans](../cafe-beans). It enables you to quickly create CLI applications with dependency injection, automatic command mapping, robust argument parsing, and extensible command resolution.
+
+---
+
+## Features
+
+- **Annotation-based Command Registration:** Define CLI commands as Java classes or methods using `@CafeCommand` and `@CafeCommandRun`.
+- **Dependency Injection:** Integrates with Cafe Beans for DI, letting you inject services and configuration into commands and the shell runtime.
+- **Apache Commons CLI Integration:** Leverages Commons CLI's `Options` and `CommandLineParser` for argument parsing.
+- **Custom Command Resolvers:** Extensible mechanism for mapping CLI arguments to command implementations.
+- **Automatic Help Generation:** Built-in help command and error handling for invalid or missing arguments.
+- **Runtime Object Repository:** Commands can produce objects that are stored and made available for subsequent commands.
+- **@CafePrimary Support:** Control bean injection precedence when multiple sources of the same type exist.
+- **Flexible Parameter Injection:** Inject arguments, beans, services, and runtime-produced objects into your command methods.
+
+---
+
+## Installation
+
+Add the following to your Maven `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.taranix.cafe</groupId>
+    <artifactId>cafe-shell</artifactId>
+    <version>0.0.4-SNAPSHOT</version>
+</dependency>
+```
+
+Or for Gradle:
+
+```gradle
+implementation 'org.taranix.cafe:cafe-shell:0.0.4-SNAPSHOT'
+```
+
+---
+
+## Quick Start
+
+### 1. Run Your Shell Application
+
+Simply instantiate `CafeShell` with your configuration class (annotated with `@CafeApplication`) and call `run`:
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        CafeShell cafeShell = new CafeShell(MyShellConfig.class);
+        int result = cafeShell.run(args);
+        System.exit(result);
+    }
+}
+
+
+
+```
+
+### 2. Configure the Application Context
+
+Set up your root configuration class and any beans you need:
+
+```java
+import org.taranix.cafe.beans.annotations.CafeApplication;
+
+@CafeApplication
+public class MyShellConfig {
+    // Additional beans and configuration (optional)
+}
+```
+
+### 3. Define Your Commands
+
+Annotate a command class with `@CafeCommand` and a method with `@CafeCommandRun`:
+
+```java
+import org.taranix.cafe.shell.annotations.CafeCommand;
+import org.taranix.cafe.shell.annotations.CafeCommandRun;
+
+@CafeCommand(command = "greet", description = "Prints a greeting")
+public class GreetCommand {
+    @CafeCommandRun
+    public void run() {
+        System.out.println("Hello from Cafe Shell!");
+    }
+}
+```
+
+#### More Complete Example
+
+```java
+import org.taranix.cafe.shell.annotations.CafeCommand;
+import org.taranix.cafe.shell.annotations.CafeCommandRun;
+import java.util.UUID;
+
+@CafeCommand(command = "u", description = "Random UUID", hasOptionalArgument = true, noOfArgs = 1)
+public class RandomUUIDCommand {
+    @CafeCommandRun
+    public UUID run(CafeCommandArguments args) {
+        UUID generated = UUID.randomUUID();
+        System.out.println("Generated UUID: " + generated);
+        return generated;
+    }
+}
+```
+
+
+
+---
+
 ## Advanced Command Execution and Dependency Injection
 
 ### Command Method Parameters
@@ -50,4 +160,39 @@ public class ProduceDataCommand {
 
 ---
 
-This flexible parameter resolution allows for rich, composable CLI flows, where commands can collaborate, share context, and use the same dependency injection model as the rest of the Cafe Beans ecosystem.
+## How It Works
+
+- **Startup:** `CafeShell` initializes a dependency-injected context based on your configuration.
+- **Command Resolution:** CLI arguments are parsed using Apache Commons CLI. Each option or positional argument is mapped to a corresponding `@CafeCommand`.
+- **Execution:** Resolved commands are executed in order, according to your logic and the shell runtime.
+- **Help and Errors:** Invalid arguments or missing commands cause the shell to print the help screen automatically.
+
+---
+
+## Error Handling & Exit Codes
+
+Cafe Shell includes robust error handling and uses exit codes for clarity:
+- `0` — Success
+- `1` — Error during execution
+- `2` — Wrong or missing argument(s)
+
+If argument parsing fails, the help message is shown.
+
+---
+
+## License
+
+See the root project [LICENSE](../LICENSE) for details.
+
+---
+
+## References
+
+- [Cafe Beans](../cafe-beans)
+- [Apache Commons CLI](https://commons.apache.org/proper/commons-cli/)
+
+---
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
