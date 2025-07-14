@@ -103,4 +103,12 @@
 
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/taranix81/cafe-core</url>
+        </repository>
+    </distributionManagement>
+
 </project>
