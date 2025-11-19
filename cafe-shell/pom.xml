@@ -7,7 +7,7 @@
     <parent>
         <artifactId>cafe-core</artifactId>
         <groupId>org.taranix.cafe</groupId>
-        <version>0.0.4-SNAPSHOT</version>
+        <version>0.0.4</version>
     </parent>
 
     <artifactId>cafe-shell</artifactId>
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>org.taranix.cafe</groupId>
             <artifactId>cafe-beans</artifactId>
-            <version>0.0.4-SNAPSHOT</version>
+            <version>0.0.4</version>
         </dependency>
     </dependencies>
 

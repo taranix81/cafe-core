@@ -7,13 +7,13 @@
     <parent>
         <artifactId>cafe-core</artifactId>
         <groupId>org.taranix.cafe</groupId>
-        <version>0.0.4-SNAPSHOT</version>
+        <version>0.0.4</version>
     </parent>
 
     <artifactId>cafe-beans</artifactId>
     <packaging>jar</packaging>
     <name>cafe-beans</name>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.4</version>
     <description>cafe framework</description>
 
     <dependencies>
