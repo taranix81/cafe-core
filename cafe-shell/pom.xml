@@ -19,7 +19,7 @@
         <dependency>
             <groupId>org.taranix.cafe</groupId>
             <artifactId>cafe-beans</artifactId>
-            <version>0.0.4-SNAPSHOT</version>
+            <version>0.0.5-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

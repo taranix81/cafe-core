@@ -13,7 +13,7 @@
     <artifactId>cafe-beans</artifactId>
     <packaging>jar</packaging>
     <name>cafe-beans</name>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.5-SNAPSHOT</version>
     <description>cafe framework</description>
 
     <dependencies>
