@@ -1,0 +1,10 @@
+@startuml
+
+autonumber
+
+Widget -> EventBus: SWT Event
+EventBus -> Widget : get BindInfo (ActionName, owning Controller)
+Widget -> EventBus: BindInfo
+EventBus -> ControllerA : call handler (BindInfo)
+EventBus -> ControllerB : call handler (BindInfo)
+@enduml

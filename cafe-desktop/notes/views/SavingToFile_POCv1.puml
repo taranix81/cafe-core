@@ -1,0 +1,37 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant EventBus
+participant ContainerComponent
+participant ViewComponent
+participant Widget
+participant ShellUtils
+participant DataSourceComponent
+
+
+
+EventBus -> ContainerComponent : ContainerSave(type="File")
+ContainerComponent --> ContainerComponent : determine active ViewComponent
+
+opt  "ViewComponent is Dirty"
+    ContainerComponent -> EventBus : GetData(data=null, target=ViewComponent)
+    EventBus ->ViewComponent : GetData(data=null, target=ViewComponent)
+    ViewComponent -> Widget : get data from Widget
+    Widget -> ViewComponent : data (generic / object??)
+    ViewComponent --> ContainerComponent :  GetData(data=<data>, target=ViewComponent)
+    opt "File is unknown"
+        ContainerComponent -> ShellUtils : open dialog box
+        ShellUtils -> ContainerComponent : file
+    end opt
+
+    opt "File is present"
+        ContainerComponent -> EventBus : FileSave(data=<data>, "file=<value>")
+        EventBus -> DataSourceComponent : FileSave ("data"=data,  "file=<value>"
+        DataSourceComponent -> DataSourceComponent : perfom persisting
+        DataSourceComponent --> ContainerComponent : FileSave --> "status" = status
+    end opt
+end opt
+ContainerComponent -> EventBus : ContainerSave(type="File")
+@enduml

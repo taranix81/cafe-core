@@ -1,0 +1,69 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>cafe-core</artifactId>
+        <groupId>org.taranix.cafe</groupId>
+        <version>0.0.5-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>cafe-desktop</artifactId>
+    <version>0.0.5-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>cafe-desktop</name>
+    <description>cafe-desktop</description>
+
+    <properties>
+        <swt_platform_version>3.124.200</swt_platform_version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.taranix.cafe</groupId>
+            <artifactId>cafe-beans</artifactId>
+            <version>0.0.5-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.taranix.cafe</groupId>
+            <artifactId>cafe-shell</artifactId>
+            <version>0.0.5-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
+    <profiles>
+        <profile>
+            <id>win</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.eclipse.platform</groupId>
+                    <artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
+                    <version>${swt_platform_version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.eclipse.platform</groupId>
+                    <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+                    <version>${swt_platform_version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+</project>

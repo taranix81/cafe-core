@@ -112,4 +112,8 @@ public class CafeAnnotationUtils {
         return Optional.ofNullable((field).getAnnotation(CafeOptional.class))
                 .isPresent();
     }
+
+    public static boolean isRuntimeResolving(Method method) {
+        return Arrays.stream(method.getAnnotations()).anyMatch(annotation -> annotation.annotationType().isAnnotationPresent(CafeRuntime.class));
+    }
 }

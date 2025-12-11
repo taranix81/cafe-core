@@ -1,0 +1,21 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant "HostComponent (VC)" as HostComponent
+participant "TextEditor(VC)" as TextEditor
+participant "DataSource (C)" as DataSource
+
+HostComponent --> TextEditor : start()
+TextEditor --> HostComponent : Message(get widget)
+HostComponent --> TextEditor : Message( host_widget)
+TextEditor --> TextEditor : create own Widget( parent = host_widget)
+TextEditor --> HostComponent : Message (get addons)
+HostComponent --> TextEditor : Message(DataSource addon)
+TextEditor --> DataSource : start()
+DataSource --> DataSource : prepare data
+DataSource --> TextEditor : Message (data)
+TextEditor --> HostComponent : name of datasource
+
+@enduml

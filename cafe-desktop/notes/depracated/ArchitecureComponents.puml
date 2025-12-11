@@ -1,0 +1,77 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+node "Cafe GUI"{
+    interface "Open View"  as OpenView
+    interface "Close View"  as CloseView
+    interface "Set active View"  as FocusView
+
+    interface "Start Application"  as StartApp
+    interface "Application Content"  as AppContent
+
+    [Application]
+    [Data]
+
+    node "SWT" {
+      [Shell]
+      [Composite]
+      [Control]
+      [CTabFolder]
+    }
+
+    node "Forms"{
+        [Form]
+        [TextForm]
+        [ListForm]
+
+        [Form]<|--[TextForm] : extends
+        [Form]<|--[ListForm] : extends
+        [Form] ...> [Control] : creates
+        [Form] ...> [Shell] : required
+
+
+        [Data] ..> [Form] : injected
+    }
+
+    node "Views"{
+        [View]
+        [Editor]
+        [FileEditor]
+
+        [View] <|-- [Editor] : extends
+        [Editor] <|-- [FileEditor] : extends
+
+        [View] ..> [Form] : contains
+        [View] ..> [Data] : provides
+
+
+    }
+
+    node "View Containers"{
+       [View Container]
+       [CTabFolder View Container]
+       [Composite View Container]
+       [View Container] <|-- [CTabFolder View Container] : extends
+       [View Container] <|-- [Composite View Container] : extends
+
+        [View Container] ..> [View] : use
+        [CTabFolder View Container] ..> [CTabFolder] : use
+        [Composite View Container] ..> [Composite] : use
+    }
+
+    node "Workspace"{
+         [WorkspaceService]
+         [WorkspaceService] ..> [View Container]: use
+         [WorkspaceService] --> [View] : creates
+    }
+
+ 
+
+    StartApp-->[Application]
+    [Application] -->  AppContent : <<call>>
+    AppContent --> [WorkspaceService] : <<creates>>
+    OpenView --> [WorkspaceService]
+    CloseView --> [WorkspaceService]
+    FocusView --> [WorkspaceService]
+}
+@enduml

@@ -1,0 +1,30 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+abstract class Widget{
+    addListener(eventType : int,  listener : Listener): void
+}
+
+abstract class Control{
+    getMenu() : Menu
+    getShell() : Shell
+    isReparentable() : boolean
+}
+Widget<|--Control : extends
+
+abstract class Scrollable{
+    getHorizontalBar() : ScrollBar
+    getVerticalBar() : ScrollBar
+}
+Control<|--Scrollable : extends
+
+class Composite{
+     getChildren() : Control[]
+     getTabList() : Control[]
+     layout() :void
+     setLayout() : void
+}
+Scrollable<|--Composite : extends
+
+
+@enduml

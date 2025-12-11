@@ -1,0 +1,38 @@
+#cafe:
+#  application:
+#    promptOnQuit: true
+#    name: My notepad
+#    container:
+#      newPageTitle: "new"
+#    menu: #menuBar
+#      items:
+#        - id: menu.file
+#          name: "File"
+#          menu:
+#            items:
+#              - id: menu.file.new
+#                name: "New"
+#              - id: menu.file.open
+#                name: "Open"
+#                onSelection: "MENU_OPEN"
+#              - id: separatorId
+#              - id: saveFileId
+#                name: "Save"
+#                onSelection: "MENU_SAVE"
+#              #              - id: saveAsFileId
+#              #                name: "Save as"
+#              #                onSelection: "MENU_SAVE_AS"
+#              #              - id: separatorId
+#              #              - id: propertiesId
+#              #                name: "Settings"
+#              #                onSelection: "MENU_OPEN_SETTINGS"
+#              #              - id: separatorId
+#              - id: closeId
+#                name: "Quit"
+#                ###onSelection: "MENU_CLOSE"
+#        - id: editId
+#          name: "Edit"
+#        - id: viewId
+#          name: "View"
+
+

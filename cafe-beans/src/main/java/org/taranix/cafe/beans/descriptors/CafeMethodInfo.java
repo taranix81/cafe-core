@@ -73,7 +73,7 @@ public class CafeMethodInfo extends CafeMemberInfo {
 
     @Override
     public boolean isOptional() {
-        return false;
+            return CafeAnnotationUtils.isRuntimeResolving(getMethod());
     }
 
     public BeanTypeKey getMethodReturnTypeKey() {

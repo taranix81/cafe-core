@@ -1,0 +1,35 @@
+@startmindmap
+'https://plantuml.com/mindmap-diagram
+
+title Cafe-Visuals GUI Structure
+
+* Application (Shell)
+** CafeModalBox (Shell)
+** CafeMenuController (Menu)
+** CafeStatusController(StatusBar)
+** CafeGridController (Composite)
+
+*** CafeView (abstract))
+**** CafeViewContainer ()
+**** CafeEditor(Control/Widget/Composite)
+
+**** Custom View
+**** Navigator View
+***** Navigator Tree View
+***** Navigator List View
+**** Table View
+**** List View
+**** Tree View
+
+**** Navigator-driven Container
+***** View
+***** View
+
+**** Tabbed container
+***** View
+***** View
+
+**** Navigator-driven Tabbed Container
+***** View
+***** View
+@endmindmap

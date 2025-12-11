@@ -1,0 +1,54 @@
+@startwbs
+* Widget
+** Control
+*** Scrollable
+**** Text
+**** List
+**** Composite
+***** Canvas
+****** GLCanvas
+****** StyledText
+****** CLabel
+****** TableCursor
+****** TreeCursor
+****** Decorations
+******* Shell
+
+***** Table
+***** TabFolder
+***** CTabFolder
+***** CoolBar
+***** Combo
+***** DateTime
+***** ExpandBar
+***** Group
+***** Tree
+
+*** Button
+*** Label
+*** Link
+*** ProgressBar
+*** Sash
+*** Scale
+*** Slider
+
+** Menu
+
+** Item
+*** MenuItem
+*** TabItem
+*** CoolItem
+*** ExpandItem
+*** TableColumn
+*** TableItem
+*** TaskItem
+*** ToolItem
+*** TrayItem
+*** TreeColumn
+*** TreeItem
+
+** ScrollBar
+** TaskBar
+** ToolTip
+** Tray
+@endwbs

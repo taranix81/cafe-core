@@ -1,0 +1,30 @@
+cafe:
+  application:
+    name: Application
+    shell:
+      promptOnQuit: true
+      menu: #menuBar
+        items:
+          - id: menu.file
+            name: "File"
+            menu:
+              items:
+                - id: menu.file.new
+                  name: "New"
+                - id: menu.file.open
+                  name: "Open"
+                - id: separatorId
+                - id: menu.file.save
+                  name: "Save"
+                - id: menu.file.save.as
+                  name: "Save as"
+                - id: menu.file.save.all
+                  name: "Save all"
+                - id: separatorId
+                - id: menu.properties
+                  name: "Settings"
+                - id: separatorId
+                - id: menu.file.quit
+                  name: "Quit"
+
+
