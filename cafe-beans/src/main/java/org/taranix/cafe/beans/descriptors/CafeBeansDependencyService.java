@@ -47,14 +47,14 @@ public class CafeBeansDependencyService {
         return !classCycleSet().isEmpty();
     }
 
-    Collection<CafeClassInfo> classCycleSet() {
+    Collection<CafeClassDescriptor> classCycleSet() {
         if (log.isTraceEnabled()) {
             classDependencies.generateDiagram("class-dependency");
         }
         return classDependencies.cycleSet();
     }
 
-    public Set<CafeClassInfo> providersForClass(CafeClassInfo target) {
+    public Set<CafeClassDescriptor> providersForClass(CafeClassDescriptor target) {
         return new HashSet<>(classDependencies.getMany(target));
     }
 

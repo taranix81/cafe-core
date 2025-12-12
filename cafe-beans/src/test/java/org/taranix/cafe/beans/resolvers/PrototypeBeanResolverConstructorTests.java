@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.taranix.cafe.beans.CafeApplicationContext;
 import org.taranix.cafe.beans.annotations.CafeAnnotationUtils;
-import org.taranix.cafe.beans.descriptors.CafeClassInfo;
+import org.taranix.cafe.beans.descriptors.CafeClassDescriptor;
 import org.taranix.cafe.beans.resolvers.data.prototype.DefaultFactory;
 import org.taranix.cafe.beans.resolvers.data.prototype.PrototypeServiceClassWCA;
 import org.taranix.cafe.beans.resolvers.data.prototype.PrototypeServiceData;
@@ -22,7 +22,7 @@ public class PrototypeBeanResolverConstructorTests {
 
         //when
         cafeApplicationContext.initialize();
-        CafeClassInfo descriptor = cafeApplicationContext.getClassDescriptor(PrototypeServiceData.class);
+        CafeClassDescriptor descriptor = cafeApplicationContext.getClassDescriptor(PrototypeServiceData.class);
         PrototypeServiceData instanceOnDemand = cafeApplicationContext.getInstance(PrototypeServiceData.class);
         PrototypeServiceData instanceOnDemand2 = cafeApplicationContext.getInstance(PrototypeServiceData.class);
 

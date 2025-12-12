@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.taranix.cafe.beans.converters.CafeConverter;
 import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
-import org.taranix.cafe.beans.descriptors.CafeClassInfo;
+import org.taranix.cafe.beans.descriptors.CafeClassDescriptor;
 import org.taranix.cafe.beans.descriptors.CafeMemberInfo;
 import org.taranix.cafe.beans.descriptors.CafeMethodInfo;
 import org.taranix.cafe.beans.exceptions.CafeBeansContextException;
@@ -78,7 +78,7 @@ public final class CafeBeansFactory {
         }
     }
 
-    private void resolveClass(CafeClassInfo classDescriptor) {
+    private void resolveClass(CafeClassDescriptor classDescriptor) {
         resolvers.findClassResolver(classDescriptor)
                 .resolve(classDescriptor, this);
     }
@@ -86,7 +86,7 @@ public final class CafeBeansFactory {
 
     private boolean isResolvableWithinBeansContext(CafeMemberInfo member) {
         List<BeanTypeKey> dependencies = member.dependencies()
-                .stream().filter(typeKey -> !member.getCafeClassInfo().typeKey().equals(typeKey)).toList();
+                .stream().filter(typeKey -> !member.getCafeClassDescriptor().typeKey().equals(typeKey)).toList();
 
         List<BeanTypeKey> nonMatched = dependencies.stream()
                 .filter(typeKey -> !repository.contains(typeKey)).toList();

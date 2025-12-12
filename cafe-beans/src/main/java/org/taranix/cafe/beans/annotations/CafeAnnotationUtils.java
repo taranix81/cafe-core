@@ -3,6 +3,11 @@ package org.taranix.cafe.beans.annotations;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.taranix.cafe.beans.annotations.modifiers.CafeOptional;
+import org.taranix.cafe.beans.annotations.modifiers.CafePrimary;
+import org.taranix.cafe.beans.annotations.modifiers.CafeName;
+import org.taranix.cafe.beans.annotations.types.CafeInitable;
+import org.taranix.cafe.beans.annotations.types.CafeTaskable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -113,7 +118,24 @@ public class CafeAnnotationUtils {
                 .isPresent();
     }
 
-    public static boolean isRuntimeResolving(Method method) {
-        return Arrays.stream(method.getAnnotations()).anyMatch(annotation -> annotation.annotationType().isAnnotationPresent(CafeRuntime.class));
+    public static boolean hasTaskableMarker(Method method) {
+        return Arrays.stream(method.getAnnotations()).anyMatch(annotation -> isAnnotationExtend(annotation, CafeTaskable.class));
+    }
+
+    public static boolean hasInitableMarker(Executable executable){
+        return Arrays.stream(executable.getAnnotations()).anyMatch(annotation -> isAnnotationExtend(annotation, CafeInitable.class));
+    }
+
+    public static boolean hasInitableMarker(Field field){
+        return Arrays.stream(field.getAnnotations()).anyMatch(annotation -> isAnnotationExtend(annotation, CafeInitable.class));
+    }
+
+
+    public static boolean isAnnotationExtend(Annotation annotation, Class<? extends Annotation> annotationClass){
+        if( annotation.annotationType().isAnnotationPresent(annotationClass)){
+            return true;
+        }
+        return Arrays.stream(annotation.getClass().getAnnotations()).anyMatch(a -> a.annotationType().isAnnotationPresent(annotationClass));
+
     }
 }

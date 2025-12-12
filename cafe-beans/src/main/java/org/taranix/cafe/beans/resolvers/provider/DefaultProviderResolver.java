@@ -16,8 +16,8 @@ public class DefaultProviderResolver implements CafeProviderResolver {
             //For constructor as provider we need to trigger class resolver
             // NOTE: singleton class will be persisted, prototype not.
             return cafeBeansFactory.getResolvers()
-                    .findClassResolver(providerInfo.getCafeClassInfo())
-                    .resolve(providerInfo.getCafeClassInfo(), cafeBeansFactory);
+                    .findClassResolver(providerInfo.getCafeClassDescriptor())
+                    .resolve(providerInfo.getCafeClassDescriptor(), cafeBeansFactory);
         }
 
         if (providerInfo.isMethod()) {

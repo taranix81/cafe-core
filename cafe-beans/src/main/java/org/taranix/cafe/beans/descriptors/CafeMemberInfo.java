@@ -12,29 +12,29 @@ import java.util.Set;
 @Getter
 public abstract class CafeMemberInfo {
 
-    private final CafeClassInfo cafeClassInfo;
+    private final CafeClassDescriptor cafeClassDescriptor;
 
-    protected CafeMemberInfo(final CafeClassInfo cafeClassInfo) {
-        this.cafeClassInfo = cafeClassInfo;
+    protected CafeMemberInfo(final CafeClassDescriptor cafeClassDescriptor) {
+        this.cafeClassDescriptor = cafeClassDescriptor;
     }
 
-    static CafeMemberInfo from(CafeClassInfo cafeClassInfo, Member member) {
+    static CafeMemberInfo from(CafeClassDescriptor cafeClassDescriptor, Member member) {
         if (member instanceof Field field) {
-            return new CafeFieldInfo(field, cafeClassInfo);
+            return new CafeFieldInfo(field, cafeClassDescriptor);
         }
 
         if (member instanceof Method method) {
-            return new CafeMethodInfo(method, cafeClassInfo);
+            return new CafeMethodInfo(method, cafeClassDescriptor);
         }
 
         if (member instanceof Constructor<?> constructor) {
-            return new CafeConstructorInfo(constructor, cafeClassInfo);
+            return new CafeConstructorInfo(constructor, cafeClassDescriptor);
         }
         return null;
     }
 
     public BeanTypeKey getOwnerClassTypeKey() {
-        return BeanTypeKey.from(getCafeClassInfo().getTypeClass());
+        return BeanTypeKey.from(getCafeClassDescriptor().getTypeClass());
     }
 
     public Class<?> declaringClass() {
@@ -99,7 +99,7 @@ public abstract class CafeMemberInfo {
         String memberType = getMember() instanceof Constructor<?> ? "Constructor" :
                 getMember() instanceof Field ? "Field" : "Method";
 
-        return "(" + memberType + ") " + cafeClassInfo.getTypeClass().getCanonicalName() + ":" + getMember().getName();
+        return "(" + memberType + ") " + cafeClassDescriptor.getTypeClass().getCanonicalName() + ":" + getMember().getName();
     }
 
     public boolean isPrototype() {
@@ -113,5 +113,9 @@ public abstract class CafeMemberInfo {
     public abstract boolean isPrimary();
 
     public abstract boolean isOptional();
+
+    public abstract boolean isTaskable();
+
+    public abstract boolean isInitable();
 
 }

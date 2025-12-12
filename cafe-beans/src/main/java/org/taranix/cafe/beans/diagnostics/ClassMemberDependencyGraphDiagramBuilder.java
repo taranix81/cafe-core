@@ -1,7 +1,7 @@
 package org.taranix.cafe.beans.diagnostics;
 
 import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
-import org.taranix.cafe.beans.descriptors.CafeClassInfo;
+import org.taranix.cafe.beans.descriptors.CafeClassDescriptor;
 import org.taranix.cafe.beans.descriptors.CafeMemberInfo;
 import org.taranix.cafe.beans.repositories.class_info.DependencyRepository;
 
@@ -58,25 +58,25 @@ public class ClassMemberDependencyGraphDiagramBuilder {
     }
 
     public ClassMemberDependencyGraphDiagramBuilder withComponents(CafeClassDescriptors components) {
-        for (CafeClassInfo cafeClassInfo : components.descriptors()) {
-            StringBuilder component = new StringBuilder("package " + cafeClassInfo.getTypeClass().getName() + " {");
+        for (CafeClassDescriptor cafeClassDescriptor : components.descriptors()) {
+            StringBuilder component = new StringBuilder("package " + cafeClassDescriptor.getTypeClass().getName() + " {");
 
             component.append(NEW_LINE);
-            if (cafeClassInfo.constructor() != null) {
-                component.append(generateElementLabel(cafeClassInfo.constructor()))
+            if (cafeClassDescriptor.constructor() != null) {
+                component.append(generateElementLabel(cafeClassDescriptor.constructor()))
                         .append(AS)
-                        .append(generateElementId(cafeClassInfo.constructor()))
+                        .append(generateElementId(cafeClassDescriptor.constructor()))
                         .append(NEW_LINE);
             }
 
-            cafeClassInfo.fields().forEach(field -> {
+            cafeClassDescriptor.fields().forEach(field -> {
                 component.append(generateElementLabel(field))
                         .append(AS)
                         .append(generateElementId(field))
                         .append(NEW_LINE);
             });
 
-            cafeClassInfo.methods().forEach(method -> {
+            cafeClassDescriptor.methods().forEach(method -> {
                 component.append(generateElementLabel(method))
                         .append(AS)
                         .append(generateElementId(method))

@@ -21,8 +21,8 @@ public class CafeFieldInfo extends CafeMemberInfo {
     private final Field field;
 
 
-    CafeFieldInfo(final Field field, CafeClassInfo cafeClassInfo) {
-        super(cafeClassInfo);
+    CafeFieldInfo(final Field field, CafeClassDescriptor cafeClassDescriptor) {
+        super(cafeClassDescriptor);
         this.field = field;
     }
 
@@ -71,6 +71,16 @@ public class CafeFieldInfo extends CafeMemberInfo {
         return CafeAnnotationUtils.isOptional(getField());
     }
 
+    @Override
+    public boolean isTaskable() {
+        return false;
+    }
+
+    @Override
+    public boolean isInitable() {
+        return CafeAnnotationUtils.hasInitableMarker(field);
+    }
+
     public <T extends Annotation> T getFieldAnnotation(Class<T> annotationType) {
         return getField().getAnnotation(annotationType);
     }
@@ -81,7 +91,7 @@ public class CafeFieldInfo extends CafeMemberInfo {
 
     public BeanTypeKey getFieldTypeKey() {
         String memberIdentifier = CafeAnnotationUtils.getMemberName(getField());
-        Type fieldType = CafeReflectionUtils.determineFieldType(getField(), getCafeClassInfo().getTypeClass());
+        Type fieldType = CafeReflectionUtils.determineFieldType(getField(), getCafeClassDescriptor().getTypeClass());
         return BeanTypeKey.from(fieldType, memberIdentifier);
     }
 

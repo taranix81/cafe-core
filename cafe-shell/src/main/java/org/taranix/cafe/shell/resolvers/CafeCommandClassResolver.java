@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.Option;
 import org.apache.commons.lang3.StringUtils;
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.descriptors.CafeClassInfo;
+import org.taranix.cafe.beans.descriptors.CafeClassDescriptor;
 import org.taranix.cafe.beans.descriptors.CafeMethodInfo;
 import org.taranix.cafe.beans.resolvers.classInfo.AbstractClassResolver;
 import org.taranix.cafe.shell.annotations.CafeCommand;
@@ -39,16 +39,16 @@ public class CafeCommandClassResolver extends AbstractClassResolver {
     }
 
     @Override
-    public Object resolve(CafeClassInfo classInfo, CafeBeansFactory beansFactory) {
+    public Object resolve(CafeClassDescriptor classInfo, CafeBeansFactory beansFactory) {
         CafeCommand cafeCommandAnnotation = classInfo.getClassAnnotation(CafeCommand.class);
         Object commandInstance = super.resolve(classInfo, beansFactory);
         Option option = buildOption(cafeCommandAnnotation);
         if (option != null) {
             beansFactory.addToRepository(option);
         }
-        CafeMethodInfo methodExecutor = getExecutorMethodInfo(classInfo);
-        CafeCommandOptionBinding commandOptionBinding = buildCommandBinding(commandInstance, methodExecutor, option);
-        beansFactory.addToRepository(commandOptionBinding);
+        //CafeMethodInfo methodExecutor = getExecutorMethodInfo(classInfo);
+        //CafeCommandOptionBinding commandOptionBinding = buildCommandBinding(commandInstance, methodExecutor, option);
+        //beansFactory.addToRepository(commandOptionBinding);
         return commandInstance;
     }
 
@@ -65,14 +65,14 @@ public class CafeCommandClassResolver extends AbstractClassResolver {
                 .build();
     }
 
-    private CafeMethodInfo getExecutorMethodInfo(CafeClassInfo cafeClassInfo) {
-        return cafeClassInfo.findAllMethodsAnnotatedBy(CafeCommandRun.class).stream()
-                .findFirst()
-                .orElseThrow(() -> new CafeCommandClassResolverException("No method annotated by @CafeCommandRun for command %s".formatted(cafeClassInfo.getTypeClass().getName())));
-    }
+//    private CafeMethodInfo getExecutorMethodInfo(CafeClassDescriptor cafeClassDescriptor) {
+//        return cafeClassDescriptor.findAllMethodsAnnotatedBy(CafeCommandRun.class).stream()
+//                .findFirst()
+//                .orElseThrow(() -> new CafeCommandClassResolverException("No method annotated by @CafeCommandRun for command %s".formatted(cafeClassDescriptor.getTypeClass().getName())));
+//    }
 
     @Override
-    public boolean isApplicable(CafeClassInfo cafeClassInfo) {
+    public boolean isApplicable(CafeClassDescriptor cafeClassDescriptor) {
         return true;
     }
 

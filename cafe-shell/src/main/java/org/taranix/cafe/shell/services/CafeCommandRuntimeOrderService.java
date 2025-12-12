@@ -3,7 +3,7 @@ package org.taranix.cafe.shell.services;
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.annotations.CafeService;
 import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
-import org.taranix.cafe.beans.descriptors.CafeClassInfo;
+import org.taranix.cafe.beans.descriptors.CafeClassDescriptor;
 import org.taranix.cafe.beans.descriptors.CafeMemberInfo;
 import org.taranix.cafe.beans.resolvers.CafeOrderedBeansService;
 import org.taranix.cafe.shell.annotations.CafeCommandRun;
@@ -24,14 +24,14 @@ public class CafeCommandRuntimeOrderService {
 
         CafeClassDescriptors classDescriptors = createClassDescriptors(commandRuntimes);
         CafeOrderedBeansService beansOrder = CafeOrderedBeansService.from(classDescriptors);
-        List<CafeClassInfo> orderedClassInfo = beansOrder.orderedClasses();
+        List<CafeClassDescriptor> orderedClassInfo = beansOrder.orderedClasses();
         return orderedClassInfo.stream()
                 .map(classInfo -> match(classInfo, commandRuntimes))
                 .flatMap(Collection::stream)
                 .toList();
     }
 
-    private List<CafeCommandRuntime> match(CafeClassInfo classInfo, Collection<CafeCommandRuntime> unOrdered) {
+    private List<CafeCommandRuntime> match(CafeClassDescriptor classInfo, Collection<CafeCommandRuntime> unOrdered) {
         return unOrdered.stream()
                 .filter(cafeCommandRuntime -> cafeCommandRuntime.commandTypeKey().equals(classInfo.typeKey()))
                 .toList();
@@ -42,8 +42,8 @@ public class CafeCommandRuntimeOrderService {
                 .withAnnotations(Set.of(CafeCommandRun.class))
                 .withClasses(commandRuntimes.stream()
                         .map(CafeCommandRuntime::getExecutor)
-                        .map(CafeMemberInfo::getCafeClassInfo)
-                        .map(CafeClassInfo::getTypeClass)
+                        .map(CafeMemberInfo::getCafeClassDescriptor)
+                        .map(CafeClassDescriptor::getTypeClass)
                         .collect(Collectors.toSet())
                 )
                 .build();

@@ -21,8 +21,8 @@ public class CafeConstructorInfo extends CafeMemberInfo {
 
     private final Constructor<?> constructor;
 
-    CafeConstructorInfo(final Constructor<?> constructor, CafeClassInfo cafeClassInfo) {
-        super(cafeClassInfo);
+    CafeConstructorInfo(final Constructor<?> constructor, CafeClassDescriptor cafeClassDescriptor) {
+        super(cafeClassDescriptor);
         this.constructor = constructor;
     }
 
@@ -68,11 +68,21 @@ public class CafeConstructorInfo extends CafeMemberInfo {
     }
 
     public boolean isPrimary() {
-        return CafeAnnotationUtils.isPrimary(getCafeClassInfo().getTypeClass());
+        return CafeAnnotationUtils.isPrimary(getCafeClassDescriptor().getTypeClass());
     }
 
     @Override
     public boolean isOptional() {
         return false;
+    }
+
+    @Override
+    public boolean isTaskable() {
+        return false;
+    }
+
+    @Override
+    public boolean isInitable() {
+        return true;
     }
 }

@@ -14,6 +14,6 @@ public class CafeCommandRuntime {
     private String[] arguments;
 
     public BeanTypeKey commandTypeKey() {
-        return executor.getCafeClassInfo().typeKey();
+        return executor.getCafeClassDescriptor().typeKey();
     }
 }

@@ -19,23 +19,20 @@ import java.util.stream.Collectors;
  * ClassInfo performs analyzing for a class:
  */
 @Slf4j
-public class CafeClassInfo implements CafeTypeDescriptor {
+public class CafeClassDescriptor implements CafeTypeDescriptor {
     @Getter
     private final Class<?> typeClass;
     @Getter
     private final Set<CafeMemberInfo> members = new HashSet<>();
-    @Getter
-    private final Set<Class<? extends Annotation>> annotations = new HashSet<>();
 
 
-    private CafeClassInfo(final Class<?> typeClass, final Set<Class<? extends Annotation>> annotations) {
+    private CafeClassDescriptor(final Class<?> typeClass) {
         this.typeClass = typeClass;
-        this.annotations.addAll(annotations);
         scanMembers();
     }
 
-    public static CafeClassInfo from(final Class<?> aClass, final Set<Class<? extends Annotation>> annotations) {
-        return new CafeClassInfo(aClass, annotations);
+    public static CafeClassDescriptor from(final Class<?> aClass) {
+        return new CafeClassDescriptor(aClass);
     }
 
     public Set<Annotation> getClassAnnotations() {
@@ -51,13 +48,18 @@ public class CafeClassInfo implements CafeTypeDescriptor {
      */
     private void scanMembers() {
         if (!typeClass.isAnonymousClass() && !typeClass.isInterface() && !Modifier.isAbstract(typeClass.getModifiers())) {
-            members.add(CafeConstructorInfo.from(this, findConstructor()));
+            members.add(CafeMemberInfo.from(this, findConstructor()));
         }
+        members.addAll(findAnnotatedMethods(typeClass)
+                .stream()
+                .map(method -> CafeMemberInfo.from(this, method))
+                .collect(Collectors.toSet()));
 
-        for (Class<? extends Annotation> annotation : annotations) {
-            members.addAll(methodDescriptors(annotation));
-            members.addAll(fieldDescriptors(annotation));
-        }
+        members.addAll(findAnnotatedFields(typeClass)
+                .stream()
+                .map(field -> CafeMemberInfo.from(this, field))
+                .collect(Collectors.toSet()));
+
     }
 
     /**
@@ -83,43 +85,29 @@ public class CafeClassInfo implements CafeTypeDescriptor {
         return constructors[0];
     }
 
-    private Set<Field> findFieldsAnnotatedWith(Class<?> introspectedClass, Class<? extends Annotation> annotation) {
+    private Set<Field> findAnnotatedFields(Class<?> introspectedClass) {
         if (introspectedClass.equals(Object.class)) {
             return Set.of();
         }
 
         Set<Field> allFields = Arrays.stream(introspectedClass.getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(annotation))
+                .filter(CafeAnnotationUtils::hasInitableMarker)
                 .collect(Collectors.toSet());
-        allFields.addAll(findFieldsAnnotatedWith(introspectedClass.getSuperclass(), annotation));
+        allFields.addAll(findAnnotatedFields(introspectedClass.getSuperclass()));
 
         return allFields;
     }
 
-    private Set<Method> findMethodsAnnotatedWith(Class<?> introspectedClass, Class<? extends Annotation> annotation) {
+    private Set<Method> findAnnotatedMethods(Class<?> introspectedClass) {
         if (introspectedClass.equals(Object.class)) {
             return Set.of();
         }
 
         Set<Method> allMethods = Arrays.stream(introspectedClass.getDeclaredMethods())
-                .filter(method -> method.isAnnotationPresent(annotation))
+                .filter(method -> CafeAnnotationUtils.hasInitableMarker(method) || CafeAnnotationUtils.hasTaskableMarker(method))
                 .collect(Collectors.toSet());
-        allMethods.addAll(findMethodsAnnotatedWith(introspectedClass.getSuperclass(), annotation));
+        allMethods.addAll(findAnnotatedMethods(introspectedClass.getSuperclass()));
         return allMethods;
-    }
-
-    private Set<CafeMemberInfo> methodDescriptors(final Class<? extends Annotation> memberAnnotation) {
-        return findMethodsAnnotatedWith(typeClass, memberAnnotation)
-                .stream()
-                .map(method -> new CafeMethodInfo(method, this))
-                .collect(Collectors.toSet());
-    }
-
-    private Set<CafeFieldInfo> fieldDescriptors(final Class<? extends Annotation> memberAnnotation) {
-        return findFieldsAnnotatedWith(typeClass, memberAnnotation)
-                .stream()
-                .map(field -> new CafeFieldInfo(field, this))
-                .collect(Collectors.toSet());
     }
 
     /**
@@ -139,7 +127,7 @@ public class CafeClassInfo implements CafeTypeDescriptor {
      */
     @Override
     public Set<BeanTypeKey> provides() {
-        return allMembers().stream()
+        return getMembers().stream()
                 .map(CafeMemberInfo::provides)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
@@ -170,20 +158,6 @@ public class CafeClassInfo implements CafeTypeDescriptor {
         return result;
     }
 
-    /**
-     * Function return class's member annotated by one of the list from getAnnotations()
-     *
-     * @return Colletion fo {@link CafeMethodInfo}
-     */
-    public Set<CafeMemberInfo> allMembers() {
-        Set<CafeMemberInfo> result = new HashSet<>();
-        if (constructor() != null) {
-            result.add(constructor());
-        }
-        result.addAll(methods());
-        result.addAll(fields());
-        return result;
-    }
 
     /**
      * Function return ConstructorInfo class
@@ -251,23 +225,9 @@ public class CafeClassInfo implements CafeTypeDescriptor {
         return clazz.isAssignableFrom(typeClass);
     }
 
-    /**
-     * Function find method annotated by {@link Class} <? extends {@link Annotation} >. <br>
-     * NOTE: Annotation can be out of scope in declare annotations
-     *
-     * @param annotationType
-     * @return
-     */
-    public Set<CafeMethodInfo> findAllMethodsAnnotatedBy(Class<? extends Annotation> annotationType) {
-        return findMethodsAnnotatedWith(typeClass, annotationType)
-                .stream()
-                .map(method -> new CafeMethodInfo(method, this))
-                .collect(Collectors.toSet());
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(typeClass, allMembers());
+        return Objects.hash(typeClass, getMembers());
     }
 
 
@@ -279,8 +239,8 @@ public class CafeClassInfo implements CafeTypeDescriptor {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        CafeClassInfo cafeClassInfo = (CafeClassInfo) o;
-        return hashCode() == cafeClassInfo.hashCode();
+        CafeClassDescriptor cafeClassDescriptor = (CafeClassDescriptor) o;
+        return hashCode() == cafeClassDescriptor.hashCode();
     }
 
     @Override

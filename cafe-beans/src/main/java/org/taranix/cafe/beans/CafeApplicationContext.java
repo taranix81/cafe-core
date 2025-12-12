@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
-import org.taranix.cafe.beans.descriptors.CafeClassInfo;
+import org.taranix.cafe.beans.descriptors.CafeClassDescriptor;
 import org.taranix.cafe.beans.exceptions.CafeApplicationContextException;
 import org.taranix.cafe.beans.repositories.ListMultiRepository;
 import org.taranix.cafe.beans.repositories.MultiRepository;
@@ -111,7 +111,7 @@ public class CafeApplicationContext {
         throw new CafeApplicationContextException("Now instance of %s found".formatted(clz));
     }
 
-    public CafeClassInfo getClassDescriptor(Class<?> clz) {
+    public CafeClassDescriptor getClassDescriptor(Class<?> clz) {
         return classDescriptors.descriptor(clz);
     }
 
@@ -121,7 +121,7 @@ public class CafeApplicationContext {
 
     public void refresh(Object object) {
         Class<?> clx = object.getClass();
-        CafeClassInfo cci = CafeClassInfo.from(clx, getAnnotations());
+        CafeClassDescriptor cci = CafeClassDescriptor.from(clx );
 
         if (cci.isSingleton()) {
             cci.fields().forEach(

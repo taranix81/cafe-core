@@ -15,12 +15,12 @@ public class CafeClassDescriptors {
     @Getter
     private final CafeBeansDependencyService dependency;
 
-    private final Set<CafeClassInfo> classDescriptors;
+    private final Set<CafeClassDescriptor> classDescriptors;
     @Getter
     private final Set<Class<? extends Annotation>> annotations;
 
 
-    private CafeClassDescriptors(final Set<CafeClassInfo> classDescriptors, final Set<Class<? extends Annotation>> annotations) {
+    private CafeClassDescriptors(final Set<CafeClassDescriptor> classDescriptors, final Set<Class<? extends Annotation>> annotations) {
         this.classDescriptors = classDescriptors;
         this.annotations = annotations;
         dependency = CafeBeansDependencyService.from(this);
@@ -47,21 +47,21 @@ public class CafeClassDescriptors {
 
     public Set<CafeConstructorInfo> constructors() {
         return classDescriptors.stream()
-                .map(CafeClassInfo::constructor)
+                .map(CafeClassDescriptor::constructor)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
 
     public Set<CafeMethodInfo> methods() {
         return classDescriptors.stream()
-                .map(CafeClassInfo::methods)
+                .map(CafeClassDescriptor::methods)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
     }
 
     public Set<CafeFieldInfo> fields() {
         return classDescriptors.stream()
-                .map(CafeClassInfo::fields)
+                .map(CafeClassDescriptor::fields)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
     }
@@ -85,11 +85,11 @@ public class CafeClassDescriptors {
                 .collect(Collectors.toSet());
     }
 
-    public Set<CafeClassInfo> descriptors() {
+    public Set<CafeClassDescriptor> descriptors() {
         return Collections.unmodifiableSet(classDescriptors);
     }
 
-    public CafeClassInfo descriptor(Class<?> aClass) {
+    public CafeClassDescriptor descriptor(Class<?> aClass) {
         return classDescriptors.stream()
                 .filter(classDescriptor -> classDescriptor.getTypeClass().equals(aClass))
                 .findAny()
@@ -116,10 +116,10 @@ public class CafeClassDescriptors {
                 throw new CafeClassDescriptorException("No annotation(s) specified");
             }
 
-            Set<CafeClassInfo> cafeClassInfos = classSet.stream()
-                    .map(aClass -> CafeClassInfo.from(aClass, annotations))
+            Set<CafeClassDescriptor> cafeClassDescriptors = classSet.stream()
+                    .map(CafeClassDescriptor::from)
                     .collect(Collectors.toSet());
-            return new CafeClassDescriptors(cafeClassInfos, annotations);
+            return new CafeClassDescriptors(cafeClassDescriptors, annotations);
         }
 
         public Builder withAnnotations(final Set<Class<? extends Annotation>> annotations) {

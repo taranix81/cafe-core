@@ -69,7 +69,7 @@ public class CafeResolvers {
                 .collect(Collectors.toSet());
     }
 
-    public CafeClassResolver findClassResolver(CafeClassInfo descriptor) {
+    public CafeClassResolver findClassResolver(CafeClassDescriptor descriptor) {
         Set<CafeClassResolver> matched = findClassResolvers(descriptor);
         if (matched.size() > 1) {
             throw new CafeBeansFactoryException(TOO_MANY_RESOLVERS.formatted(descriptor));
@@ -81,7 +81,7 @@ public class CafeResolvers {
     }
 
 
-    private Set<CafeClassResolver> findClassResolvers(CafeClassInfo classDescriptor) {
+    private Set<CafeClassResolver> findClassResolvers(CafeClassDescriptor classDescriptor) {
         return classResolvers.stream()
                 .filter(resolver -> resolver.isApplicable(classDescriptor))
                 .filter(resolver -> classDescriptor.getClassAnnotations()

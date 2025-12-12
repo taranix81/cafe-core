@@ -18,8 +18,8 @@ public class CafeMethodInfo extends CafeMemberInfo {
 
     private final Method method;
 
-    CafeMethodInfo(final Method method, CafeClassInfo cafeClassInfo) {
-        super(cafeClassInfo);
+    CafeMethodInfo(final Method method, CafeClassDescriptor cafeClassDescriptor) {
+        super(cafeClassDescriptor);
         this.method = method;
     }
 
@@ -43,7 +43,7 @@ public class CafeMethodInfo extends CafeMemberInfo {
         }
 
         // Add all parameters
-        result.addAll(CafeReflectionUtils.determineMethodParameterTypes(getMethod(), getCafeClassInfo().getTypeClass())
+        result.addAll(CafeReflectionUtils.determineMethodParameterTypes(getMethod(), getCafeClassDescriptor().getTypeClass())
                 .stream()
                 .map(BeanTypeKey::from)
                 .toList());
@@ -73,12 +73,22 @@ public class CafeMethodInfo extends CafeMemberInfo {
 
     @Override
     public boolean isOptional() {
-            return CafeAnnotationUtils.isRuntimeResolving(getMethod());
+        return false;
+    }
+
+    @Override
+    public boolean isTaskable() {
+        return CafeAnnotationUtils.hasTaskableMarker(method);
+    }
+
+    @Override
+    public boolean isInitable() {
+        return CafeAnnotationUtils.hasInitableMarker(method);
     }
 
     public BeanTypeKey getMethodReturnTypeKey() {
         String memberIdentifier = CafeAnnotationUtils.getMemberName(getMethod());
-        Type methodReturnType = CafeReflectionUtils.determineMethodReturnType(getMethod(), getCafeClassInfo().getTypeClass());
+        Type methodReturnType = CafeReflectionUtils.determineMethodReturnType(getMethod(), getCafeClassDescriptor().getTypeClass());
         return BeanTypeKey.from(methodReturnType, memberIdentifier);
     }
 

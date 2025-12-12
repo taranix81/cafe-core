@@ -63,8 +63,8 @@ class CafeBeansDependencyTests {
                 .findFirst()
                 .orElse(null);
         CafeMemberInfo constructor = cafeClassDescriptors.descriptor(ServiceClass.class).constructor();
-        CafeClassInfo dependant = cafeClassDescriptors.descriptor(ArrayServiceClassInjectable.class);
-        CafeClassInfo provider = cafeClassDescriptors.descriptor(ServiceClass.class);
+        CafeClassDescriptor dependant = cafeClassDescriptors.descriptor(ArrayServiceClassInjectable.class);
+        CafeClassDescriptor provider = cafeClassDescriptors.descriptor(ServiceClass.class);
 
         //then
         Assertions.assertNotNull(field);
@@ -94,8 +94,8 @@ class CafeBeansDependencyTests {
                 .findFirst()
                 .orElse(null);
         CafeMemberInfo constructor = cafeClassDescriptors.descriptor(ServiceClass.class).constructor();
-        CafeClassInfo dependant = cafeClassDescriptors.descriptor(ListServiceClassInjectable.class);
-        CafeClassInfo provider = cafeClassDescriptors.descriptor(ServiceClass.class);
+        CafeClassDescriptor dependant = cafeClassDescriptors.descriptor(ListServiceClassInjectable.class);
+        CafeClassDescriptor provider = cafeClassDescriptors.descriptor(ServiceClass.class);
 
         //then
         Assertions.assertNotNull(field);
@@ -127,8 +127,8 @@ class CafeBeansDependencyTests {
                 .findFirst()
                 .orElse(null);
         CafeMemberInfo constructor = cafeClassDescriptors.descriptor(ServiceClass.class).constructor();
-        CafeClassInfo dependant = cafeClassDescriptors.descriptor(SetServiceClassInjectable.class);
-        CafeClassInfo provider = cafeClassDescriptors.descriptor(ServiceClass.class);
+        CafeClassDescriptor dependant = cafeClassDescriptors.descriptor(SetServiceClassInjectable.class);
+        CafeClassDescriptor provider = cafeClassDescriptors.descriptor(ServiceClass.class);
 
         //then
         Assertions.assertNotNull(field);
@@ -233,7 +233,7 @@ class CafeBeansDependencyTests {
         boolean hasCycle = cafeBeansDependencyService.hasCycleBetweenMembers();
         boolean hacClassCycle = cafeBeansDependencyService.hasCycleBetweenClasses();
         Collection<CafeMemberInfo> cycleSet = cafeBeansDependencyService.membersCycleSet();
-        Collection<CafeClassInfo> classCycleSet = cafeBeansDependencyService.classCycleSet();
+        Collection<CafeClassDescriptor> classCycleSet = cafeBeansDependencyService.classCycleSet();
 
         //then
         Assertions.assertTrue(hasCycle);

@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.*;
 import org.taranix.cafe.beans.annotations.CafeInject;
-import org.taranix.cafe.beans.annotations.CafeOptional;
+import org.taranix.cafe.beans.annotations.modifiers.CafeOptional;
 import org.taranix.cafe.beans.annotations.CafeProperty;
 import org.taranix.cafe.beans.annotations.CafeService;
 import org.taranix.cafe.desktop.actions.HandlersService;

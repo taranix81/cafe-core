@@ -2,7 +2,7 @@ package org.taranix.cafe.desktop.annotations;
 
 
 
-import org.taranix.cafe.beans.annotations.CafeRuntime;
+import org.taranix.cafe.beans.annotations.types.CafeTaskable;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@CafeRuntime
+@CafeTaskable
 public @interface CafeShellHandler {
     ShellHandlerType type();
 

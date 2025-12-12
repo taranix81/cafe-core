@@ -82,7 +82,7 @@ public class CafeBeansResolvableServiceTests {
 
         //then
         cafeClassDescriptors.descriptor(SubjectClassInjectable.class)
-                .getMembers()
+                .getMembers() //getMembers()
                 .forEach(memberDescriptor -> Assertions.assertTrue(resolvableDescriptor.isResolvable(memberDescriptor)));
 
         //then

@@ -26,7 +26,7 @@ public class CafeBeansResolvableService {
 
 
     public BeanTypeKey notResolvableType(CafeMemberInfo cafeMemberInfo) {
-        if (cafeMemberInfo.isOptional()) {
+        if (cafeMemberInfo.isOptional() || !cafeMemberInfo.isInitable()) {
             return null;
         }
 

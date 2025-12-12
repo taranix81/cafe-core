@@ -6,7 +6,7 @@ import org.taranix.cafe.beans.annotations.CafeService;
 import org.taranix.cafe.beans.converters.CafeConverter;
 import org.taranix.cafe.beans.descriptors.CafeBeansDependencyService;
 import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
-import org.taranix.cafe.beans.descriptors.CafeClassInfo;
+import org.taranix.cafe.beans.descriptors.CafeClassDescriptor;
 import org.taranix.cafe.beans.descriptors.CafeMemberInfo;
 import org.taranix.cafe.beans.resolvers.classInfo.CafeClassResolver;
 
@@ -29,7 +29,7 @@ public class CafeOrderedBeansService {
         return new CafeOrderedBeansService(cafeClassDescriptors);
     }
 
-    public List<CafeClassInfo> orderedClasses() {
+    public List<CafeClassDescriptor> orderedClasses() {
         if (!dependencyDescriptor.hasCycleBetweenClasses()) {
             return cafeClassDescriptors.descriptors().stream()
                     .map(this::calculateClassIndex)
@@ -57,24 +57,24 @@ public class CafeOrderedBeansService {
         return new IndexedMember(cafeMemberInfo, calculateDepth(cafeMemberInfo));
     }
 
-    private IndexedClass calculateClassIndex(final CafeClassInfo cafeClassInfo) {
-        return new IndexedClass(cafeClassInfo, calculateDepth(cafeClassInfo));
+    private IndexedClass calculateClassIndex(final CafeClassDescriptor cafeClassDescriptor) {
+        return new IndexedClass(cafeClassDescriptor, calculateDepth(cafeClassDescriptor));
     }
 
-    private int calculateDepth(final CafeClassInfo cafeClassInfo) {
-        if (cafeClassInfo.hasDependencies()) {
-            int dependenciesAmount = cafeClassInfo.dependencies().size();
-            int dependenciesDepth = getDependenciesDepth(cafeClassInfo);
-            int offsetDepth = offsetDepth(cafeClassInfo);
-            log.trace("Depth for {} = {}", cafeClassInfo, dependenciesAmount + offsetDepth + dependenciesDepth);
+    private int calculateDepth(final CafeClassDescriptor cafeClassDescriptor) {
+        if (cafeClassDescriptor.hasDependencies()) {
+            int dependenciesAmount = cafeClassDescriptor.dependencies().size();
+            int dependenciesDepth = getDependenciesDepth(cafeClassDescriptor);
+            int offsetDepth = offsetDepth(cafeClassDescriptor);
+            log.trace("Depth for {} = {}", cafeClassDescriptor, dependenciesAmount + offsetDepth + dependenciesDepth);
             return dependenciesAmount + offsetDepth + dependenciesDepth;
         } else {
-            return offsetDepth(cafeClassInfo);
+            return offsetDepth(cafeClassDescriptor);
         }
     }
 
-    private Integer getDependenciesDepth(CafeClassInfo cafeClassInfo) {
-        return dependencyDescriptor.providersForClass(cafeClassInfo)
+    private Integer getDependenciesDepth(CafeClassDescriptor cafeClassDescriptor) {
+        return dependencyDescriptor.providersForClass(cafeClassDescriptor)
                 .stream()
                 .map(this::calculateDepth)
                 .reduce(0, Integer::sum);
@@ -92,19 +92,19 @@ public class CafeOrderedBeansService {
         }
     }
 
-    private int offsetDepth(CafeClassInfo cafeClassInfo) {
+    private int offsetDepth(CafeClassDescriptor cafeClassDescriptor) {
         //Standard components without offset
-        if (cafeClassInfo.getClassAnnotation(CafeFactory.class) != null || cafeClassInfo.getClassAnnotation(CafeService.class) != null) {
+        if (cafeClassDescriptor.getClassAnnotation(CafeFactory.class) != null || cafeClassDescriptor.getClassAnnotation(CafeService.class) != null) {
             return 0;
         }
 
         //Custom and standard converters without offset
-        if (cafeClassInfo.isImplementing(CafeConverter.class)) {
+        if (cafeClassDescriptor.isImplementing(CafeConverter.class)) {
             return 0;
         }
 
         //Custom resolvers without offset
-        if (cafeClassInfo.isImplementing(CafeClassResolver.class)) {
+        if (cafeClassDescriptor.isImplementing(CafeClassResolver.class)) {
             return 0;
         }
 
@@ -124,7 +124,7 @@ public class CafeOrderedBeansService {
 
     }
 
-    private record IndexedClass(CafeClassInfo classDescriptor, int dependencyDepth) {
+    private record IndexedClass(CafeClassDescriptor classDescriptor, int dependencyDepth) {
 
     }
 
