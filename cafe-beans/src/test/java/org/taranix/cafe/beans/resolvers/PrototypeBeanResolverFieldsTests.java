@@ -3,7 +3,6 @@ package org.taranix.cafe.beans.resolvers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.taranix.cafe.beans.CafeApplicationContext;
-import org.taranix.cafe.beans.annotations.CafeAnnotationUtils;
 import org.taranix.cafe.beans.resolvers.data.prototype.*;
 
 public class PrototypeBeanResolverFieldsTests {
@@ -13,7 +12,6 @@ public class PrototypeBeanResolverFieldsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(PrototypeServiceWithNestedCollectionServices.class)
                 .withClass(PrototypeServiceData.class)
                 .build();
@@ -34,7 +32,6 @@ public class PrototypeBeanResolverFieldsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(PrototypeServiceWithNestedCollectionInterface.class)
                 .withClass(PrototypeInterface.class)
                 .withClass(ServiceInterface.class)

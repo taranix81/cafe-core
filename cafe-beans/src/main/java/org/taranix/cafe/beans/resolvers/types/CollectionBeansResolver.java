@@ -2,7 +2,7 @@ package org.taranix.cafe.beans.resolvers.types;
 
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.descriptors.CafeMemberInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
 import org.taranix.cafe.beans.exceptions.CollectionTypeResolverException;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 

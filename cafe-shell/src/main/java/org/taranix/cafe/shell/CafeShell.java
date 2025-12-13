@@ -6,7 +6,6 @@ import org.taranix.cafe.beans.CafeApplication;
 import org.taranix.cafe.beans.annotations.CafeInject;
 import org.taranix.cafe.beans.resolvers.classInfo.CafeClassResolver;
 import org.taranix.cafe.beans.resolvers.classInfo.method.CafeMethodResolver;
-import org.taranix.cafe.shell.annotations.CafeCommand;
 import org.taranix.cafe.shell.commands.CafeCommandRuntime;
 import org.taranix.cafe.shell.commands.PrintHelpCommand;
 import org.taranix.cafe.shell.exceptions.CafeCommandRuntimeServiceException;
@@ -14,7 +13,6 @@ import org.taranix.cafe.shell.resolvers.CafeCommandClassResolver;
 import org.taranix.cafe.shell.resolvers.CafeCommandMethodResolver;
 import org.taranix.cafe.shell.services.CafeCommandRuntimeService;
 
-import java.lang.annotation.Annotation;
 import java.util.*;
 
 
@@ -47,10 +45,6 @@ public class CafeShell extends CafeApplication {
         addBeanToContext(this);
     }
 
-    @Override
-    protected Set<Class<? extends Annotation>> getCustomAnnotations() {
-        return Set.of(CafeCommand.class);
-    }
 
     @Override
     protected Set<CafeClassResolver> getCustomClassResolvers() {

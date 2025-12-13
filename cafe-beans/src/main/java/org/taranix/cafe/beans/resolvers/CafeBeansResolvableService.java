@@ -1,8 +1,10 @@
 package org.taranix.cafe.beans.resolvers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.taranix.cafe.beans.annotations.modifiers.CafeOptional;
+import org.taranix.cafe.beans.annotations.types.CafeTaskable;
 import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
-import org.taranix.cafe.beans.descriptors.CafeMemberInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 
 import java.util.Set;
@@ -26,7 +28,8 @@ public class CafeBeansResolvableService {
 
 
     public BeanTypeKey notResolvableType(CafeMemberInfo cafeMemberInfo) {
-        if (cafeMemberInfo.isOptional() || !cafeMemberInfo.isInitable()) {
+        if (cafeMemberInfo.getAnnotationModifiers().contains(CafeOptional.class) ||
+                cafeMemberInfo.getAnnotationTypes().contains(CafeTaskable.class)) {
             return null;
         }
 

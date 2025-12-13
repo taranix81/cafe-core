@@ -3,8 +3,8 @@ package org.taranix.cafe.beans.resolvers.classInfo.constructor;
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.CafeReflectionUtils;
-import org.taranix.cafe.beans.descriptors.CafeConstructorInfo;
-import org.taranix.cafe.beans.descriptors.CafeMemberInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeConstructorInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;

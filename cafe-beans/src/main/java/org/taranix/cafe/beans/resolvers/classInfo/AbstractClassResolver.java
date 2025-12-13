@@ -2,10 +2,10 @@ package org.taranix.cafe.beans.resolvers.classInfo;
 
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.descriptors.CafeClassDescriptor;
-import org.taranix.cafe.beans.descriptors.CafeConstructorInfo;
-import org.taranix.cafe.beans.descriptors.CafeFieldInfo;
-import org.taranix.cafe.beans.descriptors.CafeMethodInfo;
+import org.taranix.cafe.beans.descriptors.CafeClassInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeConstructorInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeFieldInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMethodInfo;
 import org.taranix.cafe.beans.exceptions.ClassResolverException;
 
 import java.util.Objects;
@@ -14,19 +14,19 @@ import java.util.Objects;
 public abstract class AbstractClassResolver implements CafeClassResolver {
 
     @Override
-    public Object resolve(final CafeClassDescriptor cafeClassDescriptor, final CafeBeansFactory beansFactory) {
-        log.debug("Resolving class :{}", cafeClassDescriptor.getTypeClass());
-        Object instance = resolveConstructor(beansFactory, cafeClassDescriptor.constructor());
+    public Object resolve(final CafeClassInfo cafeClassInfo, final CafeBeansFactory beansFactory) {
+        log.debug("Resolving class :{}", cafeClassInfo.getTypeClass());
+        Object instance = resolveConstructor(beansFactory, cafeClassInfo.constructor());
 
         if (Objects.isNull(instance)) {
-            throw new ClassResolverException("Class couldn't be instantiated :" + cafeClassDescriptor.getTypeClass());
+            throw new ClassResolverException("Class couldn't be instantiated :" + cafeClassInfo.getTypeClass());
         }
 
-        cafeClassDescriptor.fields().forEach(cafeFieldInfo ->
+        cafeClassInfo.fields().forEach(cafeFieldInfo ->
                 resolveField(beansFactory, instance, cafeFieldInfo)
         );
 
-        cafeClassDescriptor.methods().forEach(cafeMethodInfo ->
+        cafeClassInfo.methods().forEach(cafeMethodInfo ->
                 resolveMethod(beansFactory, instance, cafeMethodInfo)
         );
         return instance;

@@ -4,7 +4,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
-import org.taranix.cafe.beans.descriptors.CafeClassDescriptor;
+import org.taranix.cafe.beans.descriptors.CafeClassInfo;
+import org.taranix.cafe.beans.descriptors.ClassScanner;
 import org.taranix.cafe.beans.exceptions.CafeApplicationContextException;
 import org.taranix.cafe.beans.repositories.ListMultiRepository;
 import org.taranix.cafe.beans.repositories.MultiRepository;
@@ -65,9 +66,6 @@ public class CafeApplicationContext {
         beansFactory.resolveAllBeans();
     }
 
-    public Set<Class<? extends Annotation>> getAnnotations() {
-        return classDescriptors.getAnnotations();
-    }
 
     public <T> Collection<T> getInstances(Class<T> clz) {
         return getInstances(clz, StringUtils.EMPTY);
@@ -111,7 +109,7 @@ public class CafeApplicationContext {
         throw new CafeApplicationContextException("Now instance of %s found".formatted(clz));
     }
 
-    public CafeClassDescriptor getClassDescriptor(Class<?> clz) {
+    public CafeClassInfo getClassDescriptor(Class<?> clz) {
         return classDescriptors.descriptor(clz);
     }
 
@@ -121,7 +119,7 @@ public class CafeApplicationContext {
 
     public void refresh(Object object) {
         Class<?> clx = object.getClass();
-        CafeClassDescriptor cci = CafeClassDescriptor.from(clx );
+        CafeClassInfo cci = CafeClassInfo.from(clx);
 
         if (cci.isSingleton()) {
             cci.fields().forEach(
@@ -200,21 +198,13 @@ public class CafeApplicationContext {
             return this;
         }
 
-        public BeansContextBuilder withAnnotations(Set<Class<? extends Annotation>> annotationTypes) {
-            this.annotationTypes.addAll(annotationTypes);
-            return this;
-        }
 
         public CafeApplicationContext build() {
-            if (annotationTypes.isEmpty()) {
-                throw new CafeApplicationContextException("No annotation(s) specified");
-            }
 
             Set<Class<?>> allClasses = Stream.concat(classesToBeResolved.stream()
-                            , ClassScanner.from(annotationTypes).scan(packages).stream())
+                            , ClassScanner.getInstance().scan(packages).stream())
                     .collect(Collectors.toSet());
             CafeClassDescriptors descriptors = CafeClassDescriptors.builder()
-                    .withAnnotations(annotationTypes)
                     .withClasses(allClasses)
                     .build();
 

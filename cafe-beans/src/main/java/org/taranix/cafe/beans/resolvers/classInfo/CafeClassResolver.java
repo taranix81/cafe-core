@@ -1,15 +1,15 @@
 package org.taranix.cafe.beans.resolvers.classInfo;
 
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.descriptors.CafeClassDescriptor;
+import org.taranix.cafe.beans.descriptors.CafeClassInfo;
 
 import java.lang.annotation.Annotation;
 
 public interface CafeClassResolver {
 
-    Object resolve(CafeClassDescriptor cafeClassDescriptor, CafeBeansFactory processor);
+    Object resolve(CafeClassInfo cafeClassInfo, CafeBeansFactory processor);
 
-    boolean isApplicable(CafeClassDescriptor cafeClassDescriptor);
+    boolean isApplicable(CafeClassInfo cafeClassInfo);
 
     boolean supports(Class<? extends Annotation> annotation);
 }

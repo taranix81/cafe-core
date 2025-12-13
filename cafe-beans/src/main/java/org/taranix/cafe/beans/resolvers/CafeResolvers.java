@@ -1,6 +1,10 @@
 package org.taranix.cafe.beans.resolvers;
 
-import org.taranix.cafe.beans.descriptors.*;
+import org.taranix.cafe.beans.descriptors.CafeClassInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeConstructorInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeFieldInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMethodInfo;
 import org.taranix.cafe.beans.exceptions.CafeBeansFactoryException;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 import org.taranix.cafe.beans.resolvers.classInfo.CafeClassResolver;
@@ -63,13 +67,13 @@ public class CafeResolvers {
         return methodResolvers.stream()
                 .map(CafeMethodResolver.class::cast)
                 .filter(resolver -> resolver.isApplicable(methodDescriptor))
-                .filter(resolver -> methodDescriptor.getMethodAnnotations()
+                .filter(resolver -> methodDescriptor.getAnnotations()
                         .stream()
                         .anyMatch(annotation -> resolver.supports(annotation.annotationType())))
                 .collect(Collectors.toSet());
     }
 
-    public CafeClassResolver findClassResolver(CafeClassDescriptor descriptor) {
+    public CafeClassResolver findClassResolver(CafeClassInfo descriptor) {
         Set<CafeClassResolver> matched = findClassResolvers(descriptor);
         if (matched.size() > 1) {
             throw new CafeBeansFactoryException(TOO_MANY_RESOLVERS.formatted(descriptor));
@@ -81,7 +85,7 @@ public class CafeResolvers {
     }
 
 
-    private Set<CafeClassResolver> findClassResolvers(CafeClassDescriptor classDescriptor) {
+    private Set<CafeClassResolver> findClassResolvers(CafeClassInfo classDescriptor) {
         return classResolvers.stream()
                 .filter(resolver -> resolver.isApplicable(classDescriptor))
                 .filter(resolver -> classDescriptor.getClassAnnotations()
@@ -125,7 +129,7 @@ public class CafeResolvers {
         return fieldResolvers.stream()
                 .map(CafeFieldResolver.class::cast)
                 .filter(resolver -> resolver.isApplicable(fieldDescriptor))
-                .filter(resolver -> fieldDescriptor.getFieldAnnotations()
+                .filter(resolver -> fieldDescriptor.getAnnotations()
                         .stream()
                         .anyMatch(annotation -> resolver.supports(annotation.annotationType())))
                 .collect(Collectors.toSet());

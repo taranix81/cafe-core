@@ -1,17 +1,17 @@
 package org.taranix.cafe.beans.repositories.class_info;
 
 import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
-import org.taranix.cafe.beans.descriptors.CafeClassDescriptor;
+import org.taranix.cafe.beans.descriptors.CafeClassInfo;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 
 import java.util.Set;
 
-public class ClassDependencyRepository extends DependencyRepository<CafeClassDescriptor> {
+public class ClassDependencyRepository extends DependencyRepository<CafeClassInfo> {
 
     public static ClassDependencyRepository from(CafeClassDescriptors cafeClassDescriptors) {
         ClassDependencyRepository classDependencyRepository = new ClassDependencyRepository();
 
-        for (CafeClassDescriptor descriptor : cafeClassDescriptors.descriptors()) {
+        for (CafeClassInfo descriptor : cafeClassDescriptors.descriptors()) {
             cafeClassDescriptors.descriptors().stream()
                     .filter(item -> !item.equals(descriptor))
                     .filter(provider -> containsAtLeastOneElement(descriptor.dependencies(), provider.provides()))

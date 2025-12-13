@@ -2,21 +2,19 @@ package org.taranix.cafe.beans.descriptors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.taranix.cafe.beans.annotations.CafeAnnotationUtils;
 import org.taranix.cafe.beans.descriptors.data.ServiceClassInjectable;
 import org.taranix.cafe.beans.descriptors.data.SubjectClassInjectable;
 import org.taranix.cafe.beans.descriptors.data.SubjectClassProvider;
 import org.taranix.cafe.beans.descriptors.data.SubjectClassProviderWCADate;
 import org.taranix.cafe.beans.resolvers.CafeBeansResolvableService;
 
-public class CafeBeansResolvableServiceTests {
+class CafeBeansResolvableServiceTests {
 
 
     @Test
     void shouldClassWithoutDependenciesBeResolvable() {
         //given
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(SubjectClassProvider.class)
                 .build();
 
@@ -32,7 +30,6 @@ public class CafeBeansResolvableServiceTests {
     void shouldClassWithDependenciesBeResolvable() {
         //given
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(SubjectClassProvider.class)
                 .withClass(SubjectClassInjectable.class)
                 .build();
@@ -56,7 +53,6 @@ public class CafeBeansResolvableServiceTests {
 
         //given
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceClassInjectable.class)
                 .build();
         CafeBeansResolvableService resolvableDescriptor = CafeBeansResolvableService.from(cafeClassDescriptors);
@@ -73,7 +69,6 @@ public class CafeBeansResolvableServiceTests {
 
         //given
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(SubjectClassInjectable.class)
                 .withClass(SubjectClassProviderWCADate.class)
                 .build();

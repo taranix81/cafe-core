@@ -2,10 +2,11 @@ package org.taranix.cafe.beans.descriptors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.taranix.cafe.beans.annotations.CafeAnnotationUtils;
 import org.taranix.cafe.beans.descriptors.data.*;
 import org.taranix.cafe.beans.descriptors.data.generics.IntegerProviderAndStringInjectable;
 import org.taranix.cafe.beans.descriptors.data.generics.SetServiceClassInjectable;
+import org.taranix.cafe.beans.descriptors.members.CafeFieldInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 
 import java.util.Collection;
@@ -21,7 +22,6 @@ class CafeBeansDependencyTests {
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
                 .withClass(ServiceClassInjectable.class)
                 .withClass(ServiceClass.class)
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .build();
 
         CafeBeansDependencyService cafeBeansDependencyService = CafeBeansDependencyService.from(cafeClassDescriptors);
@@ -50,7 +50,6 @@ class CafeBeansDependencyTests {
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
                 .withClass(ArrayServiceClassInjectable.class)
                 .withClass(ServiceClass.class)
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .build();
 
         CafeBeansDependencyService cafeBeansDependencyService = CafeBeansDependencyService.from(cafeClassDescriptors);
@@ -63,8 +62,8 @@ class CafeBeansDependencyTests {
                 .findFirst()
                 .orElse(null);
         CafeMemberInfo constructor = cafeClassDescriptors.descriptor(ServiceClass.class).constructor();
-        CafeClassDescriptor dependant = cafeClassDescriptors.descriptor(ArrayServiceClassInjectable.class);
-        CafeClassDescriptor provider = cafeClassDescriptors.descriptor(ServiceClass.class);
+        CafeClassInfo dependant = cafeClassDescriptors.descriptor(ArrayServiceClassInjectable.class);
+        CafeClassInfo provider = cafeClassDescriptors.descriptor(ServiceClass.class);
 
         //then
         Assertions.assertNotNull(field);
@@ -81,7 +80,6 @@ class CafeBeansDependencyTests {
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
                 .withClass(ListServiceClassInjectable.class)
                 .withClass(ServiceClass.class)
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .build();
 
         CafeBeansDependencyService cafeBeansDependencyService = CafeBeansDependencyService.from(cafeClassDescriptors);
@@ -94,8 +92,8 @@ class CafeBeansDependencyTests {
                 .findFirst()
                 .orElse(null);
         CafeMemberInfo constructor = cafeClassDescriptors.descriptor(ServiceClass.class).constructor();
-        CafeClassDescriptor dependant = cafeClassDescriptors.descriptor(ListServiceClassInjectable.class);
-        CafeClassDescriptor provider = cafeClassDescriptors.descriptor(ServiceClass.class);
+        CafeClassInfo dependant = cafeClassDescriptors.descriptor(ListServiceClassInjectable.class);
+        CafeClassInfo provider = cafeClassDescriptors.descriptor(ServiceClass.class);
 
         //then
         Assertions.assertNotNull(field);
@@ -114,7 +112,6 @@ class CafeBeansDependencyTests {
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
                 .withClass(SetServiceClassInjectable.class)
                 .withClass(ServiceClass.class)
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .build();
 
         CafeBeansDependencyService cafeBeansDependencyService = CafeBeansDependencyService.from(cafeClassDescriptors);
@@ -127,8 +124,8 @@ class CafeBeansDependencyTests {
                 .findFirst()
                 .orElse(null);
         CafeMemberInfo constructor = cafeClassDescriptors.descriptor(ServiceClass.class).constructor();
-        CafeClassDescriptor dependant = cafeClassDescriptors.descriptor(SetServiceClassInjectable.class);
-        CafeClassDescriptor provider = cafeClassDescriptors.descriptor(ServiceClass.class);
+        CafeClassInfo dependant = cafeClassDescriptors.descriptor(SetServiceClassInjectable.class);
+        CafeClassInfo provider = cafeClassDescriptors.descriptor(ServiceClass.class);
 
         //then
         Assertions.assertNotNull(field);
@@ -147,7 +144,6 @@ class CafeBeansDependencyTests {
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
                 .withClass(ServiceClassInjectable.class)
                 .withClass(ServiceClassProvider.class)
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .build();
         CafeBeansDependencyService cafeBeansDependencyService = CafeBeansDependencyService.from(cafeClassDescriptors);
 
@@ -178,7 +174,6 @@ class CafeBeansDependencyTests {
         //given
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
                 .withClass(ServiceClassInjectable.class)
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .build();
 
         CafeBeansDependencyService cafeBeansDependencyService = CafeBeansDependencyService.from(cafeClassDescriptors);
@@ -205,7 +200,6 @@ class CafeBeansDependencyTests {
         //given
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
                 .withClass(ProvidersWithCycle.class)
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .build();
         CafeBeansDependencyService cafeBeansDependencyService = CafeBeansDependencyService
                 .from(cafeClassDescriptors);
@@ -222,7 +216,6 @@ class CafeBeansDependencyTests {
     void shouldFindCycleAmongManyClasses() {
         //given
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(StringProviderWithParameter.class)
                 .withClass(IntegerProviderWithStringParameter.class)
                 .withClass(DateProviderWithIntegerParameter.class)
@@ -233,7 +226,7 @@ class CafeBeansDependencyTests {
         boolean hasCycle = cafeBeansDependencyService.hasCycleBetweenMembers();
         boolean hacClassCycle = cafeBeansDependencyService.hasCycleBetweenClasses();
         Collection<CafeMemberInfo> cycleSet = cafeBeansDependencyService.membersCycleSet();
-        Collection<CafeClassDescriptor> classCycleSet = cafeBeansDependencyService.classCycleSet();
+        Collection<CafeClassInfo> classCycleSet = cafeBeansDependencyService.classCycleSet();
 
         //then
         Assertions.assertTrue(hasCycle);
@@ -246,7 +239,6 @@ class CafeBeansDependencyTests {
     void shouldFindStringProviderForGenericSuperClass() {
         //given
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(IntegerProviderAndStringInjectable.class)
                 .withClass(StringProvider.class)
                 .build();

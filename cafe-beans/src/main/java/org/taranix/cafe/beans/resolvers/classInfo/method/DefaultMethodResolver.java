@@ -5,7 +5,7 @@ import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.CafeReflectionUtils;
 import org.taranix.cafe.beans.annotations.CafePostInit;
 import org.taranix.cafe.beans.annotations.CafeProvider;
-import org.taranix.cafe.beans.descriptors.CafeMethodInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMethodInfo;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;

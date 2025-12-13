@@ -1,22 +1,22 @@
-package org.taranix.cafe.beans;
+package org.taranix.cafe.beans.descriptors;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.taranix.cafe.beans.CafeReflectionUtils;
 import org.taranix.cafe.beans.annotations.CafeAnnotationUtils;
+import org.taranix.cafe.beans.annotations.types.CafeType;
 
-import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClassScanner {
 
-    private final Set<Class<? extends Annotation>> annotations;
+    private static final ClassScanner classScanner = new ClassScanner();
 
-    private ClassScanner(final Set<Class<? extends Annotation>> annotations) {
-        this.annotations = annotations;
-    }
-
-    public static ClassScanner from(Set<Class<? extends Annotation>> annotations) {
-        return new ClassScanner(annotations);
+    public static ClassScanner getInstance() {
+        return classScanner;
     }
 
     public Set<Class<?>> scan(String... packages) {
@@ -26,7 +26,7 @@ public class ClassScanner {
 
         return Arrays.stream(packages)
                 .flatMap(pkg -> CafeReflectionUtils.getAllClassesFromPackage(CafeReflectionUtils.getDefault(), pkg))
-                .filter(aClass -> CafeAnnotationUtils.containsAnnotation(aClass, annotations))
+                .filter(aClass -> CafeAnnotationUtils.hasMarker(aClass, CafeType.class))
                 .collect(Collectors.toSet());
     }
 

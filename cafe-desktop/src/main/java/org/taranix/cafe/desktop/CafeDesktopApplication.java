@@ -5,14 +5,11 @@ import org.taranix.cafe.beans.CafeApplication;
 import org.taranix.cafe.beans.annotations.CafeInject;
 import org.taranix.cafe.beans.resolvers.classInfo.method.CafeMethodResolver;
 import org.taranix.cafe.desktop.actions.HandlersService;
-import org.taranix.cafe.desktop.annotations.CafeMenuItemSelectionHandler;
-import org.taranix.cafe.desktop.annotations.CafeShellHandler;
 import org.taranix.cafe.desktop.components.application.ApplicationComponent;
 import org.taranix.cafe.desktop.components.menubar.ApplicationMenuBarComponent;
 import org.taranix.cafe.desktop.resolvers.CafeMenuItemSelectionMethodResolver;
 import org.taranix.cafe.desktop.resolvers.CafeShellEventMethodResolver;
 
-import java.lang.annotation.Annotation;
 import java.util.Set;
 
 
@@ -37,10 +34,6 @@ public class CafeDesktopApplication extends CafeApplication {
         super.beforeContextInit();
     }
 
-    @Override
-    protected Set<Class<? extends Annotation>> getCustomAnnotations() {
-        return Set.of(CafeShellHandler.class, CafeMenuItemSelectionHandler.class);
-    }
 
     @Override
     protected Set<CafeMethodResolver> getCustomMethodResolvers() {

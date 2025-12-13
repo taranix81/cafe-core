@@ -3,7 +3,7 @@ package org.taranix.cafe.shell.commands;
 import lombok.Builder;
 import lombok.Getter;
 import org.apache.commons.cli.Option;
-import org.taranix.cafe.beans.descriptors.CafeMethodInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMethodInfo;
 
 import java.util.Optional;
 

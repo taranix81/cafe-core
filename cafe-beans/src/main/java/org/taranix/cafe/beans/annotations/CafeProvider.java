@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @CafeInitable
 public @interface CafeProvider {
-    Scope scope() default Scope.Singleton;
+    
 }

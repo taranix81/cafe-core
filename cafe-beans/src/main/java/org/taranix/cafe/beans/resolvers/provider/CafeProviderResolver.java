@@ -1,7 +1,7 @@
 package org.taranix.cafe.beans.resolvers.provider;
 
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.descriptors.CafeMemberInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
 
 public interface CafeProviderResolver {
 

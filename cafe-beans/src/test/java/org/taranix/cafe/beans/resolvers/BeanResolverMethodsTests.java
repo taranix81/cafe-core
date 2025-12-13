@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.taranix.cafe.beans.CafeApplicationContext;
-import org.taranix.cafe.beans.annotations.CafeAnnotationUtils;
 import org.taranix.cafe.beans.exceptions.BeansRepositoryException;
 import org.taranix.cafe.beans.resolvers.data.*;
 
@@ -19,7 +18,6 @@ class BeanResolverMethodsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClasses(Set.of(ServiceClassProvider.class))
                 .build();
 
@@ -43,7 +41,6 @@ class BeanResolverMethodsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceClassProviderWCA.class)
                 .withClass(StringProvider.class)
                 .build();
@@ -68,7 +65,6 @@ class BeanResolverMethodsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(InterfaceServiceProvider.class)
                 .build();
 
@@ -89,7 +85,6 @@ class BeanResolverMethodsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceProviderWithPrimary.class)
                 .build();
 
@@ -112,7 +107,6 @@ class BeanResolverMethodsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceProviderWithPrimary.class)
                 .withClass(OtherServiceProviderWithPrimary.class)
                 .build();

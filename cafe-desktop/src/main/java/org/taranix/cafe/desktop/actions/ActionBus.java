@@ -35,7 +35,7 @@ public class ActionBus {
     }
 
     public <T extends Action> T sendTo(T action, Object receiver) {
-        List<Method> handlerMethods = CafeAnnotationUtils.getMethodsAnnotatedBy(receiver.getClass(), CafeEventHandler.class);
+        List<Method> handlerMethods = CafeAnnotationUtils.getClassMethodsAnnotatedBy(receiver.getClass(), CafeEventHandler.class);
 
         for (Method method : handlerMethods) {
             if (method.getParameterCount() == 0) {

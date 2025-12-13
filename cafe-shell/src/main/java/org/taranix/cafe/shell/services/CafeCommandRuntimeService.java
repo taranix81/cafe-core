@@ -67,7 +67,7 @@ public class CafeCommandRuntimeService {
     }
 
     public void run(CafeCommandRuntime commandRuntime) {
-        log.debug("Executing command : {} -> {}({})", commandRuntime.getExecutor().getCafeClassDescriptor().getTypeClass()
+        log.debug("Executing command : {} -> {}({})", commandRuntime.getExecutor().getCafeClassInfo().getTypeClass()
                 , commandRuntime.getExecutor().getMethod().getName()
                 , commandRuntime.getExecutor().getMethod().getParameterTypes());
         log.debug("CLI arguments -> {} ", commandRuntime.getArguments() != null ? Arrays.stream(commandRuntime.getArguments()).toList() : "null");

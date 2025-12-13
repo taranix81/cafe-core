@@ -3,7 +3,7 @@ package org.taranix.cafe.beans.repositories.class_info;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
-import org.taranix.cafe.beans.descriptors.CafeMemberInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
 import org.taranix.cafe.beans.diagnostics.ClassMemberDependencyGraphDiagramBuilder;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 

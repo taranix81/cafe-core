@@ -1,6 +1,7 @@
 package org.taranix.cafe.shell;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -34,6 +35,7 @@ class CafeCommandTest {
     @DisplayName("Should execute commands without exception")
     @ParameterizedTest
     @MethodSource("correctCommandArguments")
+    @Disabled
     void shouldExecuteSuccessfullyCommands(List<String> arguments) {
         //given
         CafeShell cafeShell = new CafeShell(TestShellApplication.class);

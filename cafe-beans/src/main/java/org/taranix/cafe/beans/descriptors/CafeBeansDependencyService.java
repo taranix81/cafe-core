@@ -1,6 +1,7 @@
 package org.taranix.cafe.beans.descriptors;
 
 import lombok.extern.slf4j.Slf4j;
+import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
 import org.taranix.cafe.beans.repositories.class_info.ClassDependencyRepository;
 import org.taranix.cafe.beans.repositories.class_info.MemberDependencyRepository;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
@@ -47,14 +48,14 @@ public class CafeBeansDependencyService {
         return !classCycleSet().isEmpty();
     }
 
-    Collection<CafeClassDescriptor> classCycleSet() {
+    Collection<CafeClassInfo> classCycleSet() {
         if (log.isTraceEnabled()) {
             classDependencies.generateDiagram("class-dependency");
         }
         return classDependencies.cycleSet();
     }
 
-    public Set<CafeClassDescriptor> providersForClass(CafeClassDescriptor target) {
+    public Set<CafeClassInfo> providersForClass(CafeClassInfo target) {
         return new HashSet<>(classDependencies.getMany(target));
     }
 

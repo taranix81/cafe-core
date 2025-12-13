@@ -7,7 +7,7 @@ import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.CafeReflectionUtils;
 import org.taranix.cafe.beans.annotations.CafeProperty;
 import org.taranix.cafe.beans.converters.CafeConverter;
-import org.taranix.cafe.beans.descriptors.CafeFieldInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeFieldInfo;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 
 import java.lang.annotation.Annotation;
@@ -17,7 +17,7 @@ import java.lang.reflect.Type;
 public class PropertyResolver implements CafeFieldResolver {
     @Override
     public void resolve(Object instance, CafeFieldInfo cafeFieldDescriptor, CafeBeansFactory resolverProcessor) {
-        CafeProperty cafePropertyAnnotation = cafeFieldDescriptor.getFieldAnnotation(CafeProperty.class);
+        CafeProperty cafePropertyAnnotation = cafeFieldDescriptor.getAnnotation(CafeProperty.class);
         String propertyName = cafePropertyAnnotation.name();
         Type targetType = cafeFieldDescriptor.getFieldTypeKey().getType();
         Object rawPropertyValue = resolverProcessor.getProperty(propertyName);

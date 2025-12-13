@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.taranix.cafe.beans.CafeApplicationContext;
 import org.taranix.cafe.beans.CafePropertiesContext;
-import org.taranix.cafe.beans.annotations.CafeAnnotationUtils;
 import org.taranix.cafe.beans.converters.CafeConverter;
 import org.taranix.cafe.beans.repositories.beans.BeansRepository;
 
@@ -41,7 +40,6 @@ class CafePropertiesContextTests {
     @Test
     void shouldInjectPropertyIntoServiceClass() {
         CafeApplicationContext context = CafeApplicationContext.builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withPackageScan(CafeConverter.class.getPackageName())
                 .withClass(ServiceClassWithProperty.class)
                 .build();

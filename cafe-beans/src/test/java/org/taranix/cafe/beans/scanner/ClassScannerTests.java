@@ -3,19 +3,17 @@ package org.taranix.cafe.beans.scanner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.taranix.cafe.beans.CafeApplicationContext;
-import org.taranix.cafe.beans.ClassScanner;
-import org.taranix.cafe.beans.annotations.CafeAnnotationUtils;
 import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
+import org.taranix.cafe.beans.descriptors.ClassScanner;
 
 public class ClassScannerTests {
 
     @Test
     void shouldFindAllAnnotatedClasses() {
         //given
-        ClassScanner classScanner = ClassScanner.from(CafeAnnotationUtils.BASE_ANNOTATIONS);
+        ClassScanner classScanner = ClassScanner.getInstance();
         //when
         CafeClassDescriptors descriptors = CafeClassDescriptors.builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClasses(classScanner.scan("org.taranix.cafe.beans.scanner"))
                 .build();
 
@@ -30,7 +28,6 @@ public class ClassScannerTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withPackageScan("org.taranix.cafe.beans.scanner").build();
         //when
         cafeApplicationContext.initialize();

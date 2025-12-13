@@ -1,8 +1,8 @@
 package org.taranix.cafe.beans.diagnostics;
 
 import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
-import org.taranix.cafe.beans.descriptors.CafeClassDescriptor;
-import org.taranix.cafe.beans.descriptors.CafeMemberInfo;
+import org.taranix.cafe.beans.descriptors.CafeClassInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
 import org.taranix.cafe.beans.repositories.class_info.DependencyRepository;
 
 import java.lang.reflect.Executable;
@@ -58,25 +58,25 @@ public class ClassMemberDependencyGraphDiagramBuilder {
     }
 
     public ClassMemberDependencyGraphDiagramBuilder withComponents(CafeClassDescriptors components) {
-        for (CafeClassDescriptor cafeClassDescriptor : components.descriptors()) {
-            StringBuilder component = new StringBuilder("package " + cafeClassDescriptor.getTypeClass().getName() + " {");
+        for (CafeClassInfo cafeClassInfo : components.descriptors()) {
+            StringBuilder component = new StringBuilder("package " + cafeClassInfo.getTypeClass().getName() + " {");
 
             component.append(NEW_LINE);
-            if (cafeClassDescriptor.constructor() != null) {
-                component.append(generateElementLabel(cafeClassDescriptor.constructor()))
+            if (cafeClassInfo.constructor() != null) {
+                component.append(generateElementLabel(cafeClassInfo.constructor()))
                         .append(AS)
-                        .append(generateElementId(cafeClassDescriptor.constructor()))
+                        .append(generateElementId(cafeClassInfo.constructor()))
                         .append(NEW_LINE);
             }
 
-            cafeClassDescriptor.fields().forEach(field -> {
+            cafeClassInfo.fields().forEach(field -> {
                 component.append(generateElementLabel(field))
                         .append(AS)
                         .append(generateElementId(field))
                         .append(NEW_LINE);
             });
 
-            cafeClassDescriptor.methods().forEach(method -> {
+            cafeClassInfo.methods().forEach(method -> {
                 component.append(generateElementLabel(method))
                         .append(AS)
                         .append(generateElementId(method))

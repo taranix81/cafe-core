@@ -3,11 +3,12 @@ package org.taranix.cafe.beans;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.taranix.cafe.beans.annotations.modifiers.CafePrimary;
 import org.taranix.cafe.beans.converters.CafeConverter;
 import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
-import org.taranix.cafe.beans.descriptors.CafeClassDescriptor;
-import org.taranix.cafe.beans.descriptors.CafeMemberInfo;
-import org.taranix.cafe.beans.descriptors.CafeMethodInfo;
+import org.taranix.cafe.beans.descriptors.CafeClassInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMethodInfo;
 import org.taranix.cafe.beans.exceptions.CafeBeansContextException;
 import org.taranix.cafe.beans.repositories.Repository;
 import org.taranix.cafe.beans.repositories.beans.BeanRepositoryEntry;
@@ -78,7 +79,7 @@ public final class CafeBeansFactory {
         }
     }
 
-    private void resolveClass(CafeClassDescriptor classDescriptor) {
+    private void resolveClass(CafeClassInfo classDescriptor) {
         resolvers.findClassResolver(classDescriptor)
                 .resolve(classDescriptor, this);
     }
@@ -86,7 +87,7 @@ public final class CafeBeansFactory {
 
     private boolean isResolvableWithinBeansContext(CafeMemberInfo member) {
         List<BeanTypeKey> dependencies = member.dependencies()
-                .stream().filter(typeKey -> !member.getCafeClassDescriptor().typeKey().equals(typeKey)).toList();
+                .stream().filter(typeKey -> !member.getCafeClassInfo().typeKey().equals(typeKey)).toList();
 
         List<BeanTypeKey> nonMatched = dependencies.stream()
                 .filter(typeKey -> !repository.contains(typeKey)).toList();
@@ -144,7 +145,7 @@ public final class CafeBeansFactory {
                 repository.set(typeKey, BeanRepositoryEntry.builder()
                         .source(source)
                         .value(resolved)
-                        .primary(member.isPrimary())
+                        .primary(member.getAnnotationModifiers().contains(CafePrimary.class))
                         .build()));
     }
 

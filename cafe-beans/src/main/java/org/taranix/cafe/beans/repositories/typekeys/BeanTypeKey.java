@@ -31,6 +31,11 @@ public class BeanTypeKey extends TypeKey {
         return new BeanTypeKey(TypeUtils.parameterize(cls, typeArguments), typeIdentifier);
     }
 
+    public static BeanTypeKey from(Class<?> cls, Type... typeArguments) {
+        return new BeanTypeKey(TypeUtils.parameterize(cls, typeArguments), StringUtils.EMPTY);
+    }
+
+
     public static boolean isMatchByTypeOrGenericType(final BeanTypeKey requiredTypeKey, Set<BeanTypeKey> providedTypeKeys) {
         if (!providedTypeKeys.contains(requiredTypeKey)) {
             if (requiredTypeKey.isArray()) {

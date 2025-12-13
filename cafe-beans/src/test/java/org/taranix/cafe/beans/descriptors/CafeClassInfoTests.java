@@ -2,10 +2,13 @@ package org.taranix.cafe.beans.descriptors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.taranix.cafe.beans.annotations.CafeAnnotationUtils;
 import org.taranix.cafe.beans.descriptors.data.ManyProvidersAndInjectables;
 import org.taranix.cafe.beans.descriptors.data.generics.DateProviderWithInstantParameterAndLongInjectable;
 import org.taranix.cafe.beans.descriptors.data.generics.IntegerProviderAndStringInjectable;
+import org.taranix.cafe.beans.descriptors.members.CafeConstructorInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeFieldInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMethodInfo;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 
 import java.math.BigDecimal;
@@ -13,25 +16,24 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.Set;
 
-class CafeClassDescriptorTests {
+class CafeClassInfoTests {
 
 
     @Test
     void shouldFindAllAnnotatedMethodsAndFields() {
         //given
-        CafeClassDescriptor cafeClassDescriptor = CafeClassDescriptors
+        CafeClassInfo cafeClassInfo = CafeClassDescriptors
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ManyProvidersAndInjectables.class)
                 .build()
                 .descriptor(ManyProvidersAndInjectables.class);
 
 
         //when
-        Set<CafeMemberInfo> allMembers = cafeClassDescriptor.getMembers();
-        Set<CafeMethodInfo> allMethods = cafeClassDescriptor.methods();
-        Set<CafeFieldInfo> allFields = cafeClassDescriptor.fields();
-        CafeConstructorInfo constructor = cafeClassDescriptor.constructor();
+        Set<CafeMemberInfo> allMembers = cafeClassInfo.getMembers();
+        Set<CafeMethodInfo> allMethods = cafeClassInfo.methods();
+        Set<CafeFieldInfo> allFields = cafeClassInfo.fields();
+        CafeConstructorInfo constructor = cafeClassInfo.constructor();
 
         //then
         Assertions.assertEquals(9, allMembers.size());
@@ -49,23 +51,22 @@ class CafeClassDescriptorTests {
     @Test
     void shouldDetermineFieldAndMethodType() {
         //given
-        CafeClassDescriptor cafeClassDescriptor = CafeClassDescriptors
+        CafeClassInfo cafeClassInfo = CafeClassDescriptors
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(IntegerProviderAndStringInjectable.class)
                 .build()
                 .descriptor(IntegerProviderAndStringInjectable.class);
 
         //when
-        CafeFieldInfo genericField = cafeClassDescriptor
+        CafeFieldInfo genericField = cafeClassInfo
                 .fields().stream()
                 .findFirst()
                 .orElse(null);
-        CafeMethodInfo genericMethod = cafeClassDescriptor
+        CafeMethodInfo genericMethod = cafeClassInfo
                 .methods().stream()
                 .findFirst()
                 .orElse(null);
-        CafeConstructorInfo cafeConstructorDescriptor = cafeClassDescriptor.constructor();
+        CafeConstructorInfo cafeConstructorDescriptor = cafeClassInfo.constructor();
 
         //then
         Assertions.assertNotNull(genericField);
@@ -80,23 +81,22 @@ class CafeClassDescriptorTests {
     @Test
     void shouldDetermineFieldAndMethodTypeAndParameterType() {
         //given
-        CafeClassDescriptor cafeClassDescriptor = CafeClassDescriptors
+        CafeClassInfo cafeClassInfo = CafeClassDescriptors
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(DateProviderWithInstantParameterAndLongInjectable.class)
                 .build()
                 .descriptor(DateProviderWithInstantParameterAndLongInjectable.class);
 
         //when
-        CafeFieldInfo genericField = cafeClassDescriptor
+        CafeFieldInfo genericField = cafeClassInfo
                 .fields().stream()
                 .findFirst()
                 .orElse(null);
-        CafeMethodInfo genericMethod = cafeClassDescriptor
+        CafeMethodInfo genericMethod = cafeClassInfo
                 .methods().stream()
                 .findFirst()
                 .orElse(null);
-        CafeConstructorInfo cafeConstructorDescriptor = cafeClassDescriptor.constructor();
+        CafeConstructorInfo cafeConstructorDescriptor = cafeClassInfo.constructor();
 
         //then
         Assertions.assertNotNull(genericField);

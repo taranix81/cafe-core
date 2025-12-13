@@ -3,7 +3,7 @@ package org.taranix.cafe.desktop.resolvers;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.swt.events.ShellEvent;
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.descriptors.CafeMethodInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMethodInfo;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 import org.taranix.cafe.beans.resolvers.classInfo.method.CafeMethodResolver;
 import org.taranix.cafe.desktop.actions.HandlerSignature;
@@ -22,7 +22,7 @@ public class CafeShellEventMethodResolver implements CafeMethodResolver {
     public Object resolve(final Object instance, final CafeMethodInfo methodInfo, final CafeBeansFactory cafeBeansFactory) {
         HandlersService handlersService = (HandlersService) cafeBeansFactory.getBean(BeanTypeKey.from(HandlersService.class));
 
-        List<CafeShellHandler> annotations = methodInfo.getMethodAnnotations().stream()
+        List<CafeShellHandler> annotations = methodInfo.getAnnotations().stream()
                 .filter(annotation -> annotation.annotationType().equals(CafeShellHandler.class))
                 .map(CafeShellHandler.class::cast)
                 .toList();

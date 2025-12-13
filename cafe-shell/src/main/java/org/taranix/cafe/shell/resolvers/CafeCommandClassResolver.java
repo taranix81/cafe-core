@@ -4,13 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.Option;
 import org.apache.commons.lang3.StringUtils;
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.descriptors.CafeClassDescriptor;
-import org.taranix.cafe.beans.descriptors.CafeMethodInfo;
+import org.taranix.cafe.beans.descriptors.CafeClassInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMethodInfo;
 import org.taranix.cafe.beans.resolvers.classInfo.AbstractClassResolver;
 import org.taranix.cafe.shell.annotations.CafeCommand;
-import org.taranix.cafe.shell.annotations.CafeCommandRun;
 import org.taranix.cafe.shell.commands.CafeCommandOptionBinding;
-import org.taranix.cafe.shell.exceptions.CafeCommandClassResolverException;
 
 import java.lang.annotation.Annotation;
 
@@ -39,7 +37,7 @@ public class CafeCommandClassResolver extends AbstractClassResolver {
     }
 
     @Override
-    public Object resolve(CafeClassDescriptor classInfo, CafeBeansFactory beansFactory) {
+    public Object resolve(CafeClassInfo classInfo, CafeBeansFactory beansFactory) {
         CafeCommand cafeCommandAnnotation = classInfo.getClassAnnotation(CafeCommand.class);
         Object commandInstance = super.resolve(classInfo, beansFactory);
         Option option = buildOption(cafeCommandAnnotation);
@@ -72,7 +70,7 @@ public class CafeCommandClassResolver extends AbstractClassResolver {
 //    }
 
     @Override
-    public boolean isApplicable(CafeClassDescriptor cafeClassDescriptor) {
+    public boolean isApplicable(CafeClassInfo cafeClassInfo) {
         return true;
     }
 

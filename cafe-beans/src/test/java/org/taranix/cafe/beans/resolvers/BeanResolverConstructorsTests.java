@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.taranix.cafe.beans.CafeApplicationContext;
-import org.taranix.cafe.beans.annotations.CafeAnnotationUtils;
 import org.taranix.cafe.beans.exceptions.CafeBeansContextException;
 import org.taranix.cafe.beans.resolvers.data.*;
 import org.taranix.cafe.beans.resolvers.data.prototype.AbstractServiceExtensionUse;
@@ -21,7 +20,6 @@ public class BeanResolverConstructorsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceClass.class)
                 .build();
 
@@ -39,7 +37,6 @@ public class BeanResolverConstructorsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(InterfaceServiceClass.class)
                 .build();
 
@@ -60,7 +57,6 @@ public class BeanResolverConstructorsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceClassExtension.class)
                 .build();
 
@@ -83,7 +79,6 @@ public class BeanResolverConstructorsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceClassWithCollectionWCA.class)
                 .withClass(ServiceClass.class)
                 .withClass(ServiceClassExtension.class)
@@ -108,7 +103,6 @@ public class BeanResolverConstructorsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceClassWithServiceWCA.class)
                 .withClass(ServiceClass.class)
                 .build();
@@ -132,7 +126,6 @@ public class BeanResolverConstructorsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceClassWithServiceWCA.class)
                 .withClass(ServiceClassExtension.class)
                 .build();
@@ -158,7 +151,6 @@ public class BeanResolverConstructorsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceClassWCA.class)
                 .withClass(DateProvider.class)
                 .build();
@@ -179,7 +171,6 @@ public class BeanResolverConstructorsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(AbstractService.class)
                 .build();
 
@@ -194,7 +185,6 @@ public class BeanResolverConstructorsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(AbstractService.class)
                 .withClass(AbstractServiceExtension.class)
                 .withClass(AbstractServiceExtensionUse.class)

@@ -128,14 +128,14 @@ public class EventBus {
 
 
     private List<Method> getHandlers(Component component, Message message) {
-        List<Method> handlerMethods = CafeAnnotationUtils.getMethodsAnnotatedBy(component.getClass(), CafeMessageHandler.class);
+        List<Method> handlerMethods = CafeAnnotationUtils.getClassMethodsAnnotatedBy(component.getClass(), CafeMessageHandler.class);
         return handlerMethods.stream()
                 .filter(method -> isAllMatch(message, method))
                 .toList();
     }
 
     private List<Method> getHandlers(Component component, Event event) {
-        List<Method> handlerMethods = CafeAnnotationUtils.getMethodsAnnotatedBy(component.getClass(), CafeEventHandler.class);
+        List<Method> handlerMethods = CafeAnnotationUtils.getClassMethodsAnnotatedBy(component.getClass(), CafeEventHandler.class);
         return handlerMethods.stream()
                 .filter(method -> isAllMatch(event, method))
                 .toList();

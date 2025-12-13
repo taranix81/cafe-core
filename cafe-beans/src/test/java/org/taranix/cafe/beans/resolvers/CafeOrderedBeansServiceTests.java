@@ -1,10 +1,10 @@
-package org.taranix.cafe.beans.descriptors;
+package org.taranix.cafe.beans.resolvers;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.taranix.cafe.beans.annotations.CafeAnnotationUtils;
+import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
 import org.taranix.cafe.beans.descriptors.data.*;
-import org.taranix.cafe.beans.resolvers.CafeOrderedBeansService;
+import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
 
 import java.util.List;
 
@@ -15,7 +15,6 @@ class CafeOrderedBeansServiceTests {
     void shouldProperOrderedForSingleClassWithoutDependencies() {
         //given
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(SubjectClassProvider.class)
                 .build();
         CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeClassDescriptors);
@@ -33,7 +32,6 @@ class CafeOrderedBeansServiceTests {
     void shouldProperOrderedForSingleClassWithDependencyToProviderClass() {
         //given
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(SubjectClassProvider.class)
                 .withClass(SubjectClass.class)
                 .build();
@@ -55,7 +53,6 @@ class CafeOrderedBeansServiceTests {
     void shouldProperOrderedForSingleClassWithDependencyToServiceClass() {
         //given
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceClassInjectable.class)
                 .withClass(ServiceClass.class)
                 .build();
@@ -76,7 +73,6 @@ class CafeOrderedBeansServiceTests {
     void shouldProperOrderedForSingleClassWithDependencyToServiceClassWithConstructorParameter() {
         //given
         CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceClassWCAInjectable.class)
                 .withClass(ServiceClassWCA.class)
                 .withClass(StringProvider.class)

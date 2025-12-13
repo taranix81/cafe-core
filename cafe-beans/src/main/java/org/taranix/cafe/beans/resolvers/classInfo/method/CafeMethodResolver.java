@@ -1,7 +1,7 @@
 package org.taranix.cafe.beans.resolvers.classInfo.method;
 
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.descriptors.CafeMethodInfo;
+import org.taranix.cafe.beans.descriptors.members.CafeMethodInfo;
 
 import java.lang.annotation.Annotation;
 

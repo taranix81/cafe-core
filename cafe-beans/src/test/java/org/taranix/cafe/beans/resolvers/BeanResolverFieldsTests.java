@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.taranix.cafe.beans.CafeApplicationContext;
-import org.taranix.cafe.beans.annotations.CafeAnnotationUtils;
 import org.taranix.cafe.beans.resolvers.data.*;
 
 import java.util.Collection;
@@ -18,7 +17,6 @@ public class BeanResolverFieldsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceClass.class)
                 .withClass(InjectableServiceClass.class)
                 .build();
@@ -41,7 +39,6 @@ public class BeanResolverFieldsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceClass.class)
                 .withClass(ServiceClassExtension.class)
                 .withClass(InjectableCollectionsServiceClass.class)
@@ -71,7 +68,6 @@ public class BeanResolverFieldsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceClassWCA.class)
                 .withClass(InjectableServiceClassWCA.class)
                 .withClass(DateProvider.class)
@@ -96,7 +92,6 @@ public class BeanResolverFieldsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceClassWCAProviderWMA.class)
                 .withClass(InjectableServiceClass.class)
                 .withClass(DateProvider.class)
@@ -122,7 +117,6 @@ public class BeanResolverFieldsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(ServiceClassProvider.class)
                 .withClass(InjectableServiceClass.class)
                 .build();
@@ -143,7 +137,6 @@ public class BeanResolverFieldsTests {
         //given
         CafeApplicationContext cafeApplicationContext = CafeApplicationContext
                 .builder()
-                .withAnnotations(CafeAnnotationUtils.BASE_ANNOTATIONS)
                 .withClass(DateGenericClass.class)
                 .withClass(DateProvider.class)
                 .build();

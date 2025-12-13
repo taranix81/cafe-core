@@ -10,7 +10,6 @@ import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 import org.taranix.cafe.beans.resolvers.classInfo.CafeClassResolver;
 import org.taranix.cafe.beans.resolvers.classInfo.method.CafeMethodResolver;
 
-import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -66,22 +65,12 @@ public abstract class CafeApplication {
 
     private CafeApplicationContext createApplicationContext(Class<?> applicationConfigClass) {
         return CafeApplicationContext.builder()
-                .withAnnotations(defaultAnnotations())
-                .withAnnotations(getCustomAnnotations())
                 .withClassResolver(getCustomClassResolvers())
                 .withMethodResolver(getCustomMethodResolvers())
                 .withPackageScan(getPackages())
                 .withClassLoader(this.getClass().getClassLoader())
                 .withClass(applicationConfigClass)
                 .build();
-    }
-
-    protected final Set<Class<? extends Annotation>> defaultAnnotations() {
-        return CafeAnnotationUtils.BASE_ANNOTATIONS;
-    }
-
-    protected Set<Class<? extends Annotation>> getCustomAnnotations() {
-        return Set.of();
     }
 
     protected Set<CafeClassResolver> getCustomClassResolvers() {
