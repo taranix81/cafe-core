@@ -3,10 +3,9 @@ package org.taranix.cafe.beans;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
-import org.taranix.cafe.beans.descriptors.CafeClassInfo;
-import org.taranix.cafe.beans.descriptors.ClassScanner;
 import org.taranix.cafe.beans.exceptions.CafeApplicationContextException;
+import org.taranix.cafe.beans.metadata.CafeClassInfo;
+import org.taranix.cafe.beans.reflection.ClassScanner;
 import org.taranix.cafe.beans.repositories.ListMultiRepository;
 import org.taranix.cafe.beans.repositories.MultiRepository;
 import org.taranix.cafe.beans.repositories.beans.BeanRepositoryEntry;
@@ -19,6 +18,7 @@ import org.taranix.cafe.beans.resolvers.classInfo.constructor.CafeConstructorRes
 import org.taranix.cafe.beans.resolvers.classInfo.field.CafeFieldResolver;
 import org.taranix.cafe.beans.resolvers.classInfo.method.CafeMethodResolver;
 import org.taranix.cafe.beans.resolvers.types.CafeBeanResolver;
+import org.taranix.cafe.beans.services.CafeBeanDefinitionService;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -35,7 +35,7 @@ public class CafeApplicationContext {
     @Getter
     private final MultiRepository<TypeKey, BeanRepositoryEntry> repository;
 
-    private final CafeClassDescriptors classDescriptors;
+    private final CafeBeanDefinitionService classDescriptors;
 
     @Getter
     private final CafeBeansFactory beansFactory;
@@ -44,7 +44,7 @@ public class CafeApplicationContext {
     private final CafeResolvers cafeResolvers;
 
     private CafeApplicationContext(
-            CafeClassDescriptors classDescriptors,
+            CafeBeanDefinitionService classDescriptors,
             CafeResolvers cafeResolvers,
             MultiRepository<TypeKey, BeanRepositoryEntry> repository,
             final ClassLoader classLoader
@@ -110,7 +110,7 @@ public class CafeApplicationContext {
     }
 
     public CafeClassInfo getClassDescriptor(Class<?> clz) {
-        return classDescriptors.descriptor(clz);
+        return classDescriptors.findClassInfo(clz);
     }
 
     public Object getProperty(String propertyName) {
@@ -204,7 +204,7 @@ public class CafeApplicationContext {
             Set<Class<?>> allClasses = Stream.concat(classesToBeResolved.stream()
                             , ClassScanner.getInstance().scan(packages).stream())
                     .collect(Collectors.toSet());
-            CafeClassDescriptors descriptors = CafeClassDescriptors.builder()
+            CafeBeanDefinitionService descriptors = CafeBeanDefinitionService.builder()
                     .withClasses(allClasses)
                     .build();
 

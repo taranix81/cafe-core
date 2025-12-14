@@ -2,11 +2,11 @@ package org.taranix.cafe.beans.resolvers.classInfo;
 
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.descriptors.CafeClassInfo;
-import org.taranix.cafe.beans.descriptors.members.CafeConstructorInfo;
-import org.taranix.cafe.beans.descriptors.members.CafeFieldInfo;
-import org.taranix.cafe.beans.descriptors.members.CafeMethodInfo;
 import org.taranix.cafe.beans.exceptions.ClassResolverException;
+import org.taranix.cafe.beans.metadata.CafeClassInfo;
+import org.taranix.cafe.beans.metadata.members.CafeConstructorInfo;
+import org.taranix.cafe.beans.metadata.members.CafeFieldInfo;
+import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
 
 import java.util.Objects;
 

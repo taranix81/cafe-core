@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.CafeReflectionUtils;
 import org.taranix.cafe.beans.annotations.CafeProperty;
 import org.taranix.cafe.beans.converters.CafeConverter;
-import org.taranix.cafe.beans.descriptors.members.CafeFieldInfo;
+import org.taranix.cafe.beans.metadata.members.CafeFieldInfo;
+import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 
 import java.lang.annotation.Annotation;

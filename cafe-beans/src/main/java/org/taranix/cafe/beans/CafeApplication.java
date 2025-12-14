@@ -1,9 +1,9 @@
 package org.taranix.cafe.beans;
 
 import lombok.extern.slf4j.Slf4j;
-import org.taranix.cafe.beans.annotations.CafeAnnotationUtils;
 import org.taranix.cafe.beans.converters.CafeConverter;
 import org.taranix.cafe.beans.exceptions.CafeApplicationException;
+import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.repositories.beans.BeanRepositoryEntry;
 import org.taranix.cafe.beans.repositories.beans.BeansRepository;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;

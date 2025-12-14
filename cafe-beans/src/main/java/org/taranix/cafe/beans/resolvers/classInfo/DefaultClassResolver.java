@@ -4,7 +4,7 @@ package org.taranix.cafe.beans.resolvers.classInfo;
 import org.taranix.cafe.beans.annotations.CafeApplication;
 import org.taranix.cafe.beans.annotations.CafeFactory;
 import org.taranix.cafe.beans.annotations.CafeService;
-import org.taranix.cafe.beans.descriptors.CafeClassInfo;
+import org.taranix.cafe.beans.metadata.CafeClassInfo;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;

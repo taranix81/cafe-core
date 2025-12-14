@@ -2,9 +2,10 @@ package org.taranix.cafe.beans.resolvers;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
-import org.taranix.cafe.beans.descriptors.data.*;
-import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
+import org.taranix.cafe.beans.metadata.data.*;
+import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
+import org.taranix.cafe.beans.services.CafeBeanDefinitionService;
+import org.taranix.cafe.beans.services.CafeOrderedBeansService;
 
 import java.util.List;
 
@@ -14,10 +15,10 @@ class CafeOrderedBeansServiceTests {
     @Test
     void shouldProperOrderedForSingleClassWithoutDependencies() {
         //given
-        CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
+        CafeBeanDefinitionService cafeBeanDefinitionService = CafeBeanDefinitionService.builder()
                 .withClass(SubjectClassProvider.class)
                 .build();
-        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeClassDescriptors);
+        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeanDefinitionService);
 
         //when
         List<CafeMemberInfo> ordered = orderDescriptor.orderedMembers();
@@ -31,12 +32,12 @@ class CafeOrderedBeansServiceTests {
     @Test
     void shouldProperOrderedForSingleClassWithDependencyToProviderClass() {
         //given
-        CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
+        CafeBeanDefinitionService cafeBeanDefinitionService = CafeBeanDefinitionService.builder()
                 .withClass(SubjectClassProvider.class)
                 .withClass(SubjectClass.class)
                 .build();
 
-        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeClassDescriptors);
+        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeanDefinitionService);
 
         //when
         List<CafeMemberInfo> ordered = orderDescriptor.orderedMembers();
@@ -52,11 +53,11 @@ class CafeOrderedBeansServiceTests {
     @Test
     void shouldProperOrderedForSingleClassWithDependencyToServiceClass() {
         //given
-        CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
+        CafeBeanDefinitionService cafeBeanDefinitionService = CafeBeanDefinitionService.builder()
                 .withClass(ServiceClassInjectable.class)
                 .withClass(ServiceClass.class)
                 .build();
-        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeClassDescriptors);
+        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeanDefinitionService);
 
         //when
         List<CafeMemberInfo> ordered = orderDescriptor.orderedMembers();
@@ -72,12 +73,12 @@ class CafeOrderedBeansServiceTests {
     @Test
     void shouldProperOrderedForSingleClassWithDependencyToServiceClassWithConstructorParameter() {
         //given
-        CafeClassDescriptors cafeClassDescriptors = CafeClassDescriptors.builder()
+        CafeBeanDefinitionService cafeBeanDefinitionService = CafeBeanDefinitionService.builder()
                 .withClass(ServiceClassWCAInjectable.class)
                 .withClass(ServiceClassWCA.class)
                 .withClass(StringProvider.class)
                 .build();
-        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeClassDescriptors);
+        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeanDefinitionService);
 
         //when
         List<CafeMemberInfo> ordered = orderDescriptor.orderedMembers();

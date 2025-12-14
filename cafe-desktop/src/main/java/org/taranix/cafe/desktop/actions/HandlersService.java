@@ -8,7 +8,7 @@ import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.CafeReflectionUtils;
+import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
 import org.taranix.cafe.desktop.annotations.CafeMenuItemSelectionHandler;
 import org.taranix.cafe.desktop.annotations.CafeShellHandler;
 import org.taranix.cafe.desktop.annotations.ShellHandlerType;

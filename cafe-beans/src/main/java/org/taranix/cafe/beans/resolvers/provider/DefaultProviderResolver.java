@@ -2,8 +2,8 @@ package org.taranix.cafe.beans.resolvers.provider;
 
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
-import org.taranix.cafe.beans.descriptors.members.CafeMethodInfo;
+import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
+import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 
 @Slf4j

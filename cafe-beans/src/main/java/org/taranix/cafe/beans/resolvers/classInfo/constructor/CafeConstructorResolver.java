@@ -1,8 +1,8 @@
 package org.taranix.cafe.beans.resolvers.classInfo.constructor;
 
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.descriptors.members.CafeConstructorInfo;
-import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
+import org.taranix.cafe.beans.metadata.members.CafeConstructorInfo;
+import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
 
 import java.lang.annotation.Annotation;
 

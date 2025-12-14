@@ -1,8 +1,8 @@
 package org.taranix.cafe.beans.resolvers.types;
 
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
 import org.taranix.cafe.beans.exceptions.CafeBeanResolverException;
+import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 
 import java.util.Optional;
@@ -17,7 +17,7 @@ public class DefaultBeanResolver implements CafeBeanResolver {
 
     @Override
     public Object resolveOrNull(BeanTypeKey typeKey, CafeBeansFactory beansFactory) {
-        Set<CafeMemberInfo> providers = beansFactory.getClassDescriptors().findProviders(typeKey);
+        Set<CafeMemberInfo> providers = beansFactory.getClassDescriptors().findAnyTypeProviders(typeKey);
         return providers.stream()
                 .findFirst()
                 .map(memberInfo -> resolveProvider(memberInfo, beansFactory))

@@ -8,6 +8,7 @@ import org.taranix.cafe.beans.annotations.modifiers.CafeModifier;
 import org.taranix.cafe.beans.annotations.modifiers.CafeName;
 import org.taranix.cafe.beans.annotations.modifiers.CafePrimary;
 import org.taranix.cafe.beans.annotations.types.CafeType;
+import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;

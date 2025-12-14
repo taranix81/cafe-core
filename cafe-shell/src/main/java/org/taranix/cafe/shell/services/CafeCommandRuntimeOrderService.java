@@ -2,10 +2,10 @@ package org.taranix.cafe.shell.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.annotations.CafeService;
-import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
-import org.taranix.cafe.beans.descriptors.CafeClassInfo;
-import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
-import org.taranix.cafe.beans.resolvers.CafeOrderedBeansService;
+import org.taranix.cafe.beans.metadata.CafeClassInfo;
+import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
+import org.taranix.cafe.beans.services.CafeBeanDefinitionService;
+import org.taranix.cafe.beans.services.CafeOrderedBeansService;
 import org.taranix.cafe.shell.commands.CafeCommandRuntime;
 
 import java.util.Collection;
@@ -20,7 +20,7 @@ public class CafeCommandRuntimeOrderService {
 
     public List<CafeCommandRuntime> order(Collection<CafeCommandRuntime> commandRuntimes) {
 
-        CafeClassDescriptors classDescriptors = createClassDescriptors(commandRuntimes);
+        CafeBeanDefinitionService classDescriptors = createClassDescriptors(commandRuntimes);
         CafeOrderedBeansService beansOrder = CafeOrderedBeansService.from(classDescriptors);
         List<CafeClassInfo> orderedClassInfo = beansOrder.orderedClasses();
         return orderedClassInfo.stream()
@@ -35,8 +35,8 @@ public class CafeCommandRuntimeOrderService {
                 .toList();
     }
 
-    private CafeClassDescriptors createClassDescriptors(Collection<CafeCommandRuntime> commandRuntimes) {
-        return CafeClassDescriptors.builder()
+    private CafeBeanDefinitionService createClassDescriptors(Collection<CafeCommandRuntime> commandRuntimes) {
+        return CafeBeanDefinitionService.builder()
                 .withClasses(commandRuntimes.stream()
                         .map(CafeCommandRuntime::getExecutor)
                         .map(CafeMemberInfo::getCafeClassInfo)

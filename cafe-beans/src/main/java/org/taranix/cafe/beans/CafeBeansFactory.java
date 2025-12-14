@@ -5,19 +5,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.taranix.cafe.beans.annotations.modifiers.CafePrimary;
 import org.taranix.cafe.beans.converters.CafeConverter;
-import org.taranix.cafe.beans.descriptors.CafeClassDescriptors;
-import org.taranix.cafe.beans.descriptors.CafeClassInfo;
-import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
-import org.taranix.cafe.beans.descriptors.members.CafeMethodInfo;
 import org.taranix.cafe.beans.exceptions.CafeBeansContextException;
+import org.taranix.cafe.beans.metadata.CafeClassInfo;
+import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
+import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
 import org.taranix.cafe.beans.repositories.Repository;
 import org.taranix.cafe.beans.repositories.beans.BeanRepositoryEntry;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 import org.taranix.cafe.beans.repositories.typekeys.PropertyTypeKey;
 import org.taranix.cafe.beans.repositories.typekeys.TypeKey;
-import org.taranix.cafe.beans.resolvers.CafeBeansResolvableService;
-import org.taranix.cafe.beans.resolvers.CafeOrderedBeansService;
 import org.taranix.cafe.beans.resolvers.CafeResolvers;
+import org.taranix.cafe.beans.services.CafeBeanDefinitionService;
+import org.taranix.cafe.beans.services.CafeBeansResolvableService;
+import org.taranix.cafe.beans.services.CafeOrderedBeansService;
 
 import java.lang.reflect.Executable;
 import java.util.*;
@@ -31,7 +31,7 @@ public final class CafeBeansFactory {
     private final Repository<TypeKey, BeanRepositoryEntry> repository;
 
     @Getter
-    private final CafeClassDescriptors classDescriptors;
+    private final CafeBeanDefinitionService classDescriptors;
 
     @Getter
     private final CafeResolvers resolvers;
@@ -39,12 +39,12 @@ public final class CafeBeansFactory {
 
     private final CafeBeansResolvableService resolvableService;
 
-    public CafeBeansFactory(Repository<TypeKey, BeanRepositoryEntry> repository, CafeClassDescriptors classDescriptors, CafeResolvers resolvers) {
+    public CafeBeansFactory(Repository<TypeKey, BeanRepositoryEntry> repository, CafeBeanDefinitionService cafeBeanDefinitionService, CafeResolvers resolvers) {
         this.repository = repository;
-        this.classDescriptors = classDescriptors;
+        this.classDescriptors = cafeBeanDefinitionService;
         this.resolvers = resolvers;
-        this.orderedBeansService = CafeOrderedBeansService.from(classDescriptors);
-        this.resolvableService = CafeBeansResolvableService.from(classDescriptors);
+        this.orderedBeansService = CafeOrderedBeansService.from(cafeBeanDefinitionService);
+        this.resolvableService = CafeBeansResolvableService.from(cafeBeanDefinitionService);
     }
 
     public <S, T> CafeConverter<S, T> getConverter(Class<S> source, Class<T> target) {
@@ -63,8 +63,8 @@ public final class CafeBeansFactory {
     }
 
     private void validate() {
-        if (classDescriptors.getDependency().hasCycleBetweenMembers()
-                || classDescriptors.getDependency().hasCycleBetweenClasses()) {
+        if (classDescriptors.hasCycleBetweenClassMembers()
+                || classDescriptors.hasCycleBetweenClasses()) {
             throw new CafeBeansContextException("There is dependency cycle for Beans: %s".formatted("TODO"));
         }
 

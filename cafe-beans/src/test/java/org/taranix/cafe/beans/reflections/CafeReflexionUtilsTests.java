@@ -2,7 +2,7 @@ package org.taranix.cafe.beans.reflections;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.taranix.cafe.beans.CafeReflectionUtils;
+import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;

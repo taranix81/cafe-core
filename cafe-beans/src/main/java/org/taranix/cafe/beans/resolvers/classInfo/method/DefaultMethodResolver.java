@@ -2,10 +2,10 @@ package org.taranix.cafe.beans.resolvers.classInfo.method;
 
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.CafeReflectionUtils;
 import org.taranix.cafe.beans.annotations.CafePostInit;
 import org.taranix.cafe.beans.annotations.CafeProvider;
-import org.taranix.cafe.beans.descriptors.members.CafeMethodInfo;
+import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
+import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;

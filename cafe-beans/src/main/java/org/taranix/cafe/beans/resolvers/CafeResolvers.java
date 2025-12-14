@@ -1,11 +1,11 @@
 package org.taranix.cafe.beans.resolvers;
 
-import org.taranix.cafe.beans.descriptors.CafeClassInfo;
-import org.taranix.cafe.beans.descriptors.members.CafeConstructorInfo;
-import org.taranix.cafe.beans.descriptors.members.CafeFieldInfo;
-import org.taranix.cafe.beans.descriptors.members.CafeMemberInfo;
-import org.taranix.cafe.beans.descriptors.members.CafeMethodInfo;
 import org.taranix.cafe.beans.exceptions.CafeBeansFactoryException;
+import org.taranix.cafe.beans.metadata.CafeClassInfo;
+import org.taranix.cafe.beans.metadata.members.CafeConstructorInfo;
+import org.taranix.cafe.beans.metadata.members.CafeFieldInfo;
+import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
+import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 import org.taranix.cafe.beans.resolvers.classInfo.CafeClassResolver;
 import org.taranix.cafe.beans.resolvers.classInfo.DefaultClassResolver;

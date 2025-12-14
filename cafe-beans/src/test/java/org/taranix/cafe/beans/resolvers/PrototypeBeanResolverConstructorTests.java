@@ -3,7 +3,7 @@ package org.taranix.cafe.beans.resolvers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.taranix.cafe.beans.CafeApplicationContext;
-import org.taranix.cafe.beans.descriptors.CafeClassInfo;
+import org.taranix.cafe.beans.metadata.CafeClassInfo;
 import org.taranix.cafe.beans.resolvers.data.prototype.DefaultFactory;
 import org.taranix.cafe.beans.resolvers.data.prototype.PrototypeServiceClassWCA;
 import org.taranix.cafe.beans.resolvers.data.prototype.PrototypeServiceData;

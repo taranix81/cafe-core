@@ -2,8 +2,8 @@ package org.taranix.cafe.beans.repositories.typekeys;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.taranix.cafe.beans.CafeReflectionUtils;
 import org.taranix.cafe.beans.exceptions.BeanTypeKeyException;
+import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

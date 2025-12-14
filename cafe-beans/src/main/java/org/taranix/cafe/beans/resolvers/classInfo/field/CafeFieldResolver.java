@@ -2,7 +2,7 @@ package org.taranix.cafe.beans.resolvers.classInfo.field;
 
 
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.descriptors.members.CafeFieldInfo;
+import org.taranix.cafe.beans.metadata.members.CafeFieldInfo;
 
 import java.lang.annotation.Annotation;
 
