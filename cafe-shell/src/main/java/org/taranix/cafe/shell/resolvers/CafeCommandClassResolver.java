@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.metadata.CafeClassInfo;
 import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
-import org.taranix.cafe.beans.resolvers.classInfo.AbstractClassResolver;
+import org.taranix.cafe.beans.resolvers.metadata.AbstractClassResolver;
 import org.taranix.cafe.shell.annotations.CafeCommand;
 import org.taranix.cafe.shell.commands.CafeCommandOptionBinding;
 

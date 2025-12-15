@@ -4,9 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.annotations.CafeFactory;
 import org.taranix.cafe.beans.annotations.CafeService;
 import org.taranix.cafe.beans.converters.CafeConverter;
+import org.taranix.cafe.beans.metadata.CafeBeansDefinitionRegistry;
 import org.taranix.cafe.beans.metadata.CafeClassInfo;
 import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
-import org.taranix.cafe.beans.resolvers.classInfo.CafeClassResolver;
+import org.taranix.cafe.beans.resolvers.metadata.CafeClassResolver;
 
 import java.util.Comparator;
 import java.util.List;
@@ -15,39 +16,32 @@ import java.util.Set;
 @Slf4j
 public class CafeOrderedBeansService {
 
-    private final CafeBeanDefinitionService cafeBeanDefinitionService;
+    private final CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry;
 
-    private CafeOrderedBeansService(CafeBeanDefinitionService cafeBeanDefinitionService) {
-        this.cafeBeanDefinitionService = cafeBeanDefinitionService;
+    private CafeOrderedBeansService(CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry) {
+        this.cafeBeansDefinitionRegistry = cafeBeansDefinitionRegistry;
 
     }
 
-    public static CafeOrderedBeansService from(CafeBeanDefinitionService cafeBeanDefinitionService) {
-        return new CafeOrderedBeansService(cafeBeanDefinitionService);
+    public static CafeOrderedBeansService from(CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry) {
+        return new CafeOrderedBeansService(cafeBeansDefinitionRegistry);
     }
 
     public List<CafeClassInfo> orderedClasses() {
-        if (!cafeBeanDefinitionService.hasCycleBetweenClasses()) {
-            return cafeBeanDefinitionService.getCafeClassInfos().stream()
-                    .map(this::calculateClassIndex)
-                    .sorted(Comparator.comparing(IndexedClass::dependencyDepth))
-                    .map(IndexedClass::classDescriptor)
-                    .toList();
-        }
-
-        return List.of();
+        return cafeBeansDefinitionRegistry.getCafeClassInfos().stream()
+                .map(this::calculateClassIndex)
+                .sorted(Comparator.comparing(IndexedClass::dependencyDepth))
+                .map(IndexedClass::classDescriptor)
+                .toList();
     }
 
     public List<CafeMemberInfo> orderedMembers() {
+        return allMembers().stream()
+                .map(this::calculateIndex)
+                .sorted(Comparator.comparing(IndexedMember::dependencyDepth))
+                .map(IndexedMember::memberDescriptor)
+                .toList();
 
-        if (!cafeBeanDefinitionService.hasCycleBetweenClassMembers()) {
-            return allMembers().stream()
-                    .map(this::calculateIndex)
-                    .sorted(Comparator.comparing(IndexedMember::dependencyDepth))
-                    .map(IndexedMember::memberDescriptor)
-                    .toList();
-        }
-        return List.of();
     }
 
     private IndexedMember calculateIndex(final CafeMemberInfo cafeMemberInfo) {
@@ -71,7 +65,7 @@ public class CafeOrderedBeansService {
     }
 
     private Integer getDependenciesDepth(CafeClassInfo cafeClassInfo) {
-        return cafeBeanDefinitionService.getClassDependencyResolverRegistry().providers(cafeClassInfo)
+        return cafeBeansDefinitionRegistry.getClassDependencyResolverRegistry().providers(cafeClassInfo)
                 .stream()
                 .map(this::calculateDepth)
                 .reduce(0, Integer::sum);
@@ -80,7 +74,7 @@ public class CafeOrderedBeansService {
     private int calculateDepth(final CafeMemberInfo cafeMemberInfo) {
         if (cafeMemberInfo.hasDependencies()) {
             return cafeMemberInfo.dependencies().size() +
-                    cafeBeanDefinitionService.getMemberDependencyResolverRegistry().providers(cafeMemberInfo)
+                    cafeBeansDefinitionRegistry.getMemberDependencyResolverRegistry().providers(cafeMemberInfo)
                             .stream()
                             .map(this::calculateDepth)
                             .reduce(0, Integer::sum);
@@ -106,14 +100,14 @@ public class CafeOrderedBeansService {
         }
 
         //custom component with offset of custom resolvers
-        return cafeBeanDefinitionService.getCafeClassInfos().stream()
+        return cafeBeansDefinitionRegistry.getCafeClassInfos().stream()
                 .filter(ccd -> ccd.isImplementing(CafeClassResolver.class))
                 .map(this::calculateDepth)
                 .reduce(0, Integer::sum);
     }
 
     private Set<CafeMemberInfo> allMembers() {
-        return cafeBeanDefinitionService.allMembers();
+        return cafeBeansDefinitionRegistry.allMembers();
     }
 
 

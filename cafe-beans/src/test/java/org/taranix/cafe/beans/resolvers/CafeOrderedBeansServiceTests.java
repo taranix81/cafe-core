@@ -1,24 +1,26 @@
 package org.taranix.cafe.beans.resolvers;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.taranix.cafe.beans.metadata.data.*;
+import org.taranix.cafe.beans.annotations.CafeInject;
+import org.taranix.cafe.beans.annotations.CafeProvider;
+import org.taranix.cafe.beans.annotations.CafeService;
+import org.taranix.cafe.beans.metadata.CafeBeansDefinitionRegistry;
 import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
-import org.taranix.cafe.beans.services.CafeBeanDefinitionService;
 import org.taranix.cafe.beans.services.CafeOrderedBeansService;
 
 import java.util.List;
 
 class CafeOrderedBeansServiceTests {
 
-
     @Test
     void shouldProperOrderedForSingleClassWithoutDependencies() {
         //given
-        CafeBeanDefinitionService cafeBeanDefinitionService = CafeBeanDefinitionService.builder()
+        CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry = CafeBeansDefinitionRegistry.builder()
                 .withClass(SubjectClassProvider.class)
                 .build();
-        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeanDefinitionService);
+        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeansDefinitionRegistry);
 
         //when
         List<CafeMemberInfo> ordered = orderDescriptor.orderedMembers();
@@ -32,12 +34,12 @@ class CafeOrderedBeansServiceTests {
     @Test
     void shouldProperOrderedForSingleClassWithDependencyToProviderClass() {
         //given
-        CafeBeanDefinitionService cafeBeanDefinitionService = CafeBeanDefinitionService.builder()
+        CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry = CafeBeansDefinitionRegistry.builder()
                 .withClass(SubjectClassProvider.class)
                 .withClass(SubjectClass.class)
                 .build();
 
-        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeanDefinitionService);
+        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeansDefinitionRegistry);
 
         //when
         List<CafeMemberInfo> ordered = orderDescriptor.orderedMembers();
@@ -53,11 +55,11 @@ class CafeOrderedBeansServiceTests {
     @Test
     void shouldProperOrderedForSingleClassWithDependencyToServiceClass() {
         //given
-        CafeBeanDefinitionService cafeBeanDefinitionService = CafeBeanDefinitionService.builder()
+        CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry = CafeBeansDefinitionRegistry.builder()
                 .withClass(ServiceClassInjectable.class)
                 .withClass(ServiceClass.class)
                 .build();
-        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeanDefinitionService);
+        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeansDefinitionRegistry);
 
         //when
         List<CafeMemberInfo> ordered = orderDescriptor.orderedMembers();
@@ -73,12 +75,12 @@ class CafeOrderedBeansServiceTests {
     @Test
     void shouldProperOrderedForSingleClassWithDependencyToServiceClassWithConstructorParameter() {
         //given
-        CafeBeanDefinitionService cafeBeanDefinitionService = CafeBeanDefinitionService.builder()
+        CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry = CafeBeansDefinitionRegistry.builder()
                 .withClass(ServiceClassWCAInjectable.class)
                 .withClass(ServiceClassWCA.class)
                 .withClass(StringProvider.class)
                 .build();
-        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeanDefinitionService);
+        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeansDefinitionRegistry);
 
         //when
         List<CafeMemberInfo> ordered = orderDescriptor.orderedMembers();
@@ -90,5 +92,50 @@ class CafeOrderedBeansServiceTests {
         Assertions.assertTrue(ordered.get(2).isMethod());
         Assertions.assertTrue(ordered.get(3).isConstructor());
         Assertions.assertTrue(ordered.get(4).isField());
+    }
+
+    static class SubjectClass {
+
+    }
+
+    static class SubjectClassProvider {
+        @CafeProvider
+        private SubjectClass producer() {
+            throw new NotImplementedException();
+        }
+
+    }
+
+    @CafeService
+    static class ServiceClassWCA {
+
+        ServiceClassWCA(String someString) {
+
+        }
+    }
+
+    static class StringProvider {
+
+        @CafeProvider
+        String getString() {
+            throw new NotImplementedException();
+        }
+    }
+
+    static class ServiceClassWCAInjectable {
+
+        @CafeInject
+        ServiceClassWCA service;
+    }
+
+    @CafeService
+    static class ServiceClass {
+    }
+
+    @CafeService
+    static class ServiceClassInjectable {
+
+        @CafeInject
+        ServiceClass serviceClass;
     }
 }

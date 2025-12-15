@@ -7,21 +7,21 @@ import org.taranix.cafe.beans.metadata.members.CafeFieldInfo;
 import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
 import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
-import org.taranix.cafe.beans.resolvers.classInfo.CafeClassResolver;
-import org.taranix.cafe.beans.resolvers.classInfo.DefaultClassResolver;
-import org.taranix.cafe.beans.resolvers.classInfo.constructor.CafeConstructorResolver;
-import org.taranix.cafe.beans.resolvers.classInfo.constructor.DefaultConstructorResolver;
-import org.taranix.cafe.beans.resolvers.classInfo.field.CafeFieldResolver;
-import org.taranix.cafe.beans.resolvers.classInfo.field.DefaultFieldResolver;
-import org.taranix.cafe.beans.resolvers.classInfo.field.PropertyResolver;
-import org.taranix.cafe.beans.resolvers.classInfo.method.CafeMethodResolver;
-import org.taranix.cafe.beans.resolvers.classInfo.method.DefaultMethodResolver;
-import org.taranix.cafe.beans.resolvers.provider.CafeProviderResolver;
-import org.taranix.cafe.beans.resolvers.provider.DefaultProviderResolver;
-import org.taranix.cafe.beans.resolvers.types.ArrayBeansResolver;
-import org.taranix.cafe.beans.resolvers.types.CafeBeanResolver;
-import org.taranix.cafe.beans.resolvers.types.CollectionBeansResolver;
-import org.taranix.cafe.beans.resolvers.types.DefaultBeanResolver;
+import org.taranix.cafe.beans.resolvers.metadata.CafeClassResolver;
+import org.taranix.cafe.beans.resolvers.metadata.CafeProviderResolver;
+import org.taranix.cafe.beans.resolvers.metadata.DefaultClassResolver;
+import org.taranix.cafe.beans.resolvers.metadata.DefaultProviderResolver;
+import org.taranix.cafe.beans.resolvers.metadata.constructor.CafeConstructorResolver;
+import org.taranix.cafe.beans.resolvers.metadata.constructor.DefaultConstructorResolver;
+import org.taranix.cafe.beans.resolvers.metadata.field.CafeFieldResolver;
+import org.taranix.cafe.beans.resolvers.metadata.field.DefaultFieldResolver;
+import org.taranix.cafe.beans.resolvers.metadata.field.PropertyResolver;
+import org.taranix.cafe.beans.resolvers.metadata.method.CafeMethodResolver;
+import org.taranix.cafe.beans.resolvers.metadata.method.DefaultMethodResolver;
+import org.taranix.cafe.beans.resolvers.types.ArrayBeanTypeResolver;
+import org.taranix.cafe.beans.resolvers.types.CafeBeanTypeResolver;
+import org.taranix.cafe.beans.resolvers.types.ClassBeanTypeResolver;
+import org.taranix.cafe.beans.resolvers.types.CollectionBeanTypeResolver;
 
 import java.util.HashSet;
 import java.util.List;
@@ -47,10 +47,10 @@ public class CafeResolvers {
 
     private final Set<CafeMethodResolver> methodResolvers = new HashSet<>(List.of(
             new DefaultMethodResolver()));
-    private final Set<CafeBeanResolver> beanTypekeyResolvers = new HashSet<>(List.of(
-            new DefaultBeanResolver(),
-            new ArrayBeansResolver(),
-            new CollectionBeansResolver()));
+    private final Set<CafeBeanTypeResolver> beanTypekeyResolvers = new HashSet<>(List.of(
+            new ClassBeanTypeResolver(),
+            new ArrayBeanTypeResolver(),
+            new CollectionBeanTypeResolver()));
 
     public CafeMethodResolver findMethodResolver(CafeMethodInfo methodDescriptor) {
         Set<CafeMethodResolver> matched = findMethodResolvers(methodDescriptor);
@@ -135,8 +135,8 @@ public class CafeResolvers {
                 .collect(Collectors.toSet());
     }
 
-    public CafeBeanResolver findBeanTypekeyResolver(BeanTypeKey typeKey) {
-        Set<CafeBeanResolver> matched = beanTypekeyResolvers.stream()
+    public CafeBeanTypeResolver findBeanTypekeyResolver(BeanTypeKey typeKey) {
+        Set<CafeBeanTypeResolver> matched = beanTypekeyResolvers.stream()
                 .filter(cafeBeanTypekeyResolver -> cafeBeanTypekeyResolver.isApplicable(typeKey))
                 .collect(Collectors.toSet());
 
@@ -171,8 +171,8 @@ public class CafeResolvers {
         this.methodResolvers.addAll(Set.of(methodResolvers));
     }
 
-    public void add(CafeBeanResolver... cafeBeanResolvers) {
-        this.beanTypekeyResolvers.addAll(Set.of(cafeBeanResolvers));
+    public void add(CafeBeanTypeResolver... cafeBeanTypeResolvers) {
+        this.beanTypekeyResolvers.addAll(Set.of(cafeBeanTypeResolvers));
     }
 }
 

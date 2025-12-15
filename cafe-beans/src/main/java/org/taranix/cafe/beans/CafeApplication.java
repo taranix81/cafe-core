@@ -7,8 +7,8 @@ import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.repositories.beans.BeanRepositoryEntry;
 import org.taranix.cafe.beans.repositories.beans.BeansRepository;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
-import org.taranix.cafe.beans.resolvers.classInfo.CafeClassResolver;
-import org.taranix.cafe.beans.resolvers.classInfo.method.CafeMethodResolver;
+import org.taranix.cafe.beans.resolvers.metadata.CafeClassResolver;
+import org.taranix.cafe.beans.resolvers.metadata.method.CafeMethodResolver;
 
 import java.util.Arrays;
 import java.util.Collection;

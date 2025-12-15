@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.taranix.cafe.beans.annotations.modifiers.CafePrimary;
 import org.taranix.cafe.beans.converters.CafeConverter;
 import org.taranix.cafe.beans.exceptions.CafeBeansContextException;
+import org.taranix.cafe.beans.metadata.CafeBeansDefinitionRegistry;
 import org.taranix.cafe.beans.metadata.CafeClassInfo;
 import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
 import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
@@ -15,12 +16,15 @@ import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 import org.taranix.cafe.beans.repositories.typekeys.PropertyTypeKey;
 import org.taranix.cafe.beans.repositories.typekeys.TypeKey;
 import org.taranix.cafe.beans.resolvers.CafeResolvers;
-import org.taranix.cafe.beans.services.CafeBeanDefinitionService;
-import org.taranix.cafe.beans.services.CafeBeansResolvableService;
 import org.taranix.cafe.beans.services.CafeOrderedBeansService;
+import org.taranix.cafe.beans.validation.CafeValidationResultFormatter;
+import org.taranix.cafe.beans.validation.CafeValidationService;
+import org.taranix.cafe.beans.validation.ValidationResult;
 
 import java.lang.reflect.Executable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,21 +34,23 @@ public final class CafeBeansFactory {
 
     private final Repository<TypeKey, BeanRepositoryEntry> repository;
 
+    private final CafeValidationService cafeValidationService;
+
     @Getter
-    private final CafeBeanDefinitionService classDescriptors;
+    private final CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry;
+
 
     @Getter
     private final CafeResolvers resolvers;
     private final CafeOrderedBeansService orderedBeansService;
 
-    private final CafeBeansResolvableService resolvableService;
-
-    public CafeBeansFactory(Repository<TypeKey, BeanRepositoryEntry> repository, CafeBeanDefinitionService cafeBeanDefinitionService, CafeResolvers resolvers) {
+    public CafeBeansFactory(Repository<TypeKey, BeanRepositoryEntry> repository, CafeValidationService cafeValidationService, CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry, CafeResolvers resolvers) {
         this.repository = repository;
-        this.classDescriptors = cafeBeanDefinitionService;
+        this.cafeValidationService = cafeValidationService;
+        this.cafeBeansDefinitionRegistry = cafeBeansDefinitionRegistry;
         this.resolvers = resolvers;
-        this.orderedBeansService = CafeOrderedBeansService.from(cafeBeanDefinitionService);
-        this.resolvableService = CafeBeansResolvableService.from(cafeBeanDefinitionService);
+        this.orderedBeansService = CafeOrderedBeansService.from(cafeBeansDefinitionRegistry);
+
     }
 
     public <S, T> CafeConverter<S, T> getConverter(Class<S> source, Class<T> target) {
@@ -63,52 +69,16 @@ public final class CafeBeansFactory {
     }
 
     private void validate() {
-        if (classDescriptors.hasCycleBetweenClassMembers()
-                || classDescriptors.hasCycleBetweenClasses()) {
-            throw new CafeBeansContextException("There is dependency cycle for Beans: %s".formatted("TODO"));
-        }
-
-        Set<CafeMemberInfo> nonResolvableMembers = notResolvableMembers();
-
-        if (!nonResolvableMembers.isEmpty()) {
-            throw new CafeBeansContextException("No resolvable Beans : %s"
-                    .formatted(StringUtils.join(nonResolvableMembers.stream()
-                            .map(CafeMemberInfo::getOwnerClassTypeKey)
-                            .collect(Collectors.toSet())
-                    )));
+        Set<ValidationResult> results = cafeValidationService.validate(cafeBeansDefinitionRegistry);
+        String fullMessage = CafeValidationResultFormatter.format(results);
+        if (StringUtils.isNoneBlank(fullMessage)) {
+            throw new CafeBeansContextException(fullMessage);
         }
     }
 
     private void resolveClass(CafeClassInfo classDescriptor) {
         resolvers.findClassResolver(classDescriptor)
                 .resolve(classDescriptor, this);
-    }
-
-
-    private boolean isResolvableWithinBeansContext(CafeMemberInfo member) {
-        List<BeanTypeKey> dependencies = member.dependencies()
-                .stream().filter(typeKey -> !member.getCafeClassInfo().typeKey().equals(typeKey)).toList();
-
-        List<BeanTypeKey> nonMatched = dependencies.stream()
-                .filter(typeKey -> !repository.contains(typeKey)).toList();
-        if (!nonMatched.isEmpty()) {
-            log.debug("Non resolvable dependencies {} for {}", nonMatched, member);
-            return false;
-        }
-
-        return true;
-    }
-
-    private Set<CafeMemberInfo> notResolvableMembers() {
-        Set<CafeMemberInfo> result = new HashSet<>();
-
-        for (CafeMemberInfo member : classDescriptors.allMembers()) {
-            BeanTypeKey nonResolvableType = resolvableService.notResolvableType(member);
-            if (nonResolvableType != null && (!repository.contains(nonResolvableType))) {
-                result.add(member);
-            }
-        }
-        return result;
     }
 
     public void addToRepository(Object instance) {
@@ -126,10 +96,7 @@ public final class CafeBeansFactory {
                         .anyMatch(beanRepositoryEntry -> executable.equals(beanRepositoryEntry.getSource())));
     }
 
-    /**
-     * @param member
-     * @param resolved
-     */
+
     public void persistSingleton(final CafeMemberInfo member, Object resolved) {
         if (member.isSingleton()) {
             persistAny(member, resolved, (Executable) member.getMember());

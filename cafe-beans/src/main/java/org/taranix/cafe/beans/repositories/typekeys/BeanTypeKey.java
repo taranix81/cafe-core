@@ -44,6 +44,9 @@ public class BeanTypeKey extends TypeKey {
             }
 
             if (requiredTypeKey.isCollection()) {
+                if (requiredTypeKey.getType() instanceof Class<?>) {
+                    throw new BeanTypeKeyException("Collection without Parameter is not support : %s".formatted(requiredTypeKey.getType()));
+                }
                 Type[] argumentTypes = ((ParameterizedType) requiredTypeKey.getType()).getActualTypeArguments();
                 if (argumentTypes.length == 1) {
                     return isMatchByTypeOrGenericType(BeanTypeKey.from(argumentTypes[0], requiredTypeKey.getTypeIdentifier()), providedTypeKeys);

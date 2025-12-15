@@ -1,0 +1,27 @@
+package org.taranix.cafe.beans.validation;
+
+import org.taranix.cafe.beans.metadata.CafeBeansDefinitionRegistry;
+
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+public class CafeValidationService {
+
+    private final Set<CafeValidator> validatorSet;
+
+    public CafeValidationService(Set<CafeValidator> validatorSet) {
+        this.validatorSet = validatorSet;
+    }
+
+    public Set<ValidationResult> validate(CafeBeansDefinitionRegistry registry) {
+        return validatorSet.stream()
+                .map(cafeValidator -> cafeValidator.validate(registry))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toSet());
+    }
+
+
+}
+

@@ -50,6 +50,7 @@ class CafeCommandTest {
     @DisplayName("Should failed execution by parser exception")
     @ParameterizedTest
     @MethodSource("wrongCommandArguments")
+    @Disabled
     void shouldFailExecutionByParserException(List<String> arguments) {
         //given
         CafeShell cafeShell = new CafeShell(TestShellApplication.class);

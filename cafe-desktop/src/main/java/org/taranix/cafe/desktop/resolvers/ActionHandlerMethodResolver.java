@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
-import org.taranix.cafe.beans.resolvers.classInfo.method.CafeMethodResolver;
+import org.taranix.cafe.beans.resolvers.metadata.method.CafeMethodResolver;
 import org.taranix.cafe.desktop.actions.ActionHandlers;
 import org.taranix.cafe.desktop.annotations.CafeActionHandler;
 

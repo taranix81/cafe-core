@@ -4,7 +4,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
-import org.taranix.cafe.beans.resolvers.classInfo.method.DefaultMethodResolver;
+import org.taranix.cafe.beans.resolvers.metadata.method.DefaultMethodResolver;
 import org.taranix.cafe.shell.annotations.CafeCommandRun;
 
 import java.lang.annotation.Annotation;
