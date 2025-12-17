@@ -6,10 +6,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.taranix.cafe.beans.annotations.modifiers.CafePrimary;
 import org.taranix.cafe.beans.converters.CafeConverter;
 import org.taranix.cafe.beans.exceptions.CafeBeansContextException;
-import org.taranix.cafe.beans.metadata.CafeBeansDefinitionRegistry;
-import org.taranix.cafe.beans.metadata.CafeClassInfo;
-import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
-import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
+import org.taranix.cafe.beans.metadata.CafeBeansRegistry;
+import org.taranix.cafe.beans.metadata.CafeClassMetadata;
+import org.taranix.cafe.beans.metadata.CafeMemberMetadata;
+import org.taranix.cafe.beans.metadata.CafeMethodMetadata;
 import org.taranix.cafe.beans.repositories.Repository;
 import org.taranix.cafe.beans.repositories.beans.BeanRepositoryEntry;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
@@ -37,19 +37,19 @@ public final class CafeBeansFactory {
     private final CafeValidationService cafeValidationService;
 
     @Getter
-    private final CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry;
+    private final CafeBeansRegistry cafeBeansRegistry;
 
 
     @Getter
     private final CafeResolvers resolvers;
     private final CafeOrderedBeansService orderedBeansService;
 
-    public CafeBeansFactory(Repository<TypeKey, BeanRepositoryEntry> repository, CafeValidationService cafeValidationService, CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry, CafeResolvers resolvers) {
+    public CafeBeansFactory(Repository<TypeKey, BeanRepositoryEntry> repository, CafeValidationService cafeValidationService, CafeBeansRegistry cafeBeansRegistry, CafeResolvers resolvers) {
         this.repository = repository;
         this.cafeValidationService = cafeValidationService;
-        this.cafeBeansDefinitionRegistry = cafeBeansDefinitionRegistry;
+        this.cafeBeansRegistry = cafeBeansRegistry;
         this.resolvers = resolvers;
-        this.orderedBeansService = CafeOrderedBeansService.from(cafeBeansDefinitionRegistry);
+        this.orderedBeansService = CafeOrderedBeansService.from(cafeBeansRegistry);
 
     }
 
@@ -69,14 +69,14 @@ public final class CafeBeansFactory {
     }
 
     private void validate() {
-        Set<ValidationResult> results = cafeValidationService.validate(cafeBeansDefinitionRegistry);
+        Set<ValidationResult> results = cafeValidationService.validate(cafeBeansRegistry);
         String fullMessage = CafeValidationResultFormatter.format(results);
         if (StringUtils.isNoneBlank(fullMessage)) {
             throw new CafeBeansContextException(fullMessage);
         }
     }
 
-    private void resolveClass(CafeClassInfo classDescriptor) {
+    private void resolveClass(CafeClassMetadata classDescriptor) {
         resolvers.findClassResolver(classDescriptor)
                 .resolve(classDescriptor, this);
     }
@@ -97,18 +97,18 @@ public final class CafeBeansFactory {
     }
 
 
-    public void persistSingleton(final CafeMemberInfo member, Object resolved) {
+    public void persistSingleton(final CafeMemberMetadata member, Object resolved) {
         if (member.isSingleton()) {
             persistAny(member, resolved, (Executable) member.getMember());
         }
     }
 
-    public void persistAny(CafeMemberInfo member, Object resolved, Executable source) {
+    public void persistAny(CafeMemberMetadata member, Object resolved, Executable source) {
         if (Objects.isNull(resolved)) {
             return;
         }
 
-        member.provides().forEach(typeKey ->
+        member.getProvidedTypes().forEach(typeKey ->
                 repository.set(typeKey, BeanRepositoryEntry.builder()
                         .source(source)
                         .value(resolved)
@@ -125,7 +125,7 @@ public final class CafeBeansFactory {
         return repository.contains(typeKey);
     }
 
-    public boolean isMethodResolved(CafeMethodInfo methodInfo) {
+    public boolean isMethodResolved(CafeMethodMetadata methodInfo) {
         return repository.getMany(methodInfo.getMethodReturnTypeKey())
                 .stream()
                 .anyMatch(beanRepositoryEntry -> beanRepositoryEntry.getSource().equals(methodInfo.getMethod()));
@@ -155,7 +155,7 @@ public final class CafeBeansFactory {
         return repository.getOne(typeKey).getValue();
     }
 
-    public Object getResolved(CafeMethodInfo methodInfo) {
+    public Object getResolved(CafeMethodMetadata methodInfo) {
         return repository.getMany(methodInfo.getMethodReturnTypeKey()).stream()
                 .filter(beanRepositoryEntry -> beanRepositoryEntry.getSource().equals(methodInfo.getMethod()))
                 .map(BeanRepositoryEntry::getValue)

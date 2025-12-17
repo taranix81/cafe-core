@@ -3,6 +3,7 @@ package org.taranix.cafe.beans.reflection;
 import com.google.common.reflect.ClassPath;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.taranix.cafe.beans.exceptions.ReflectionUtilsException;
 
@@ -15,6 +16,7 @@ import java.util.stream.Stream;
  * Utility class providing common reflection operations for the Cafe IoC container.
  * This includes type checking, member access, class hierarchy scanning, and generic type resolution.
  */
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CafeReflectionUtils {
 
@@ -142,50 +144,6 @@ public class CafeReflectionUtils {
 
     // --- Hierarchy Scanning ---
 
-    /**
-     * Recursively retrieves all interfaces (both raw and generic) implemented by a class and its superclasses.
-     *
-     * @param clazz The starting class.
-     * @return A Set of all implemented Type interfaces.
-     */
-    public static Set<Type> getAllInterfaces(Class<?> clazz) {
-        Set<Type> result = new HashSet<>();
-        for (Type typeInterface : clazz.getGenericInterfaces()) {
-            result.add(typeInterface);
-            if (typeInterface instanceof Class<?> classInterface) {
-                // Recursively check interfaces of the interface itself (if any)
-                result.addAll(getAllInterfaces(classInterface));
-            }
-        }
-        // Recursively check interfaces of the superclass
-        if (clazz.getSuperclass() != null) {
-            result.addAll(getAllInterfaces(clazz.getSuperclass()));
-        }
-        return result;
-    }
-
-    /**
-     * Recursively retrieves all superclasses (both raw and generic types) of a class,
-     * excluding Object.class.
-     *
-     * @param clazz The starting class.
-     * @return A Set of all superclass Types.
-     */
-    public static Set<Type> getAllSuperClasses(Class<?> clazz) {
-        Set<Type> result = new HashSet<>();
-        Class<?> superClass = clazz.getSuperclass();
-
-        if (superClass != null && !superClass.equals(Object.class)) {
-            // Add both the generic type and the raw class for the immediate superclass
-            result.add(clazz.getGenericSuperclass());
-            result.add(superClass);
-
-            // Recursively add superclasses of the superclass
-            result.addAll(getAllSuperClasses(superClass));
-        }
-        return result;
-    }
-
     // --- Generic Type Resolution ---
 
     /**
@@ -275,11 +233,11 @@ public class CafeReflectionUtils {
      * Determines the concrete parameter Types of a method by resolving their generic arguments
      * against the class's type arguments.
      */
-    public static List<Type> determineMethodParameterTypes(Method method, Class<?> clazz) {
+    public static Type[] determineMethodParameterTypes(Method method, Class<?> clazz) {
         Map<TypeVariable<?>, Type> typeArgs = determineTypeArguments(clazz);
         return Arrays.stream(method.getGenericParameterTypes())
                 .map(type -> replaceTypeArguments(type, typeArgs))
-                .toList();
+                .toArray(Type[]::new);
     }
 
 
@@ -326,5 +284,81 @@ public class CafeReflectionUtils {
             throw new ReflectionUtilsException("Failed to scan package '%s' for classes: %s"
                     .formatted(lookupPackage, e.getMessage()));
         }
+    }
+
+
+    /**
+     * Returns a set of all supertypes (classes and interfaces) for a given class,
+     * considering their full generic signatures.
+     *
+     * @param theClass The starting class to be analyzed.
+     * @return A unique set of supertypes (interfaces and classes) as Type objects.
+     */
+    public static Set<Type> getAllSuperTypes(Class<?> theClass) {
+        if (theClass == null) {
+            return Collections.emptySet();
+        }
+
+        // We use LinkedHashSet to maintain uniqueness and order.
+        Set<Type> result = new LinkedHashSet<>();
+        // Queue for processing types (BFS - Breadth First Search).
+        Queue<Type> queue = new ArrayDeque<>();
+
+        // The starting class must be added as a Type (which makes it a Type, not a Class)
+        queue.add(theClass);
+
+        while (!queue.isEmpty()) {
+            Type currentType = queue.poll();
+
+            // 1. Check for uniqueness at the full type level (e.g., List<String> != List<Integer>)
+            if (currentType != null && !currentType.equals(Object.class) && result.add(currentType)) {
+
+                // 2. Get the raw class (Class<?>) from the current Type.
+                // This method must be able to extract Class<?> from both Class<?> and ParameterizedType.
+                Class<?> rawClass = getRawClass(currentType);
+
+                if (rawClass != null && !rawClass.equals(Object.class)) {
+
+                    // 3. Add generic superclass (extends)
+                    Type superclass = rawClass.getGenericSuperclass();
+                    if (superclass != null) {
+                        queue.add(superclass);
+                    }
+
+                    // 4. Add generic interfaces (implements)
+                    Type[] interfaces = rawClass.getGenericInterfaces();
+                    if (interfaces.length > 0) {
+                        queue.addAll(Arrays.asList(interfaces));
+                    }
+                }
+            }
+        }
+
+        // Removing the starting class and Object.class (which gets added as a Type after scanning superclasses)
+        result.remove(theClass);
+        // Remove Object.class if it appears as a raw type
+        result.remove(Object.class);
+
+        return Collections.unmodifiableSet(result);
+    }
+
+    /**
+     * Utility method to get the raw class from a Type object.
+     * You should place this implementation in CafeReflectionUtils.
+     */
+    private static Class<?> getRawClass(Type type) {
+        if (type instanceof Class<?>) {
+            return (Class<?>) type;
+        }
+        // If it is a generic type with parameters (e.g., List<String>)
+        if (type instanceof ParameterizedType parameterizedType) {
+            Type rawType = parameterizedType.getRawType();
+            if (rawType instanceof Class<?>) {
+                return (Class<?>) rawType;
+            }
+        }
+        // Other types like GenericArrayType, WildcardType, TypeVariable should be handled,
+        // but they are marginal in this context.
+        return null;
     }
 }

@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.annotations.CafeInject;
 import org.taranix.cafe.beans.annotations.modifiers.CafeOptional;
-import org.taranix.cafe.beans.metadata.members.CafeFieldInfo;
+import org.taranix.cafe.beans.metadata.CafeFieldMetadata;
 import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 
@@ -13,7 +13,7 @@ import java.lang.annotation.Annotation;
 @Slf4j
 public class DefaultFieldResolver implements CafeFieldResolver {
     @Override
-    public void resolve(final Object instance, final CafeFieldInfo cafeFieldDescriptor, final CafeBeansFactory cafeBeansFactory) {
+    public void resolve(final Object instance, final CafeFieldMetadata cafeFieldDescriptor, final CafeBeansFactory cafeBeansFactory) {
         log.debug("Resolving field : {} ", cafeFieldDescriptor.getField());
         BeanTypeKey fieldTypeKey = cafeFieldDescriptor.getFieldTypeKey();
         Object value = cafeFieldDescriptor.getAnnotationModifiers().contains(CafeOptional.class) ? cafeBeansFactory.getBeanOrNull(fieldTypeKey) :
@@ -24,7 +24,7 @@ public class DefaultFieldResolver implements CafeFieldResolver {
     }
 
     @Override
-    public boolean isApplicable(final CafeFieldInfo cafeFieldDescriptor) {
+    public boolean isApplicable(final CafeFieldMetadata cafeFieldDescriptor) {
         return true;
     }
 

@@ -3,7 +3,7 @@ package org.taranix.cafe.desktop.resolvers;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.swt.events.SelectionEvent;
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
+import org.taranix.cafe.beans.metadata.CafeMethodMetadata;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 import org.taranix.cafe.beans.resolvers.metadata.method.CafeMethodResolver;
 import org.taranix.cafe.desktop.actions.HandlerSignature;
@@ -19,7 +19,7 @@ public class CafeMenuItemSelectionMethodResolver implements CafeMethodResolver {
 
 
     @Override
-    public Object resolve(final Object instance, final CafeMethodInfo methodInfo, final CafeBeansFactory cafeBeansFactory) {
+    public Object resolve(final Object instance, final CafeMethodMetadata methodInfo, final CafeBeansFactory cafeBeansFactory) {
         HandlersService handlersService = (HandlersService) cafeBeansFactory.getBean(BeanTypeKey.from(HandlersService.class));
 
         List<CafeMenuItemSelectionHandler> annotations = methodInfo.getAnnotations().stream()
@@ -39,7 +39,7 @@ public class CafeMenuItemSelectionMethodResolver implements CafeMethodResolver {
     }
 
     @Override
-    public boolean isApplicable(CafeMethodInfo methodInfo) {
+    public boolean isApplicable(CafeMethodMetadata methodInfo) {
         if (methodInfo.getMethod().getParameterCount() > 1) {
             log.warn("Method {} will be not triggered : more than 1 parameter", methodInfo.getMethod());
         }

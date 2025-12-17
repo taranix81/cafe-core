@@ -2,28 +2,30 @@ package org.taranix.cafe.beans.resolvers.metadata;
 
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
-import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
+import org.taranix.cafe.beans.metadata.CafeClassMetadata;
+import org.taranix.cafe.beans.metadata.CafeMemberMetadata;
+import org.taranix.cafe.beans.metadata.CafeMethodMetadata;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 
 @Slf4j
 public class DefaultProviderResolver implements CafeProviderResolver {
     @Override
-    public Object resolve(CafeMemberInfo providerInfo, CafeBeansFactory cafeBeansFactory) {
+    public Object resolve(CafeMemberMetadata providerInfo, CafeBeansFactory cafeBeansFactory) {
         log.debug("Resolving {}", providerInfo);
 
         if (providerInfo.isConstructor()) {
             //For constructor as provider we need to trigger class resolver
             // NOTE: singleton class will be persisted, prototype not.
+            CafeClassMetadata cafeClassMetadata = providerInfo.getParent();
             return cafeBeansFactory.getResolvers()
-                    .findClassResolver(providerInfo.getCafeClassInfo())
-                    .resolve(providerInfo.getCafeClassInfo(), cafeBeansFactory);
+                    .findClassResolver(cafeClassMetadata)
+                    .resolve(cafeClassMetadata, cafeBeansFactory);
         }
 
         if (providerInfo.isMethod()) {
             // Find existing owner of the method or instantiate it
-            BeanTypeKey classBeanType = providerInfo.getOwnerClassTypeKey();
-            CafeMethodInfo methodInfo = (CafeMethodInfo) providerInfo;
+            BeanTypeKey classBeanType = providerInfo.getParentTypeKey();
+            CafeMethodMetadata methodInfo = (CafeMethodMetadata) providerInfo;
 
             Object instance = cafeBeansFactory.getBean(classBeanType);
 
@@ -48,7 +50,7 @@ public class DefaultProviderResolver implements CafeProviderResolver {
     }
 
     @Override
-    public boolean isApplicable(CafeMemberInfo memberInfo) {
+    public boolean isApplicable(CafeMemberMetadata memberInfo) {
         return !memberInfo.isField();
     }
 }

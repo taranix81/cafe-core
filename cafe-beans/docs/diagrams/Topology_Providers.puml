@@ -1,0 +1,53 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface ProviderInterface{
+    +String provide()
+}
+interface GenericProviderInterface<T>{
+    + T provide()
+}
+
+class DirectProviderClass <<CafeService>>{
+  + String provide() <<CafeProvider>>
+}
+
+abstract class AbstractClass {
+  + String provide() <<CafeProvider>>
+}
+
+class CustomClass {
+}
+
+class ProviderClass <<CafeService>> {
+
+}
+
+class ExtensionClass  {
+   CustomClass get() <<CafeProvider>>
+}
+
+class ProviderExtensionClass <<CafeService>> {
+
+}
+
+
+class DirectStringProviderClass<String> <<CafeService>>{
+  + String provide() <<CafeProvider>>
+}
+
+class DirectIProviderIntegerClass<Integer> <<CafeService>>{
+  + Integer provide() <<CafeProvider>>
+  + String nonProvide()
+}
+
+
+ProviderInterface <|-- DirectProviderClass
+ProviderInterface <|-- AbstractClass
+AbstractClass <|-- ProviderClass
+AbstractClass <|-- ExtensionClass
+ExtensionClass <|-- ProviderExtensionClass
+GenericProviderInterface <|-- DirectStringProviderClass
+GenericProviderInterface <|-- DirectIProviderIntegerClass
+
+@enduml

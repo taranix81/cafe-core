@@ -3,7 +3,7 @@ package org.taranix.cafe.shell.commands;
 import lombok.Builder;
 import lombok.Getter;
 import org.apache.commons.cli.Option;
-import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
+import org.taranix.cafe.beans.metadata.CafeMethodMetadata;
 
 import java.util.Optional;
 
@@ -12,7 +12,7 @@ import java.util.Optional;
 public class CafeCommandOptionBinding {
 
     private Object commandInstance;
-    private CafeMethodInfo executor;
+    private CafeMethodMetadata executor;
     private Option optionBinding;
 
     public CafeCommandRuntime asCommandRuntime(String[] args) {

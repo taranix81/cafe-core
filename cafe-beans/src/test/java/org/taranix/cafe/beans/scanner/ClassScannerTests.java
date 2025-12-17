@@ -3,7 +3,7 @@ package org.taranix.cafe.beans.scanner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.taranix.cafe.beans.CafeApplicationContext;
-import org.taranix.cafe.beans.metadata.CafeBeansDefinitionRegistry;
+import org.taranix.cafe.beans.metadata.CafeBeansRegistry;
 import org.taranix.cafe.beans.reflection.ClassScanner;
 
 public class ClassScannerTests {
@@ -13,14 +13,14 @@ public class ClassScannerTests {
         //given
         ClassScanner classScanner = ClassScanner.getInstance();
         //when
-        CafeBeansDefinitionRegistry descriptors = CafeBeansDefinitionRegistry.builder()
+        CafeBeansRegistry descriptors = CafeBeansRegistry.builder()
                 .withClasses(classScanner.scan("org.taranix.cafe.beans.scanner"))
                 .build();
 
         //then
         Assertions.assertNotNull(descriptors);
-        Assertions.assertNotNull(descriptors.findClassInfo(FactoryClass.class));
-        Assertions.assertNotNull(descriptors.findClassInfo(ServiceClass.class));
+        Assertions.assertNotNull(descriptors.findClassMetadata(FactoryClass.class));
+        Assertions.assertNotNull(descriptors.findClassMetadata(ServiceClass.class));
     }
 
     @Test

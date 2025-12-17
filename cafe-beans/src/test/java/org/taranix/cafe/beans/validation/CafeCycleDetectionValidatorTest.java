@@ -6,9 +6,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.taranix.cafe.beans.annotations.CafeFactory;
 import org.taranix.cafe.beans.annotations.CafeProvider;
-import org.taranix.cafe.beans.metadata.CafeBeansDefinitionRegistry;
-import org.taranix.cafe.beans.metadata.CafeClassInfo;
-import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
+import org.taranix.cafe.beans.metadata.CafeBeansRegistry;
+import org.taranix.cafe.beans.metadata.CafeClassMetadata;
+import org.taranix.cafe.beans.metadata.CafeMemberMetadata;
 
 import java.util.Date;
 import java.util.Optional;
@@ -22,19 +22,19 @@ class CafeCycleDetectionValidatorTest {
     @DisplayName("Should find a dependency cycle within a single class using provider methods.")
     void shouldFindCycleInsideOneClass() {
         // given
-        CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry = CafeBeansDefinitionRegistry.builder()
+        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
                 .withClass(ProvidersWithInternalCycle.class)
                 .build();
         CafeCycleDetectionValidator validator = new CafeCycleDetectionValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeBeansDefinitionRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeBeansRegistry);
 
         // then
         Assertions.assertTrue(result.isPresent(), "Expected a validation result due to cycle.");
         // Check if all provider methods (2 methods) are part of the cycle objects
-        Set<CafeMemberInfo> expectedMembers = cafeBeansDefinitionRegistry.allMembers().stream()
-                .filter(CafeMemberInfo::isMethod)
+        Set<CafeMemberMetadata> expectedMembers = cafeBeansRegistry.allMembers().stream()
+                .filter(CafeMemberMetadata::isMethod)
                 .collect(Collectors.toSet());
         Assertions.assertTrue(result.get().objects().containsAll(expectedMembers), "All methods should be part of the detected cycle.");
     }
@@ -43,7 +43,7 @@ class CafeCycleDetectionValidatorTest {
     @DisplayName("Should find a dependency cycle spread across multiple classes.")
     void shouldFindCycleAmongManyClasses() {
         // given
-        CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry = CafeBeansDefinitionRegistry.builder()
+        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
                 .withClass(StringProviderWithDateParameterService.class)
                 .withClass(IntegerProviderWithStringParameter.class)
                 .withClass(DateProviderWithIntegerParameterService.class)
@@ -51,12 +51,12 @@ class CafeCycleDetectionValidatorTest {
         CafeCycleDetectionValidator validator = new CafeCycleDetectionValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeBeansDefinitionRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeBeansRegistry);
         Set<Object> objectsWithCycle = result.map(ValidationResult::objects).orElse(Set.of());
 
         // Filter members and classes from the result set
-        Set<CafeClassInfo> classesInCycle = objectsWithCycle.stream().filter(CafeClassInfo.class::isInstance).map(CafeClassInfo.class::cast).collect(Collectors.toSet());
-        Set<CafeMemberInfo> membersInCycle = objectsWithCycle.stream().filter(CafeMemberInfo.class::isInstance).map(CafeMemberInfo.class::cast).collect(Collectors.toSet());
+        Set<CafeClassMetadata> classesInCycle = objectsWithCycle.stream().filter(CafeClassMetadata.class::isInstance).map(CafeClassMetadata.class::cast).collect(Collectors.toSet());
+        Set<CafeMemberMetadata> membersInCycle = objectsWithCycle.stream().filter(CafeMemberMetadata.class::isInstance).map(CafeMemberMetadata.class::cast).collect(Collectors.toSet());
 
         // then
         Assertions.assertTrue(result.isPresent(), "Expected a validation result due to cycle.");
@@ -70,14 +70,14 @@ class CafeCycleDetectionValidatorTest {
     @DisplayName("Should NOT find a cycle when dependencies are acyclic (positive scenario).")
     void shouldNotFindCycleWhenNoCycleExists() {
         // given
-        CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry = CafeBeansDefinitionRegistry.builder()
+        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
                 .withClass(ValidProvider.class)
                 // Assuming IntegerProviderWithStringParameter does not close a cycle here
                 .build();
         CafeCycleDetectionValidator validator = new CafeCycleDetectionValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeBeansDefinitionRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeBeansRegistry);
 
         // then
         Assertions.assertFalse(result.isPresent(), "Expected no validation result (no cycle found).");
@@ -87,31 +87,31 @@ class CafeCycleDetectionValidatorTest {
     @DisplayName("Should find a cycle involving component constructors.")
     void shouldFindCycleInvolvingConstructors() {
         // given
-        CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry = CafeBeansDefinitionRegistry.builder()
+        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
                 .withClass(ConstructorCycleA.class)
                 .withClass(ConstructorCycleB.class)
                 .build();
         CafeCycleDetectionValidator validator = new CafeCycleDetectionValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeBeansDefinitionRegistry);
-        Set<CafeMemberInfo> membersInCycle = result.map(ValidationResult::objects).orElse(Set.of()).stream()
-                .filter(CafeMemberInfo.class::isInstance)
-                .map(CafeMemberInfo.class::cast)
+        Optional<ValidationResult> result = validator.validate(cafeBeansRegistry);
+        Set<CafeMemberMetadata> membersInCycle = result.map(ValidationResult::objects).orElse(Set.of()).stream()
+                .filter(CafeMemberMetadata.class::isInstance)
+                .map(CafeMemberMetadata.class::cast)
                 .collect(Collectors.toSet());
 
         // then
         Assertions.assertTrue(result.isPresent(), "Expected a validation result due to constructor cycle.");
         // Expecting two constructors involved in the cycle
         Assertions.assertEquals(2, membersInCycle.size(), "Expected two constructors to be found in the cycle.");
-        Assertions.assertTrue(membersInCycle.stream().allMatch(CafeMemberInfo::isConstructor), "All members in the cycle should be constructors.");
+        Assertions.assertTrue(membersInCycle.stream().allMatch(CafeMemberMetadata::isConstructor), "All members in the cycle should be constructors.");
     }
 
     @Test
     @DisplayName("Should NOT find a cycle when dependencies are linear (A -> B -> C).")
     void shouldNotFindCycleWhenOnlyLinearDependenciesExist() {
         // given
-        CafeBeansDefinitionRegistry cafeBeansDefinitionRegistry = CafeBeansDefinitionRegistry.builder()
+        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
                 .withClass(DependencyC.class)
                 .withClass(DependencyB.class)
                 .withClass(DependencyA.class)
@@ -119,7 +119,7 @@ class CafeCycleDetectionValidatorTest {
         CafeCycleDetectionValidator validator = new CafeCycleDetectionValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeBeansDefinitionRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeBeansRegistry);
 
         // then
         Assertions.assertFalse(result.isPresent(), "Expected no validation result for linear dependencies.");

@@ -4,8 +4,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.taranix.cafe.beans.exceptions.CafeApplicationContextException;
-import org.taranix.cafe.beans.metadata.CafeBeansDefinitionRegistry;
-import org.taranix.cafe.beans.metadata.CafeClassInfo;
+import org.taranix.cafe.beans.metadata.CafeBeansRegistry;
+import org.taranix.cafe.beans.metadata.CafeClassMetadata;
+import org.taranix.cafe.beans.metadata.CafeClassMetadataFactory;
 import org.taranix.cafe.beans.reflection.ClassScanner;
 import org.taranix.cafe.beans.repositories.ListMultiRepository;
 import org.taranix.cafe.beans.repositories.MultiRepository;
@@ -38,7 +39,7 @@ public class CafeApplicationContext {
     @Getter
     private final MultiRepository<TypeKey, BeanRepositoryEntry> repository;
 
-    private final CafeBeansDefinitionRegistry classDescriptors;
+    private final CafeBeansRegistry classDescriptors;
 
     @Getter
     private final CafeBeansFactory beansFactory;
@@ -47,7 +48,7 @@ public class CafeApplicationContext {
     private final CafeResolvers cafeResolvers;
 
     private CafeApplicationContext(
-            CafeBeansDefinitionRegistry classDescriptors,
+            CafeBeansRegistry classDescriptors,
             CafeValidationService cafeValidationService,
             CafeResolvers cafeResolvers,
             MultiRepository<TypeKey, BeanRepositoryEntry> repository,
@@ -113,8 +114,8 @@ public class CafeApplicationContext {
         throw new CafeApplicationContextException("Now instance of %s found".formatted(clz));
     }
 
-    public CafeClassInfo getClassDescriptor(Class<?> clz) {
-        return classDescriptors.findClassInfo(clz);
+    public CafeClassMetadata getClassDescriptor(Class<?> clz) {
+        return classDescriptors.findClassMetadata(clz);
     }
 
     public Object getProperty(String propertyName) {
@@ -123,10 +124,10 @@ public class CafeApplicationContext {
 
     public void refresh(Object object) {
         Class<?> clx = object.getClass();
-        CafeClassInfo cci = CafeClassInfo.from(clx);
+        CafeClassMetadata cci = CafeClassMetadataFactory.create(clx);
 
         if (cci.isSingleton()) {
-            cci.fields().forEach(
+            cci.getFields().forEach(
                     cafeFieldInfo -> cafeResolvers.findFieldResolver(cafeFieldInfo).resolve(object, cafeFieldInfo, beansFactory)
             );
         }
@@ -199,7 +200,7 @@ public class CafeApplicationContext {
             Set<Class<?>> allClasses = Stream.concat(classesToBeResolved.stream()
                             , ClassScanner.getInstance().scan(packages).stream())
                     .collect(Collectors.toSet());
-            CafeBeansDefinitionRegistry descriptors = CafeBeansDefinitionRegistry.builder()
+            CafeBeansRegistry descriptors = CafeBeansRegistry.builder()
                     .withClasses(allClasses)
                     .build();
 

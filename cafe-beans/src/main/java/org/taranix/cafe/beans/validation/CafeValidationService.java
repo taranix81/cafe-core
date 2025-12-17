@@ -1,6 +1,6 @@
 package org.taranix.cafe.beans.validation;
 
-import org.taranix.cafe.beans.metadata.CafeBeansDefinitionRegistry;
+import org.taranix.cafe.beans.metadata.CafeBeansRegistry;
 
 import java.util.Optional;
 import java.util.Set;
@@ -14,7 +14,7 @@ public class CafeValidationService {
         this.validatorSet = validatorSet;
     }
 
-    public Set<ValidationResult> validate(CafeBeansDefinitionRegistry registry) {
+    public Set<ValidationResult> validate(CafeBeansRegistry registry) {
         return validatorSet.stream()
                 .map(cafeValidator -> cafeValidator.validate(registry))
                 .filter(Optional::isPresent)

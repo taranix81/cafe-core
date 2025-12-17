@@ -2,7 +2,7 @@ package org.taranix.cafe.shell.commands;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
+import org.taranix.cafe.beans.metadata.CafeMethodMetadata;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 
 @Getter
@@ -10,10 +10,12 @@ import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 public class CafeCommandRuntime {
 
     private Object commandInstance;
-    private CafeMethodInfo executor;
+    private CafeMethodMetadata executor;
     private String[] arguments;
 
     public BeanTypeKey commandTypeKey() {
-        return executor.getCafeClassInfo().typeKey();
+        return executor.getParentTypeKey();
+        //getDeclaringClassTypeKey();
+        // getCafeClassMetadata().getTypeKey();
     }
 }

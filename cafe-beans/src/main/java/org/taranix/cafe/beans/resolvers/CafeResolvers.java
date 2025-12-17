@@ -1,11 +1,7 @@
 package org.taranix.cafe.beans.resolvers;
 
 import org.taranix.cafe.beans.exceptions.CafeBeansFactoryException;
-import org.taranix.cafe.beans.metadata.CafeClassInfo;
-import org.taranix.cafe.beans.metadata.members.CafeConstructorInfo;
-import org.taranix.cafe.beans.metadata.members.CafeFieldInfo;
-import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
-import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
+import org.taranix.cafe.beans.metadata.*;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 import org.taranix.cafe.beans.resolvers.metadata.CafeClassResolver;
 import org.taranix.cafe.beans.resolvers.metadata.CafeProviderResolver;
@@ -52,7 +48,7 @@ public class CafeResolvers {
             new ArrayBeanTypeResolver(),
             new CollectionBeanTypeResolver()));
 
-    public CafeMethodResolver findMethodResolver(CafeMethodInfo methodDescriptor) {
+    public CafeMethodResolver findMethodResolver(CafeMethodMetadata methodDescriptor) {
         Set<CafeMethodResolver> matched = findMethodResolvers(methodDescriptor);
         if (matched.size() > 1) {
             throw new CafeBeansFactoryException(TOO_MANY_RESOLVERS.formatted(methodDescriptor.getMember()));
@@ -63,7 +59,7 @@ public class CafeResolvers {
                 .orElseThrow(() -> new CafeBeansFactoryException(NO_RESOLVER_FOUND.formatted(methodDescriptor.getMember())));
     }
 
-    private Set<CafeMethodResolver> findMethodResolvers(CafeMethodInfo methodDescriptor) {
+    private Set<CafeMethodResolver> findMethodResolvers(CafeMethodMetadata methodDescriptor) {
         return methodResolvers.stream()
                 .map(CafeMethodResolver.class::cast)
                 .filter(resolver -> resolver.isApplicable(methodDescriptor))
@@ -73,7 +69,7 @@ public class CafeResolvers {
                 .collect(Collectors.toSet());
     }
 
-    public CafeClassResolver findClassResolver(CafeClassInfo descriptor) {
+    public CafeClassResolver findClassResolver(CafeClassMetadata descriptor) {
         Set<CafeClassResolver> matched = findClassResolvers(descriptor);
         if (matched.size() > 1) {
             throw new CafeBeansFactoryException(TOO_MANY_RESOLVERS.formatted(descriptor));
@@ -85,16 +81,16 @@ public class CafeResolvers {
     }
 
 
-    private Set<CafeClassResolver> findClassResolvers(CafeClassInfo classDescriptor) {
+    private Set<CafeClassResolver> findClassResolvers(CafeClassMetadata classDescriptor) {
         return classResolvers.stream()
                 .filter(resolver -> resolver.isApplicable(classDescriptor))
-                .filter(resolver -> classDescriptor.getClassAnnotations()
+                .filter(resolver -> classDescriptor.getRootClassAnnotations()
                         .stream()
                         .anyMatch(annotation -> resolver.supports(annotation.annotationType())))
                 .collect(Collectors.toSet());
     }
 
-    public CafeConstructorResolver findConstructorResolver(CafeConstructorInfo constructorDescriptor) {
+    public CafeConstructorResolver findConstructorResolver(CafeConstructorMetadata constructorDescriptor) {
         Set<CafeConstructorResolver> matched = findConstructorResolvers(constructorDescriptor);
         if (matched.size() > 1) {
             throw new CafeBeansFactoryException(TOO_MANY_RESOLVERS.formatted(constructorDescriptor.getMember()));
@@ -105,16 +101,16 @@ public class CafeResolvers {
                 .orElseThrow(() -> new CafeBeansFactoryException(NO_RESOLVER_FOUND.formatted(constructorDescriptor.getMember())));
     }
 
-    private Set<CafeConstructorResolver> findConstructorResolvers(CafeConstructorInfo constructorDescriptor) {
+    private Set<CafeConstructorResolver> findConstructorResolvers(CafeConstructorMetadata cafeAnnotationConstructorInfo) {
         return constructorResolvers.stream()
                 .map(CafeConstructorResolver.class::cast)
-                .filter(resolver -> resolver.isApplicable(constructorDescriptor))
-                .filter(resolver -> constructorDescriptor.getConstructorAnnotations().stream().anyMatch(annotation -> resolver.supports(annotation.annotationType()))
+                .filter(resolver -> resolver.isApplicable(cafeAnnotationConstructorInfo))
+                .filter(resolver -> cafeAnnotationConstructorInfo.getAnnotations().stream().anyMatch(annotation -> resolver.supports(annotation.annotationType()))
                         || resolver.supports(null))
                 .collect(Collectors.toSet());
     }
 
-    public CafeFieldResolver findFieldResolver(CafeFieldInfo fieldDescriptor) {
+    public CafeFieldResolver findFieldResolver(CafeFieldMetadata fieldDescriptor) {
         Set<CafeFieldResolver> matched = findFieldResolvers(fieldDescriptor);
         if (matched.size() > 1) {
             throw new CafeBeansFactoryException(TOO_MANY_RESOLVERS.formatted(fieldDescriptor.getMember()));
@@ -125,7 +121,7 @@ public class CafeResolvers {
                 .orElseThrow(() -> new CafeBeansFactoryException(NO_RESOLVER_FOUND.formatted(fieldDescriptor.getMember())));
     }
 
-    private Set<CafeFieldResolver> findFieldResolvers(CafeFieldInfo fieldDescriptor) {
+    private Set<CafeFieldResolver> findFieldResolvers(CafeFieldMetadata fieldDescriptor) {
         return fieldResolvers.stream()
                 .map(CafeFieldResolver.class::cast)
                 .filter(resolver -> resolver.isApplicable(fieldDescriptor))
@@ -148,7 +144,7 @@ public class CafeResolvers {
                 .orElseThrow(() -> new CafeBeansFactoryException(NO_RESOLVER_FOUND.formatted(typeKey)));
     }
 
-    public CafeProviderResolver findProviderResolver(CafeMemberInfo memberInfo) {
+    public CafeProviderResolver findProviderResolver(CafeMemberMetadata memberInfo) {
         return providerResolvers.stream()
                 .filter(cafeProviderResolver -> cafeProviderResolver.isApplicable(memberInfo))
                 .findFirst()

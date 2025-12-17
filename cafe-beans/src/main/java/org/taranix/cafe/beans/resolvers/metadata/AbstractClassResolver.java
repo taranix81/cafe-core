@@ -3,10 +3,10 @@ package org.taranix.cafe.beans.resolvers.metadata;
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.exceptions.ClassResolverException;
-import org.taranix.cafe.beans.metadata.CafeClassInfo;
-import org.taranix.cafe.beans.metadata.members.CafeConstructorInfo;
-import org.taranix.cafe.beans.metadata.members.CafeFieldInfo;
-import org.taranix.cafe.beans.metadata.members.CafeMethodInfo;
+import org.taranix.cafe.beans.metadata.CafeClassMetadata;
+import org.taranix.cafe.beans.metadata.CafeConstructorMetadata;
+import org.taranix.cafe.beans.metadata.CafeFieldMetadata;
+import org.taranix.cafe.beans.metadata.CafeMethodMetadata;
 
 import java.util.Objects;
 
@@ -14,35 +14,35 @@ import java.util.Objects;
 public abstract class AbstractClassResolver implements CafeClassResolver {
 
     @Override
-    public Object resolve(final CafeClassInfo cafeClassInfo, final CafeBeansFactory beansFactory) {
-        log.debug("Resolving class :{}", cafeClassInfo.getTypeClass());
-        Object instance = resolveConstructor(beansFactory, cafeClassInfo.constructor());
+    public Object resolve(final CafeClassMetadata cafeClassMetadata, final CafeBeansFactory beansFactory) {
+        log.debug("Resolving class :{}", cafeClassMetadata.getRootClass());
+        Object instance = resolveConstructor(beansFactory, cafeClassMetadata.getConstructor());
 
         if (Objects.isNull(instance)) {
-            throw new ClassResolverException("Class couldn't be instantiated :" + cafeClassInfo.getTypeClass());
+            throw new ClassResolverException("Class couldn't be instantiated :" + cafeClassMetadata.getRootClass());
         }
 
-        cafeClassInfo.fields().forEach(cafeFieldInfo ->
+        cafeClassMetadata.getFields().forEach(cafeFieldInfo ->
                 resolveField(beansFactory, instance, cafeFieldInfo)
         );
 
-        cafeClassInfo.methods().forEach(cafeMethodInfo ->
+        cafeClassMetadata.getMethods().forEach(cafeMethodInfo ->
                 resolveMethod(beansFactory, instance, cafeMethodInfo)
         );
         return instance;
     }
 
-    protected Object resolveConstructor(CafeBeansFactory cafeBeansFactory, CafeConstructorInfo descriptor) {
+    protected Object resolveConstructor(CafeBeansFactory cafeBeansFactory, CafeConstructorMetadata descriptor) {
         return cafeBeansFactory.getResolvers().findConstructorResolver(descriptor)
                 .resolve(descriptor, cafeBeansFactory);
     }
 
-    protected void resolveMethod(CafeBeansFactory cafeBeansFactory, Object instance, CafeMethodInfo methodDescriptor) {
+    protected void resolveMethod(CafeBeansFactory cafeBeansFactory, Object instance, CafeMethodMetadata methodDescriptor) {
         cafeBeansFactory.getResolvers().findMethodResolver(methodDescriptor)
                 .resolve(instance, methodDescriptor, cafeBeansFactory);
     }
 
-    protected void resolveField(CafeBeansFactory cafeBeansFactory, Object instance, CafeFieldInfo descriptor) {
+    protected void resolveField(CafeBeansFactory cafeBeansFactory, Object instance, CafeFieldMetadata descriptor) {
         cafeBeansFactory.getResolvers().findFieldResolver(descriptor)
                 .resolve(instance, descriptor, cafeBeansFactory);
 

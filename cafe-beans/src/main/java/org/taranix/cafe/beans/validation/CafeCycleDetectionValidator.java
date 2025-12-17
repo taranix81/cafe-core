@@ -1,8 +1,8 @@
 package org.taranix.cafe.beans.validation;
 
-import org.taranix.cafe.beans.metadata.CafeBeansDefinitionRegistry;
-import org.taranix.cafe.beans.metadata.CafeClassInfo;
-import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
+import org.taranix.cafe.beans.metadata.CafeBeansRegistry;
+import org.taranix.cafe.beans.metadata.CafeClassMetadata;
+import org.taranix.cafe.beans.metadata.CafeMemberMetadata;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -15,12 +15,12 @@ public class CafeCycleDetectionValidator implements CafeValidator {
     private static final String CYCLE_ERROR_MESSAGE = "Circular dependencies detected in the Cafe context.";
 
     @Override
-    public Optional<ValidationResult> validate(CafeBeansDefinitionRegistry registry) {
+    public Optional<ValidationResult> validate(CafeBeansRegistry registry) {
         // 1. Detect cycles among members (fields/methods)
-        Collection<CafeMemberInfo> memberCycles = getMemberCycleSet(registry);
+        Collection<CafeMemberMetadata> memberCycles = getMemberCycleSet(registry);
 
         // 2. Detect cycles among classes
-        Collection<CafeClassInfo> classCycles = getClassCycleSet(registry);
+        Collection<CafeClassMetadata> classCycles = getClassCycleSet(registry);
 
         // Check if any cycles were detected
         if (!memberCycles.isEmpty() || !classCycles.isEmpty()) {
@@ -45,12 +45,12 @@ public class CafeCycleDetectionValidator implements CafeValidator {
     }
 
     // --- Helper methods ---
-    private Collection<CafeMemberInfo> getMemberCycleSet(CafeBeansDefinitionRegistry registry) {
-        return registry.getMemberDependencyResolverRegistry().cycleSet();
+    private Collection<CafeMemberMetadata> getMemberCycleSet(CafeBeansRegistry registry) {
+        return registry.getMemberDependencyRegistry().cycleSet();
     }
 
-    private Collection<CafeClassInfo> getClassCycleSet(CafeBeansDefinitionRegistry registry) {
-        return registry.getClassDependencyResolverRegistry().cycleSet();
+    private Collection<CafeClassMetadata> getClassCycleSet(CafeBeansRegistry registry) {
+        return registry.getClassDependencyRegistry().cycleSet();
     }
 
 

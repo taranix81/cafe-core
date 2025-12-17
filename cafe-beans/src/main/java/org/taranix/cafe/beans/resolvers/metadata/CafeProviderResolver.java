@@ -1,11 +1,11 @@
 package org.taranix.cafe.beans.resolvers.metadata;
 
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
+import org.taranix.cafe.beans.metadata.CafeMemberMetadata;
 
 public interface CafeProviderResolver {
 
-    Object resolve(CafeMemberInfo memberInfo, CafeBeansFactory cafeBeansFactory);
+    Object resolve(CafeMemberMetadata memberInfo, CafeBeansFactory cafeBeansFactory);
 
-    boolean isApplicable(CafeMemberInfo descriptor);
+    boolean isApplicable(CafeMemberMetadata descriptor);
 }

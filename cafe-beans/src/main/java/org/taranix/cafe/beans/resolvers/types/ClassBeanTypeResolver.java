@@ -2,7 +2,7 @@ package org.taranix.cafe.beans.resolvers.types;
 
 import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.exceptions.CafeBeanResolverException;
-import org.taranix.cafe.beans.metadata.members.CafeMemberInfo;
+import org.taranix.cafe.beans.metadata.CafeMemberMetadata;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 
 import java.util.Optional;
@@ -17,7 +17,7 @@ public class ClassBeanTypeResolver implements CafeBeanTypeResolver {
 
     @Override
     public Object resolveOrNull(BeanTypeKey typeKey, CafeBeansFactory beansFactory) {
-        Set<CafeMemberInfo> providers = beansFactory.getCafeBeansDefinitionRegistry().findAnyTypeProviders(typeKey);
+        Set<CafeMemberMetadata> providers = beansFactory.getCafeBeansRegistry().findAnyTypeProviders(typeKey);
         return providers.stream()
                 .findFirst()
                 .map(memberInfo -> resolveProvider(memberInfo, beansFactory))
@@ -30,7 +30,7 @@ public class ClassBeanTypeResolver implements CafeBeanTypeResolver {
         return !(typeKey.isArray() || typeKey.isCollection());
     }
 
-    private Object resolveProvider(CafeMemberInfo memberInfo, CafeBeansFactory beansFactory) {
+    private Object resolveProvider(CafeMemberMetadata memberInfo, CafeBeansFactory beansFactory) {
         return beansFactory.getResolvers()
                 .findProviderResolver(memberInfo)
                 .resolve(memberInfo, beansFactory);
