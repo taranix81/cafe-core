@@ -8,12 +8,15 @@ import org.taranix.cafe.beans.resolvers.metadata.CafeProviderResolver;
 import org.taranix.cafe.beans.resolvers.metadata.DefaultClassResolver;
 import org.taranix.cafe.beans.resolvers.metadata.DefaultProviderResolver;
 import org.taranix.cafe.beans.resolvers.metadata.constructor.CafeConstructorResolver;
-import org.taranix.cafe.beans.resolvers.metadata.constructor.DefaultConstructorResolver;
+import org.taranix.cafe.beans.resolvers.metadata.constructor.PrototypeConstructorResolver;
+import org.taranix.cafe.beans.resolvers.metadata.constructor.SingletonConstructorResolver;
 import org.taranix.cafe.beans.resolvers.metadata.field.CafeFieldResolver;
-import org.taranix.cafe.beans.resolvers.metadata.field.DefaultFieldResolver;
 import org.taranix.cafe.beans.resolvers.metadata.field.PropertyResolver;
+import org.taranix.cafe.beans.resolvers.metadata.field.WireFieldResolver;
 import org.taranix.cafe.beans.resolvers.metadata.method.CafeMethodResolver;
-import org.taranix.cafe.beans.resolvers.metadata.method.DefaultMethodResolver;
+import org.taranix.cafe.beans.resolvers.metadata.method.PrototypeWireMethodResolver;
+import org.taranix.cafe.beans.resolvers.metadata.method.SingletonHandlerMethodResolver;
+import org.taranix.cafe.beans.resolvers.metadata.method.SingletonWireMethodResolver;
 import org.taranix.cafe.beans.resolvers.types.ArrayBeanTypeResolver;
 import org.taranix.cafe.beans.resolvers.types.CafeBeanTypeResolver;
 import org.taranix.cafe.beans.resolvers.types.ClassBeanTypeResolver;
@@ -36,19 +39,24 @@ public class CafeResolvers {
             new DefaultClassResolver()));
 
     private final Set<CafeConstructorResolver> constructorResolvers = new HashSet<>(List.of(
-            new DefaultConstructorResolver()));
+            new SingletonConstructorResolver(),
+            new PrototypeConstructorResolver()));
     private final Set<CafeFieldResolver> fieldResolvers = new HashSet<>(List.of(
-            new DefaultFieldResolver(),
-            new PropertyResolver()));
+            new WireFieldResolver(),
+            new PropertyResolver())
+    );
 
     private final Set<CafeMethodResolver> methodResolvers = new HashSet<>(List.of(
-            new DefaultMethodResolver()));
+            new PrototypeWireMethodResolver(),
+            new SingletonWireMethodResolver(),
+            new SingletonHandlerMethodResolver())
+    );
     private final Set<CafeBeanTypeResolver> beanTypekeyResolvers = new HashSet<>(List.of(
             new ClassBeanTypeResolver(),
             new ArrayBeanTypeResolver(),
             new CollectionBeanTypeResolver()));
 
-    public CafeMethodResolver findMethodResolver(CafeMethodMetadata methodDescriptor) {
+    public CafeMethodResolver findMethodResolver(CafeMethod methodDescriptor) {
         Set<CafeMethodResolver> matched = findMethodResolvers(methodDescriptor);
         if (matched.size() > 1) {
             throw new CafeBeansFactoryException(TOO_MANY_RESOLVERS.formatted(methodDescriptor.getMember()));
@@ -59,7 +67,7 @@ public class CafeResolvers {
                 .orElseThrow(() -> new CafeBeansFactoryException(NO_RESOLVER_FOUND.formatted(methodDescriptor.getMember())));
     }
 
-    private Set<CafeMethodResolver> findMethodResolvers(CafeMethodMetadata methodDescriptor) {
+    private Set<CafeMethodResolver> findMethodResolvers(CafeMethod methodDescriptor) {
         return methodResolvers.stream()
                 .map(CafeMethodResolver.class::cast)
                 .filter(resolver -> resolver.isApplicable(methodDescriptor))
@@ -69,7 +77,7 @@ public class CafeResolvers {
                 .collect(Collectors.toSet());
     }
 
-    public CafeClassResolver findClassResolver(CafeClassMetadata descriptor) {
+    public CafeClassResolver findClassResolver(CafeClass descriptor) {
         Set<CafeClassResolver> matched = findClassResolvers(descriptor);
         if (matched.size() > 1) {
             throw new CafeBeansFactoryException(TOO_MANY_RESOLVERS.formatted(descriptor));
@@ -81,7 +89,7 @@ public class CafeResolvers {
     }
 
 
-    private Set<CafeClassResolver> findClassResolvers(CafeClassMetadata classDescriptor) {
+    private Set<CafeClassResolver> findClassResolvers(CafeClass classDescriptor) {
         return classResolvers.stream()
                 .filter(resolver -> resolver.isApplicable(classDescriptor))
                 .filter(resolver -> classDescriptor.getRootClassAnnotations()
@@ -90,7 +98,7 @@ public class CafeResolvers {
                 .collect(Collectors.toSet());
     }
 
-    public CafeConstructorResolver findConstructorResolver(CafeConstructorMetadata constructorDescriptor) {
+    public CafeConstructorResolver findConstructorResolver(CafeConstructor constructorDescriptor) {
         Set<CafeConstructorResolver> matched = findConstructorResolvers(constructorDescriptor);
         if (matched.size() > 1) {
             throw new CafeBeansFactoryException(TOO_MANY_RESOLVERS.formatted(constructorDescriptor.getMember()));
@@ -101,7 +109,7 @@ public class CafeResolvers {
                 .orElseThrow(() -> new CafeBeansFactoryException(NO_RESOLVER_FOUND.formatted(constructorDescriptor.getMember())));
     }
 
-    private Set<CafeConstructorResolver> findConstructorResolvers(CafeConstructorMetadata cafeAnnotationConstructorInfo) {
+    private Set<CafeConstructorResolver> findConstructorResolvers(CafeConstructor cafeAnnotationConstructorInfo) {
         return constructorResolvers.stream()
                 .map(CafeConstructorResolver.class::cast)
                 .filter(resolver -> resolver.isApplicable(cafeAnnotationConstructorInfo))
@@ -110,7 +118,7 @@ public class CafeResolvers {
                 .collect(Collectors.toSet());
     }
 
-    public CafeFieldResolver findFieldResolver(CafeFieldMetadata fieldDescriptor) {
+    public CafeFieldResolver findFieldResolver(CafeField fieldDescriptor) {
         Set<CafeFieldResolver> matched = findFieldResolvers(fieldDescriptor);
         if (matched.size() > 1) {
             throw new CafeBeansFactoryException(TOO_MANY_RESOLVERS.formatted(fieldDescriptor.getMember()));
@@ -121,7 +129,7 @@ public class CafeResolvers {
                 .orElseThrow(() -> new CafeBeansFactoryException(NO_RESOLVER_FOUND.formatted(fieldDescriptor.getMember())));
     }
 
-    private Set<CafeFieldResolver> findFieldResolvers(CafeFieldMetadata fieldDescriptor) {
+    private Set<CafeFieldResolver> findFieldResolvers(CafeField fieldDescriptor) {
         return fieldResolvers.stream()
                 .map(CafeFieldResolver.class::cast)
                 .filter(resolver -> resolver.isApplicable(fieldDescriptor))
@@ -144,7 +152,7 @@ public class CafeResolvers {
                 .orElseThrow(() -> new CafeBeansFactoryException(NO_RESOLVER_FOUND.formatted(typeKey)));
     }
 
-    public CafeProviderResolver findProviderResolver(CafeMemberMetadata memberInfo) {
+    public CafeProviderResolver findProviderResolver(CafeMember memberInfo) {
         return providerResolvers.stream()
                 .filter(cafeProviderResolver -> cafeProviderResolver.isApplicable(memberInfo))
                 .findFirst()

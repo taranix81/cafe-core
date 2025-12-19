@@ -2,7 +2,7 @@ package org.taranix.cafe.desktop.components_old;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.taranix.cafe.beans.annotations.CafeInject;
+import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.desktop.components_old.events.EventBus;
 import org.taranix.cafe.desktop.components_old.events.messages.Message;
 

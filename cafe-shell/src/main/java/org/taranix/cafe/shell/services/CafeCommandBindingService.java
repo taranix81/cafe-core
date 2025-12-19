@@ -1,8 +1,8 @@
 package org.taranix.cafe.shell.services;
 
 import org.apache.commons.cli.Option;
-import org.taranix.cafe.beans.annotations.CafeInject;
-import org.taranix.cafe.beans.annotations.CafeService;
+import org.taranix.cafe.beans.annotations.fields.CafeInject;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
 import org.taranix.cafe.shell.CafeShell;
 import org.taranix.cafe.shell.commands.CafeCommandOptionBinding;
 import org.taranix.cafe.shell.exceptions.CafeCommandBindingServiceException;

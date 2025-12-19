@@ -4,15 +4,15 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.taranix.cafe.beans.annotations.CafeInject;
-import org.taranix.cafe.beans.annotations.CafeProvider;
-import org.taranix.cafe.beans.annotations.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.fields.CafeInject;
+import org.taranix.cafe.beans.annotations.methods.CafeProvider;
 import org.taranix.cafe.beans.annotations.modifiers.CafeOptional;
 import org.taranix.cafe.beans.exceptions.BeanTypeKeyException;
-import org.taranix.cafe.beans.metadata.CafeBeansRegistry;
-import org.taranix.cafe.beans.metadata.CafeConstructorMetadata;
-import org.taranix.cafe.beans.metadata.CafeFieldMetadata;
-import org.taranix.cafe.beans.metadata.CafeMethodMetadata;
+import org.taranix.cafe.beans.metadata.CafeConstructor;
+import org.taranix.cafe.beans.metadata.CafeField;
+import org.taranix.cafe.beans.metadata.CafeMetadataRegistry;
+import org.taranix.cafe.beans.metadata.CafeMethod;
 
 import java.util.Date;
 import java.util.List;
@@ -24,12 +24,12 @@ class CafeBeansResolvableServiceTests {
     @DisplayName("(Positive) Should pass when class has no dependencies.")
     void shouldClassWithoutDependenciesBeResolvable() {
         // given
-        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry cafeMetadataRegistry = CafeMetadataRegistry.builder()
                 .withClass(SubjectClassProvider.class)
                 .build();
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
         // when
-        Optional<ValidationResult> result = validator.validate(cafeBeansRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
 
         // then
         Assertions.assertTrue(result.isEmpty(), "Expected successful validation.");
@@ -39,14 +39,14 @@ class CafeBeansResolvableServiceTests {
     @DisplayName("(Positive) Should pass when class dependencies are resolvable.")
     void shouldClassWithDependenciesBeResolvable() {
         // given
-        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry cafeMetadataRegistry = CafeMetadataRegistry.builder()
                 .withClass(SubjectClassProvider.class)
                 .withClass(SubjectClassInjectable.class)
                 .build();
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeBeansRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
 
         // then
         Assertions.assertTrue(result.isEmpty(), "Expected successful validation when dependencies are met.");
@@ -56,21 +56,21 @@ class CafeBeansResolvableServiceTests {
     @DisplayName("(Negative) Should fail when field dependency is unresolvable.")
     void shouldClassWithoutDependenciesNotBeResolvable() {
         // given
-        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry cafeMetadataRegistry = CafeMetadataRegistry.builder()
                 .withClass(ServiceClassInjectable.class)
                 .build();
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeBeansRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
 
         // Extracting the unresolvable member from the result
-        CafeFieldMetadata nonResolvableField = result
+        CafeField nonResolvableField = result
                 .map(ValidationResult::objects)
                 .flatMap(objects -> objects.stream()
-                        .filter(CafeFieldMetadata.class::isInstance)
+                        .filter(CafeField.class::isInstance)
                         .findFirst())
-                .map(CafeFieldMetadata.class::cast)
+                .map(CafeField.class::cast)
                 .orElse(null);
 
         // then
@@ -84,7 +84,7 @@ class CafeBeansResolvableServiceTests {
     void shouldDependantSubjectClassBeResolvableAndProviderSubjectClassWithDependencyNot() {
 
         // given
-        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry cafeMetadataRegistry = CafeMetadataRegistry.builder()
                 .withClass(SubjectClassInjectable.class)
                 .withClass(SubjectClassProviderWCADate.class)
                 .build();
@@ -92,7 +92,7 @@ class CafeBeansResolvableServiceTests {
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeBeansRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
 
         // then
         Assertions.assertTrue(result.isPresent(), "Expected validation failure due to missing Date and String providers.");
@@ -100,15 +100,15 @@ class CafeBeansResolvableServiceTests {
         // Extracting members of specific types
         Set<Object> objects = result.get().objects();
 
-        CafeMethodMetadata nonResolvableMethod = objects.stream()
-                .filter(CafeMethodMetadata.class::isInstance)
-                .map(CafeMethodMetadata.class::cast)
+        CafeMethod nonResolvableMethod = objects.stream()
+                .filter(CafeMethod.class::isInstance)
+                .map(CafeMethod.class::cast)
                 .findFirst()
                 .orElse(null);
 
-        CafeConstructorMetadata nonResolvableConstructor = objects.stream()
-                .filter(CafeConstructorMetadata.class::isInstance)
-                .map(CafeConstructorMetadata.class::cast)
+        CafeConstructor nonResolvableConstructor = objects.stream()
+                .filter(CafeConstructor.class::isInstance)
+                .map(CafeConstructor.class::cast)
                 .findFirst()
                 .orElse(null);
 
@@ -121,13 +121,13 @@ class CafeBeansResolvableServiceTests {
     @DisplayName("(Positive) Should pass when a required dependency is marked as @CafeOptional.")
     void shouldPassWhenDependencyIsOptional() {
         // given
-        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry cafeMetadataRegistry = CafeMetadataRegistry.builder()
                 .withClass(OptionalServiceInjectable.class)
                 .build();
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeBeansRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
 
         // then
         Assertions.assertTrue(result.isEmpty(), "Expected successful validation as dependency is optional.");
@@ -137,18 +137,18 @@ class CafeBeansResolvableServiceTests {
     @DisplayName("(Negative) Should fail when a non-optional constructor dependency is unresolvable.")
     void shouldFailOnUnresolvableConstructorDependency() {
         // given
-        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry cafeMetadataRegistry = CafeMetadataRegistry.builder()
                 .withClass(ConstructorInjectableMissingDependency.class)
                 .build();
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeBeansRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
 
         // then
         Assertions.assertTrue(result.isPresent(), "Expected validation failure due to missing Date provider for constructor.");
         // Verify the unresolvable member is indeed a Constructor
-        Assertions.assertTrue(result.get().objects().stream().anyMatch(CafeConstructorMetadata.class::isInstance),
+        Assertions.assertTrue(result.get().objects().stream().anyMatch(CafeConstructor.class::isInstance),
                 "Expected the unresolvable member to be the constructor.");
     }
 
@@ -156,18 +156,18 @@ class CafeBeansResolvableServiceTests {
     @DisplayName("(Negative) Should fail when a method dependency is unresolvable.")
     void shouldFailOnUnresolvableMethodDependency() {
         // given
-        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry cafeMetadataRegistry = CafeMetadataRegistry.builder()
                 .withClass(MethodInjectableMissingDependency.class)
                 .build();
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeBeansRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
 
         // then
         Assertions.assertTrue(result.isPresent(), "Expected validation failure due to missing Date provider for method.");
         // Verify the unresolvable member is indeed a Method
-        Assertions.assertTrue(result.get().objects().stream().anyMatch(CafeMethodMetadata.class::isInstance),
+        Assertions.assertTrue(result.get().objects().stream().anyMatch(CafeMethod.class::isInstance),
                 "Expected the unresolvable member to be the method.");
     }
 
@@ -175,7 +175,7 @@ class CafeBeansResolvableServiceTests {
     @DisplayName("(Positive) Should pass when required generic type (List<String>) is exactly matched.")
     void shouldPassOnExactGenericMatch() {
         // given
-        CafeBeansRegistry registry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry registry = CafeMetadataRegistry.builder()
                 .withClass(StringListProvider.class)
                 .withClass(StringListConsumer.class)
                 .build();
@@ -192,7 +192,7 @@ class CafeBeansResolvableServiceTests {
     @DisplayName("(Negative) Should fail when required generic argument (List<String>) does not match provider (List<Integer>).")
     void shouldFailOnGenericTypeMismatch() {
         // given
-        CafeBeansRegistry registry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry registry = CafeMetadataRegistry.builder()
                 .withClass(IntegerListProvider.class)
                 .withClass(StringListConsumer.class)
                 .build();
@@ -210,7 +210,7 @@ class CafeBeansResolvableServiceTests {
     void shouldFailRegistryBuildOnRawTypeConsumer() {
         // given / when / then
         Assertions.assertThrows(BeanTypeKeyException.class, () -> {
-            CafeBeansRegistry.builder()
+            CafeMetadataRegistry.builder()
                     .withClass(StringListProvider.class)
                     .withClass(RawListConsumer.class)
                     .build();
@@ -221,7 +221,7 @@ class CafeBeansResolvableServiceTests {
     @DisplayName("(Positive) Should pass when generic type is resolved to String in Constructor.")
     void shouldPassWhenGenericTypeResolvedToConstructor() {
         // given
-        CafeBeansRegistry registry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry registry = CafeMetadataRegistry.builder()
                 .withClass(StringValueProvider.class)
                 .withClass(ValueConsumerConstructor.class)
                 .build();
@@ -238,7 +238,7 @@ class CafeBeansResolvableServiceTests {
     @DisplayName("(Positive) Should pass when generic type is resolved to Integer in Field.")
     void shouldPassWhenGenericTypeResolvedToField() {
         // given
-        CafeBeansRegistry registry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry registry = CafeMetadataRegistry.builder()
                 .withClass(IntegerValueProvider.class)
                 .withClass(ValueConsumerField.class)
                 .build();
@@ -255,7 +255,7 @@ class CafeBeansResolvableServiceTests {
     @DisplayName("(Negative) Should fail when required generic type (Boolean) is not provided (String provided).")
     void shouldFailOnGenericTypeMismatchOnInterface() {
         // given
-        CafeBeansRegistry registry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry registry = CafeMetadataRegistry.builder()
                 .withClass(StringValueProvider.class)
                 .withClass(BooleanValueConsumer.class)
                 .build();

@@ -2,8 +2,8 @@ package org.taranix.cafe.beans.reflections;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.taranix.cafe.beans.metadata.CafeClassMetadataFactory;
-import org.taranix.cafe.beans.metadata.CafeConstructorMetadata;
+import org.taranix.cafe.beans.metadata.CafeClassFactory;
+import org.taranix.cafe.beans.metadata.CafeConstructor;
 import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 
@@ -39,8 +39,8 @@ class CafeReflexionUtilsTests {
     @Test
     void test1() {
         List<Type> types = CafeReflectionUtils.getAllSuperTypes(theClass.class).stream().toList();
-        CafeConstructorMetadata constructor = CafeClassMetadataFactory.create(theClass.class).getConstructor();
-        List<BeanTypeKey> providedTypes = constructor.getProvidedTypes().stream().toList();
+        CafeConstructor constructor = CafeClassFactory.create(theClass.class).getConstructor();
+        List<BeanTypeKey> providedTypes = constructor.getProvidedTypeKeys().stream().toList();
 
         Assertions.assertNotNull(types);
     }

@@ -2,8 +2,8 @@ package org.taranix.cafe.shell.commands;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
-import org.taranix.cafe.beans.annotations.CafeInject;
-import org.taranix.cafe.beans.annotations.CafeProperty;
+import org.taranix.cafe.beans.annotations.fields.CafeInject;
+import org.taranix.cafe.beans.annotations.fields.CafeProperty;
 import org.taranix.cafe.shell.annotations.CafeCommand;
 import org.taranix.cafe.shell.annotations.CafeCommandRun;
 

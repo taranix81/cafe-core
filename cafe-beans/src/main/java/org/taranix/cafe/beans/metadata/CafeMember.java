@@ -1,8 +1,8 @@
 package org.taranix.cafe.beans.metadata;
 
 import lombok.Getter;
+import org.taranix.cafe.beans.annotations.base.CafeWirerType;
 import org.taranix.cafe.beans.annotations.modifiers.CafeModifier;
-import org.taranix.cafe.beans.annotations.types.CafeType;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 import org.taranix.cafe.beans.repositories.typekeys.PropertyTypeKey;
@@ -18,17 +18,17 @@ import java.util.stream.Collectors;
  * This class abstracts the reflection details and provides common utilities
  * for dependency analysis (provides/dependencies) and annotation access.
  */
-public abstract class CafeMemberMetadata {
+public abstract class CafeMember {
 
 
     @Getter
-    private final CafeClassMetadata cafeClassMetadata;
+    private final CafeClass cafeClass;
 
     /**
      * Constructs a CafeMemberInfo with the given class metadata parent.
      */
-    protected CafeMemberMetadata(CafeClassMetadata cafeClassMetadata) {
-        this.cafeClassMetadata = cafeClassMetadata;
+    protected CafeMember(CafeClass cafeClass) {
+        this.cafeClass = cafeClass;
     }
 
     /**
@@ -56,8 +56,10 @@ public abstract class CafeMemberMetadata {
      * Returns a set of annotation classes that are CafeType markers present on this member.
      * This is useful for identifying primary/qualifier types for bean resolution.
      */
-    public final Set<Class<? extends Annotation>> getAnnotationTypesMarkers() {
-        return getAnnotationsMarkedBy(CafeType.class);
+    public final Set<Class<? extends Annotation>> getAnnotationLifecycleMarkers() {
+        Set<Class<? extends Annotation>> result = new HashSet<>(getAnnotationTypesMarkedBy(CafeWirerType.class));
+        result.addAll(getAnnotationTypesMarkedBy(CafeWirerType.class));
+        return result;
     }
 
     /**
@@ -65,7 +67,7 @@ public abstract class CafeMemberMetadata {
      * This uses the CafeAnnotationUtils to check for meta-annotations extending {@link CafeModifier}.
      */
     public final Set<Class<? extends Annotation>> getAnnotationModifiers() {
-        return getAnnotationsMarkedBy(CafeModifier.class);
+        return getAnnotationTypesMarkedBy(CafeModifier.class);
     }
 
     /**
@@ -90,8 +92,8 @@ public abstract class CafeMemberMetadata {
     /**
      * Returns the root class from the parent metadata.
      */
-    public CafeClassMetadata getParent() {
-        return cafeClassMetadata;
+    public CafeClass getParent() {
+        return cafeClass;
     }
 
     /**
@@ -120,7 +122,7 @@ public abstract class CafeMemberMetadata {
     /**
      * Checks if this member and another have the same declaring class.
      */
-    public boolean isBelongToTheSameClass(CafeMemberMetadata other) {
+    public boolean isBelongToTheSameClass(CafeMember other) {
         return other != null && getMemberDeclaringClass().equals(other.getMemberDeclaringClass());
     }
 
@@ -158,31 +160,31 @@ public abstract class CafeMemberMetadata {
      * Returns the set of bean type keys this member provides (e.g., the return type of a factory method,
      * or the class type for a constructor).
      */
-    public abstract Set<BeanTypeKey> getProvidedTypes();
+    public abstract Set<BeanTypeKey> getProvidedTypeKeys();
 
     /**
      * Returns true if this member has any bean or property dependencies.
      */
     public boolean hasDependencies() {
-        return !getRequiredTypes().isEmpty() || !getRequiredProperties().isEmpty();
+        return !getRequiredTypeKeys().isEmpty() || !getRequiredPropertyTypeKeys().isEmpty();
     }
 
     /**
      * Returns the list of bean type keys this member depends on (e.g., constructor parameters,
      * method parameters, or injected fields).
      */
-    public abstract List<BeanTypeKey> getRequiredTypes();
+    public abstract List<BeanTypeKey> getRequiredTypeKeys();
 
     /**
      * Returns the list of property type keys this member depends on (e.g., configuration properties).
      */
-    public abstract List<PropertyTypeKey> getRequiredProperties();
+    public abstract List<PropertyTypeKey> getRequiredPropertyTypeKeys();
 
     /**
      * Returns true if this member depends on the given bean type key.
      */
     public boolean hasDependencies(BeanTypeKey typeKey) {
-        return getRequiredTypes().contains(typeKey);
+        return getRequiredTypeKeys().contains(typeKey);
     }
 
     // --- Scoping & Modifiers ---
@@ -210,11 +212,18 @@ public abstract class CafeMemberMetadata {
      * <p>
      * Should be move to Annotation Utils
      */
-    private Set<Class<? extends Annotation>> getAnnotationsMarkedBy(Class<? extends Annotation> markerType) {
+    public Set<Class<? extends Annotation>> getAnnotationTypesMarkedBy(Class<? extends Annotation> markerType) {
         // Use getAnnotatedElement() for unified access
         return Arrays.stream(getAnnotatedElement().getAnnotations())
                 .filter(annotation -> CafeAnnotationUtils.isAnnotationMarkedBy(annotation, markerType))
                 .map(Annotation::annotationType)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<Annotation> getAnnotationsMarkedBy(Class<? extends Annotation> markerType) {
+        // Use getAnnotatedElement() for unified access
+        return Arrays.stream(getAnnotatedElement().getAnnotations())
+                .filter(annotation -> CafeAnnotationUtils.isAnnotationMarkedBy(annotation, markerType))
                 .collect(Collectors.toSet());
     }
 
@@ -230,7 +239,7 @@ public abstract class CafeMemberMetadata {
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof CafeMemberMetadata other)) return false;
+        if (!(obj instanceof CafeMember other)) return false;
         // Equality based solely on the underlying Member object
         return Objects.equals(getMember(), other.getMember());
     }

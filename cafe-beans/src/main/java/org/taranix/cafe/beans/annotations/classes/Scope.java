@@ -1,4 +1,4 @@
-package org.taranix.cafe.beans.annotations;
+package org.taranix.cafe.beans.annotations.classes;
 
 public enum Scope {
     Singleton,

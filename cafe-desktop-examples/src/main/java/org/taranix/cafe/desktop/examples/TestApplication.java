@@ -1,6 +1,6 @@
 package org.taranix.cafe.desktop.examples;
 
-import org.taranix.cafe.beans.annotations.CafeApplication;
+import org.taranix.cafe.beans.annotations.classes.CafeApplication;
 import org.taranix.cafe.desktop.CafeDesktopApplication;
 
 @CafeApplication

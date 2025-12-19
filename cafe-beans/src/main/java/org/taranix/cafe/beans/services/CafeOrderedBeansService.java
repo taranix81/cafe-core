@@ -1,12 +1,11 @@
 package org.taranix.cafe.beans.services;
 
 import lombok.extern.slf4j.Slf4j;
-import org.taranix.cafe.beans.annotations.CafeFactory;
-import org.taranix.cafe.beans.annotations.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
 import org.taranix.cafe.beans.converters.CafeConverter;
-import org.taranix.cafe.beans.metadata.CafeBeansRegistry;
-import org.taranix.cafe.beans.metadata.CafeClassMetadata;
-import org.taranix.cafe.beans.metadata.CafeMemberMetadata;
+import org.taranix.cafe.beans.metadata.CafeClass;
+import org.taranix.cafe.beans.metadata.CafeMember;
+import org.taranix.cafe.beans.metadata.CafeMetadataRegistry;
 import org.taranix.cafe.beans.resolvers.metadata.CafeClassResolver;
 
 import java.util.Comparator;
@@ -16,26 +15,26 @@ import java.util.Set;
 @Slf4j
 public class CafeOrderedBeansService {
 
-    private final CafeBeansRegistry cafeBeansRegistry;
+    private final CafeMetadataRegistry cafeMetadataRegistry;
 
-    private CafeOrderedBeansService(CafeBeansRegistry cafeBeansRegistry) {
-        this.cafeBeansRegistry = cafeBeansRegistry;
+    private CafeOrderedBeansService(CafeMetadataRegistry cafeMetadataRegistry) {
+        this.cafeMetadataRegistry = cafeMetadataRegistry;
 
     }
 
-    public static CafeOrderedBeansService from(CafeBeansRegistry cafeBeansRegistry) {
-        return new CafeOrderedBeansService(cafeBeansRegistry);
+    public static CafeOrderedBeansService from(CafeMetadataRegistry cafeMetadataRegistry) {
+        return new CafeOrderedBeansService(cafeMetadataRegistry);
     }
 
-    public List<CafeClassMetadata> orderedClasses() {
-        return cafeBeansRegistry.getCafeClassMetadata().stream()
+    public List<CafeClass> orderedClasses() {
+        return cafeMetadataRegistry.getCafeClassMetadata().stream()
                 .map(this::calculateClassIndex)
                 .sorted(Comparator.comparing(IndexedClass::dependencyDepth))
                 .map(IndexedClass::classDescriptor)
                 .toList();
     }
 
-    public List<CafeMemberMetadata> orderedMembers() {
+    public List<CafeMember> orderedMembers() {
         return allMembers().stream()
                 .map(this::calculateIndex)
                 .sorted(Comparator.comparing(IndexedMember::dependencyDepth))
@@ -44,37 +43,37 @@ public class CafeOrderedBeansService {
 
     }
 
-    private IndexedMember calculateIndex(final CafeMemberMetadata cafeMemberMetadata) {
-        return new IndexedMember(cafeMemberMetadata, calculateDepth(cafeMemberMetadata));
+    private IndexedMember calculateIndex(final CafeMember cafeMember) {
+        return new IndexedMember(cafeMember, calculateDepth(cafeMember));
     }
 
-    private IndexedClass calculateClassIndex(final CafeClassMetadata cafeClassMetadata) {
-        return new IndexedClass(cafeClassMetadata, calculateDepth(cafeClassMetadata));
+    private IndexedClass calculateClassIndex(final CafeClass cafeClass) {
+        return new IndexedClass(cafeClass, calculateDepth(cafeClass));
     }
 
-    private int calculateDepth(final CafeClassMetadata cafeClassMetadata) {
-        if (cafeClassMetadata.hasDependencies()) {
-            int dependenciesAmount = cafeClassMetadata.getRequiredTypes().size();
-            int dependenciesDepth = getDependenciesDepth(cafeClassMetadata);
-            int offsetDepth = offsetDepth(cafeClassMetadata);
-            log.trace("Depth for {} = {}", cafeClassMetadata, dependenciesAmount + offsetDepth + dependenciesDepth);
+    private int calculateDepth(final CafeClass cafeClass) {
+        if (cafeClass.hasDependencies()) {
+            int dependenciesAmount = cafeClass.getRequiredTypes().size();
+            int dependenciesDepth = getDependenciesDepth(cafeClass);
+            int offsetDepth = offsetDepth(cafeClass);
+            log.trace("Depth for {} = {}", cafeClass, dependenciesAmount + offsetDepth + dependenciesDepth);
             return dependenciesAmount + offsetDepth + dependenciesDepth;
         } else {
-            return offsetDepth(cafeClassMetadata);
+            return offsetDepth(cafeClass);
         }
     }
 
-    private Integer getDependenciesDepth(CafeClassMetadata cafeClassMetadata) {
-        return cafeBeansRegistry.getClassDependencyRegistry().providers(cafeClassMetadata)
+    private Integer getDependenciesDepth(CafeClass cafeClass) {
+        return cafeMetadataRegistry.getClassDependencyRegistry().providers(cafeClass)
                 .stream()
                 .map(this::calculateDepth)
                 .reduce(0, Integer::sum);
     }
 
-    private int calculateDepth(final CafeMemberMetadata cafeMemberMetadata) {
-        if (cafeMemberMetadata.hasDependencies()) {
-            return cafeMemberMetadata.getRequiredTypes().size() +
-                    cafeBeansRegistry.getMemberDependencyRegistry().providers(cafeMemberMetadata)
+    private int calculateDepth(final CafeMember cafeMember) {
+        if (cafeMember.hasDependencies()) {
+            return cafeMember.getRequiredTypeKeys().size() +
+                    cafeMetadataRegistry.getMemberDependencyRegistry().providers(cafeMember)
                             .stream()
                             .map(this::calculateDepth)
                             .reduce(0, Integer::sum);
@@ -83,39 +82,39 @@ public class CafeOrderedBeansService {
         }
     }
 
-    private int offsetDepth(CafeClassMetadata cafeClassMetadata) {
+    private int offsetDepth(CafeClass cafeClass) {
         //Standard components without offset
-        if (cafeClassMetadata.getRootClassAnnotation(CafeFactory.class) != null || cafeClassMetadata.getRootClassAnnotation(CafeService.class) != null) {
+        if (cafeClass.getRootClassAnnotation(CafeService.class) != null) {
             return 0;
         }
 
         //Custom and standard converters without offset
-        if (cafeClassMetadata.isImplementing(CafeConverter.class)) {
+        if (cafeClass.isImplementing(CafeConverter.class)) {
             return 0;
         }
 
         //Custom resolvers without offset
-        if (cafeClassMetadata.isImplementing(CafeClassResolver.class)) {
+        if (cafeClass.isImplementing(CafeClassResolver.class)) {
             return 0;
         }
 
         //custom component with offset of custom resolvers
-        return cafeBeansRegistry.getCafeClassMetadata().stream()
+        return cafeMetadataRegistry.getCafeClassMetadata().stream()
                 .filter(ccd -> ccd.isImplementing(CafeClassResolver.class))
                 .map(this::calculateDepth)
                 .reduce(0, Integer::sum);
     }
 
-    private Set<CafeMemberMetadata> allMembers() {
-        return cafeBeansRegistry.allMembers();
+    private Set<CafeMember> allMembers() {
+        return cafeMetadataRegistry.allMembers();
     }
 
 
-    private record IndexedMember(CafeMemberMetadata memberDescriptor, int dependencyDepth) {
+    private record IndexedMember(CafeMember memberDescriptor, int dependencyDepth) {
 
     }
 
-    private record IndexedClass(CafeClassMetadata classDescriptor, int dependencyDepth) {
+    private record IndexedClass(CafeClass classDescriptor, int dependencyDepth) {
 
     }
 

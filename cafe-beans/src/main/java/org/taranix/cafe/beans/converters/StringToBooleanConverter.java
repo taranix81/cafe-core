@@ -1,7 +1,7 @@
 package org.taranix.cafe.beans.converters;
 
 import lombok.extern.slf4j.Slf4j;
-import org.taranix.cafe.beans.annotations.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
 
 @Slf4j
 @CafeService

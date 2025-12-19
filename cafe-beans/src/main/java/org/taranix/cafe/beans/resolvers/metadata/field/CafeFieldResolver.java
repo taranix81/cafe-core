@@ -2,15 +2,15 @@ package org.taranix.cafe.beans.resolvers.metadata.field;
 
 
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.metadata.CafeFieldMetadata;
+import org.taranix.cafe.beans.metadata.CafeField;
 
 import java.lang.annotation.Annotation;
 
 
 public interface CafeFieldResolver {
-    void resolve(Object instance, CafeFieldMetadata cafeFieldDescriptor, CafeBeansFactory resolverProcessor);
+    void resolve(Object instance, CafeField cafeFieldDescriptor, CafeBeansFactory resolverProcessor);
 
-    boolean isApplicable(CafeFieldMetadata cafeFieldDescriptor);
+    boolean isApplicable(CafeField cafeFieldDescriptor);
 
     boolean supports(Class<? extends Annotation> annotation);
 }

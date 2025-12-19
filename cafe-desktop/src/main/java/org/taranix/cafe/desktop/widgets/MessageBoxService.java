@@ -4,7 +4,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.taranix.cafe.beans.annotations.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
 
 import java.nio.file.Path;
 import java.util.Optional;

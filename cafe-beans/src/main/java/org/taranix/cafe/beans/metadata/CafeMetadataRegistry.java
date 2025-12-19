@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * Aggregates multiple CafeClassMetadata instances.
  * Acts as a read-only repository for static metadata.
  */
-public class CafeBeansRegistry {
+public class CafeMetadataRegistry {
 
     @Getter
     private final MemberDependencyResolverRegistry memberDependencyRegistry;
@@ -25,12 +25,12 @@ public class CafeBeansRegistry {
     private final ClassDependencyRegistry classDependencyRegistry;
 
     @Getter
-    private final Set<CafeClassMetadata> cafeClassMetadata;
+    private final Set<CafeClass> cafeClassMetadata;
 
-    private final Map<Class<?>, CafeClassMetadata> classMetadataMap;
+    private final Map<Class<?>, CafeClass> classMetadataMap;
 
-    private CafeBeansRegistry(
-            Set<CafeClassMetadata> cafeClassMetadata,
+    private CafeMetadataRegistry(
+            Set<CafeClass> cafeClassMetadata,
             MemberDependencyResolverRegistry memberDependencyRegistry,
             ClassDependencyRegistry classDependencyRegistry) {
 
@@ -39,34 +39,34 @@ public class CafeBeansRegistry {
         this.classDependencyRegistry = classDependencyRegistry;
 
         this.classMetadataMap = this.cafeClassMetadata.stream()
-                .collect(Collectors.toUnmodifiableMap(CafeClassMetadata::getRootClass, Function.identity()));
+                .collect(Collectors.toUnmodifiableMap(CafeClass::getRootClass, Function.identity()));
     }
 
     public static Builder builder() {
         return new Builder();
     }
 
-    public Set<CafeMemberMetadata> allMembers() {
+    public Set<CafeMember> allMembers() {
         return cafeClassMetadata.stream()
                 .flatMap(cd -> cd.getMembers().stream())
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public Set<CafeMemberMetadata> findAnyTypeProviders(BeanTypeKey typeKey) {
+    public Set<CafeMember> findAnyTypeProviders(BeanTypeKey typeKey) {
         return allMembers().stream()
-                .filter(member -> member.getProvidedTypes().contains(typeKey))
+                .filter(member -> member.getProvidedTypeKeys().contains(typeKey))
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public Set<CafeMemberMetadata> findSingletonProviders(BeanTypeKey typeKey) {
+    public Set<CafeMember> findSingletonProviders(BeanTypeKey typeKey) {
         return findAnyTypeProviders(typeKey).stream()
-                .filter(CafeMemberMetadata::isSingleton)
+                .filter(CafeMember::isSingleton)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public Set<CafeMemberMetadata> findPrototypeProviders(BeanTypeKey typeKey) {
+    public Set<CafeMember> findPrototypeProviders(BeanTypeKey typeKey) {
         return findAnyTypeProviders(typeKey).stream()
-                .filter(CafeMemberMetadata::isPrototype)
+                .filter(CafeMember::isPrototype)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
@@ -74,7 +74,7 @@ public class CafeBeansRegistry {
      * Returns the metadata for the given class, or null if not found.
      * Changed name from findClassInfo to findClassMetadata for consistency.
      */
-    public CafeClassMetadata findClassMetadata(Class<?> aClass) {
+    public CafeClass getClassMetadata(Class<?> aClass) {
         return classMetadataMap.get(aClass);
     }
 
@@ -98,17 +98,17 @@ public class CafeBeansRegistry {
             return this;
         }
 
-        public CafeBeansRegistry build() {
+        public CafeMetadataRegistry build() {
             // 1. Create Metadata objects
-            Set<CafeClassMetadata> descriptors = classSet.stream()
-                    .map(CafeClassMetadataFactory::create)
+            Set<CafeClass> cafeClassSet = classSet.stream()
+                    .map(CafeClassFactory::create)
                     .collect(Collectors.toSet());
 
             // 2. Build Dependency Graphs (Logic moved here from Registry constructor)
-            MemberDependencyResolverRegistry memberRegistry = MemberDependencyResolverRegistry.from(descriptors);
-            ClassDependencyRegistry classRegistry = ClassDependencyRegistry.from(descriptors);
+            MemberDependencyResolverRegistry memberRegistry = MemberDependencyResolverRegistry.from(cafeClassSet);
+            ClassDependencyRegistry classRegistry = ClassDependencyRegistry.from(cafeClassSet);
 
-            return new CafeBeansRegistry(descriptors, memberRegistry, classRegistry);
+            return new CafeMetadataRegistry(cafeClassSet, memberRegistry, classRegistry);
         }
     }
 }

@@ -9,7 +9,7 @@ import java.lang.reflect.Executable;
 @Builder
 @Getter
 public class BeanRepositoryEntry {
-    private Object value;
+    private Object value; // result of source
     private Executable source;
     private boolean primary;
 }

@@ -1,6 +1,6 @@
 package org.taranix.cafe.beans.converters;
 
-import org.taranix.cafe.beans.annotations.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
 
 @CafeService
 class StringToLongConverter implements CafeConverter<String, Long> {

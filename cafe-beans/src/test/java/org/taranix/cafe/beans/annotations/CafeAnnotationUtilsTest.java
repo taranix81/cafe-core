@@ -4,10 +4,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.taranix.cafe.beans.annotations.base.CafeWirerType;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.Scope;
+import org.taranix.cafe.beans.annotations.methods.CafeProvider;
 import org.taranix.cafe.beans.annotations.modifiers.CafeModifier;
 import org.taranix.cafe.beans.annotations.modifiers.CafeName;
 import org.taranix.cafe.beans.annotations.modifiers.CafePrimary;
-import org.taranix.cafe.beans.annotations.types.CafeType;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 
 import java.lang.annotation.Annotation;
@@ -37,7 +40,7 @@ class CafeAnnotationUtilsTest {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @CafeType
+    @CafeWirerType
     @interface CustomTypeMarker {
     }
 
@@ -256,25 +259,25 @@ class CafeAnnotationUtilsTest {
             // Check if CafeName is extended by CafeType (should be false)
             Field field = MemberBean.class.getDeclaredField("fieldWithCafeName");
             Annotation cafeName = field.getAnnotation(CafeName.class);
-            assertFalse(CafeAnnotationUtils.isAnnotationMarkedBy(cafeName, CafeType.class));
+            assertFalse(CafeAnnotationUtils.isAnnotationMarkedBy(cafeName, CafeWirerType.class));
         }
 
         @Test
         void hasMarker_ShouldReturnTrueForFieldMarker() throws NoSuchFieldException {
             Field field = MemberBean.class.getDeclaredField("fieldWithTypeMarker");
-            assertTrue(CafeAnnotationUtils.hasMarker(field, CafeType.class));
+            assertTrue(CafeAnnotationUtils.hasAnnotationMarker(field, CafeWirerType.class));
         }
 
         @Test
         void hasMarker_ShouldReturnTrueForExecutableMarker() throws NoSuchMethodException {
             Method method = MemberBean.class.getDeclaredMethod("modifiedProviderMethod");
-            assertTrue(CafeAnnotationUtils.hasMarker(method, CafeModifier.class));
+            assertTrue(CafeAnnotationUtils.hasAnnotationMarker(method, CafeModifier.class));
         }
 
         @Test
         void hasMarker_ShouldReturnFalseWhenMarkerIsMissing() throws NoSuchMethodException {
             Method method = MemberBean.class.getDeclaredMethod("unannotatedMethod");
-            assertFalse(CafeAnnotationUtils.hasMarker(method, CafeType.class));
+            assertFalse(CafeAnnotationUtils.hasAnnotationMarker(method, CafeWirerType.class));
         }
 
     }

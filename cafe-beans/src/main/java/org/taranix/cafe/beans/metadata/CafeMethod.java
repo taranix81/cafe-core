@@ -1,7 +1,7 @@
 package org.taranix.cafe.beans.metadata;
 
 import lombok.Getter;
-import org.taranix.cafe.beans.annotations.CafeProvider;
+import org.taranix.cafe.beans.annotations.base.CafeWirerType;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
@@ -20,15 +20,15 @@ import java.util.Set;
  * (which provide a bean) and task/event handler methods (which have dependencies).
  */
 @Getter
-public class CafeMethodMetadata extends CafeMemberMetadata {
+public class CafeMethod extends CafeMember {
 
     private final Method method;
 
     /**
      * Constructs a descriptor for the given method.
      */
-    CafeMethodMetadata(final Method method, CafeClassMetadata cafeClassMetadata) {
-        super(cafeClassMetadata);
+    CafeMethod(final Method method, CafeClass cafeClass) {
+        super(cafeClass);
         this.method = method;
     }
 
@@ -42,9 +42,9 @@ public class CafeMethodMetadata extends CafeMemberMetadata {
      * For factory methods, this is the method's return type.
      */
     @Override
-    public Set<BeanTypeKey> getProvidedTypes() {
+    public Set<BeanTypeKey> getProvidedTypeKeys() {
         // A method can only provide one bean (its return value)
-        if (!hasAnnotation(CafeProvider.class)) {
+        if (!CafeAnnotationUtils.hasAnnotationMarker(getMethod(), CafeWirerType.class)) {
             return Set.of();
         }
         return Set.of(getMethodReturnTypeKey());
@@ -58,7 +58,11 @@ public class CafeMethodMetadata extends CafeMemberMetadata {
      * </ul>
      */
     @Override
-    public List<BeanTypeKey> getRequiredTypes() {
+    public List<BeanTypeKey> getRequiredTypeKeys() {
+        if (!CafeAnnotationUtils.hasAnnotationMarker(getMethod(), CafeWirerType.class)) {
+            return List.of();
+        }
+
         List<BeanTypeKey> result = new ArrayList<>();
 
         // Dependency on owner class instance for non-static methods
@@ -67,6 +71,7 @@ public class CafeMethodMetadata extends CafeMemberMetadata {
         }
 
         // Add all parameter types as bean dependencies
+
         result.addAll(Arrays.stream(getMethodParameterTypeKeys()).toList());
         return result;
     }
@@ -76,7 +81,7 @@ public class CafeMethodMetadata extends CafeMemberMetadata {
      * on the method itself.
      */
     @Override
-    public List<PropertyTypeKey> getRequiredProperties() {
+    public List<PropertyTypeKey> getRequiredPropertyTypeKeys() {
         return List.of();
     }
 
@@ -87,7 +92,7 @@ public class CafeMethodMetadata extends CafeMemberMetadata {
         }
 
         // Uses pattern matching for instanceof (Java 16+)
-        if (obj instanceof CafeMethodMetadata cafeMethodInfo) {
+        if (obj instanceof CafeMethod cafeMethodInfo) {
             return getMember().equals(cafeMethodInfo.getMember());
         }
         return false;

@@ -5,7 +5,6 @@ import org.taranix.cafe.beans.converters.CafeConverter;
 import org.taranix.cafe.beans.exceptions.CafeApplicationException;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.repositories.beans.BeanRepositoryEntry;
-import org.taranix.cafe.beans.repositories.beans.BeansRepository;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 import org.taranix.cafe.beans.resolvers.metadata.CafeClassResolver;
 import org.taranix.cafe.beans.resolvers.metadata.method.CafeMethodResolver;
@@ -45,20 +44,17 @@ public abstract class CafeApplication {
     }
 
     public void addBeanToContext(Object object, boolean asPrimary) {
-        cafeApplicationContext.getRepository().set(BeanTypeKey.from(object.getClass()), BeanRepositoryEntry.builder()
+        cafeApplicationContext.getBeansFactory().getRepository().set(BeanTypeKey.from(object.getClass()), BeanRepositoryEntry.builder()
                 .value(object)
                 .primary(asPrimary)
                 .source(null)
                 .build());
     }
 
-    public void addRepositoryToContext(BeansRepository repository) {
-        cafeApplicationContext.getRepository().addRepository(repository);
-    }
 
     protected Class<?> validateApplicationClass(Class<?> applicationConfigClass) {
-        if (!CafeAnnotationUtils.isAnnotationPresent(applicationConfigClass, org.taranix.cafe.beans.annotations.CafeApplication.class)) {
-            throw new CafeApplicationException("Missing annotation :" + org.taranix.cafe.beans.annotations.CafeApplication.class.getName());
+        if (!CafeAnnotationUtils.isAnnotationPresent(applicationConfigClass, org.taranix.cafe.beans.annotations.classes.CafeApplication.class)) {
+            throw new CafeApplicationException("Missing annotation :" + org.taranix.cafe.beans.annotations.classes.CafeApplication.class.getName());
         }
         return applicationConfigClass;
     }
@@ -101,8 +97,8 @@ public abstract class CafeApplication {
         return packages.toArray(new String[]{});
     }
 
-    protected org.taranix.cafe.beans.annotations.CafeApplication getCafeApplicationAnnotation() {
-        return applicationConfigClass.getAnnotation(org.taranix.cafe.beans.annotations.CafeApplication.class);
+    protected org.taranix.cafe.beans.annotations.classes.CafeApplication getCafeApplicationAnnotation() {
+        return applicationConfigClass.getAnnotation(org.taranix.cafe.beans.annotations.classes.CafeApplication.class);
     }
 
     /**

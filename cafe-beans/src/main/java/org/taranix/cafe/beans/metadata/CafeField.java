@@ -1,8 +1,8 @@
 package org.taranix.cafe.beans.metadata;
 
 import lombok.Getter;
-import org.taranix.cafe.beans.annotations.CafeInject;
-import org.taranix.cafe.beans.annotations.CafeProperty;
+import org.taranix.cafe.beans.annotations.fields.CafeInject;
+import org.taranix.cafe.beans.annotations.fields.CafeProperty;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
@@ -20,15 +20,15 @@ import java.util.Set;
  * for field injection (e.g., @CafeInject) and property injection (e.g., @CafeProperty).
  */
 @Getter
-public class CafeFieldMetadata extends CafeMemberMetadata {
+public class CafeField extends CafeMember {
 
     private final Field field;
 
     /**
      * Constructs a descriptor for the given field.
      */
-    CafeFieldMetadata(final Field field, CafeClassMetadata cafeClassMetadata) {
-        super(cafeClassMetadata);
+    CafeField(final Field field, CafeClass cafeClass) {
+        super(cafeClass);
         this.field = field;
     }
 
@@ -41,7 +41,7 @@ public class CafeFieldMetadata extends CafeMemberMetadata {
      * Fields, typically, do not provide new beans to the container.
      */
     @Override
-    public Set<BeanTypeKey> getProvidedTypes() {
+    public Set<BeanTypeKey> getProvidedTypeKeys() {
         return Set.of();
     }
 
@@ -53,7 +53,7 @@ public class CafeFieldMetadata extends CafeMemberMetadata {
      * </ul>
      */
     @Override
-    public List<BeanTypeKey> getRequiredTypes() {
+    public List<BeanTypeKey> getRequiredTypeKeys() {
         List<BeanTypeKey> result = new ArrayList<>();
 
         // Dependency on owner class instance for non-static fields
@@ -73,7 +73,7 @@ public class CafeFieldMetadata extends CafeMemberMetadata {
      * Returns property dependencies if the field is annotated with @CafeProperty.
      */
     @Override
-    public List<PropertyTypeKey> getRequiredProperties() {
+    public List<PropertyTypeKey> getRequiredPropertyTypeKeys() {
         if (hasAnnotation(CafeProperty.class)) {
             String propertyName = getAnnotation(CafeProperty.class).name();
             return List.of(PropertyTypeKey.from(propertyName));

@@ -2,7 +2,7 @@ package org.taranix.cafe.desktop;
 
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeApplication;
-import org.taranix.cafe.beans.annotations.CafeInject;
+import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.beans.resolvers.metadata.method.CafeMethodResolver;
 import org.taranix.cafe.desktop.actions.HandlersService;
 import org.taranix.cafe.desktop.components.application.ApplicationComponent;

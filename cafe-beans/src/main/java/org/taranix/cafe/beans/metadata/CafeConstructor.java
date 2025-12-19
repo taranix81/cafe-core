@@ -19,15 +19,15 @@ import java.util.stream.Collectors;
  * and the dependencies needed for invocation (constructor parameters).
  */
 @Getter
-public class CafeConstructorMetadata extends CafeMemberMetadata {
+public class CafeConstructor extends CafeMember {
 
     private final Constructor<?> constructor;
 
     /**
      * Constructs a descriptor for the given constructor.
      */
-    CafeConstructorMetadata(final Constructor<?> constructor, CafeClassMetadata cafeClassMetadata) {
-        super(cafeClassMetadata);
+    CafeConstructor(final Constructor<?> constructor, CafeClass cafeClass) {
+        super(cafeClass);
         this.constructor = constructor;
     }
 
@@ -45,25 +45,12 @@ public class CafeConstructorMetadata extends CafeMemberMetadata {
      * </ul>
      */
     @Override
-    public Set<BeanTypeKey> getProvidedTypes() {
+    public Set<BeanTypeKey> getProvidedTypeKeys() {
         Set<BeanTypeKey> result = new HashSet<>();
         Class<?> declaringClass = getConstructor().getDeclaringClass();
 
         // 1. The class itself
         result.add(BeanTypeKey.from(getParentRootClass()));
-
-//        // 2. All superclasses
-//        result.addAll(CafeReflectionUtils.getAllSuperClasses(declaringClass)
-//                .stream()
-//                .map(BeanTypeKey::from)
-//                .collect(Collectors.toSet()));
-//
-//        // 3. All interfaces
-//        result.addAll(CafeReflectionUtils.getAllInterfaces(declaringClass)
-//                .stream()
-//                .map(BeanTypeKey::from)
-//                .collect(Collectors.toSet()));
-
         result.addAll(CafeReflectionUtils.getAllSuperTypes(declaringClass).stream()
                 .map(BeanTypeKey::from)
                 .collect(Collectors.toSet()));
@@ -75,7 +62,7 @@ public class CafeConstructorMetadata extends CafeMemberMetadata {
      * These are derived from the constructor's parameter types.
      */
     @Override
-    public List<BeanTypeKey> getRequiredTypes() {
+    public List<BeanTypeKey> getRequiredTypeKeys() {
         List<Type> parameterTypes = CafeReflectionUtils.determineConstructorParameterTypes(getConstructor());
         return parameterTypes.stream()
                 .map(BeanTypeKey::from)
@@ -87,7 +74,7 @@ public class CafeConstructorMetadata extends CafeMemberMetadata {
      * on them in this framework design.
      */
     @Override
-    public List<PropertyTypeKey> getRequiredProperties() {
+    public List<PropertyTypeKey> getRequiredPropertyTypeKeys() {
         return List.of();
     }
 

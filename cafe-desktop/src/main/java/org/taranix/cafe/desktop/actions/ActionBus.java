@@ -1,7 +1,7 @@
 package org.taranix.cafe.desktop.actions;
 
 import org.apache.commons.lang3.StringUtils;
-import org.taranix.cafe.beans.annotations.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
 import org.taranix.cafe.desktop.components_old.events.annotations.CafeEventHandler;

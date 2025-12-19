@@ -2,7 +2,7 @@ package org.taranix.cafe.beans.metadata;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.taranix.cafe.beans.annotations.CafeProvider;
+import org.taranix.cafe.beans.annotations.methods.CafeProvider;
 import org.taranix.cafe.beans.annotations.modifiers.CafeName;
 import org.taranix.cafe.beans.annotations.modifiers.CafeOptional;
 import org.taranix.cafe.beans.annotations.modifiers.CafePrimary;
@@ -19,31 +19,31 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Negative/Positive: CafeClassInfo Definition & Inspection")
-class CafeClassMetadataTest {
+class CafeClassTest {
 
     @Test
     @DisplayName("Negative: Should throw exception when class has multiple constructors")
     void shouldThrowWhenMoreThanOneGetConstructor() {
         // building CafeClassInfo triggers scanMembers -> findConstructor -> should throw
-        assertThrows(CafeClassMetadataException.class, () -> CafeClassMetadataFactory.create(CafeClassMetadataTestFixtures.TwoConstructorsClass.class));
+        assertThrows(CafeClassMetadataException.class, () -> CafeClassFactory.create(CafeClassMetadataTestFixtures.TwoConstructorsClass.class));
     }
 
     @Test
     @DisplayName("Positive: Should correctly find all annotated methods and fields in class")
     void shouldFindAllAnnotatedGetMethodsMetadatasAndGetFieldsMetadata() {
         //given
-        CafeClassMetadata cafeClassMetadata = CafeBeansRegistry
+        CafeClass cafeClass = CafeMetadataRegistry
                 .builder()
                 .withClass(CafeClassMetadataTestFixtures.ManyProvidersAndInjectables.class)
                 .build()
-                .findClassMetadata(CafeClassMetadataTestFixtures.ManyProvidersAndInjectables.class);
+                .getClassMetadata(CafeClassMetadataTestFixtures.ManyProvidersAndInjectables.class);
 
 
         //when
-        Set<CafeMemberMetadata> allMembers = cafeClassMetadata.getMembers();
-        Set<CafeMethodMetadata> allMethods = cafeClassMetadata.getMethods();
-        Set<CafeFieldMetadata> allFields = cafeClassMetadata.getFields();
-        CafeConstructorMetadata constructor = cafeClassMetadata.getConstructor();
+        Set<CafeMember> allMembers = cafeClass.getMembers();
+        Set<CafeMethod> allMethods = cafeClass.getMethods();
+        Set<CafeField> allFields = cafeClass.getFields();
+        CafeConstructor constructor = cafeClass.getConstructor();
 
         //then
         assertEquals(9, allMembers.size());
@@ -51,31 +51,31 @@ class CafeClassMetadataTest {
         assertEquals(3, allFields.size());
 
         assertTrue(constructor.hasDependencies());
-        assertTrue(constructor.getRequiredTypes().contains(BeanTypeKey.from(BigDecimal.class)));
-        assertTrue(constructor.getProvidedTypes().contains(BeanTypeKey.from(CafeClassMetadataTestFixtures.ManyProvidersAndInjectables.class)));
+        assertTrue(constructor.getRequiredTypeKeys().contains(BeanTypeKey.from(BigDecimal.class)));
+        assertTrue(constructor.getProvidedTypeKeys().contains(BeanTypeKey.from(CafeClassMetadataTestFixtures.ManyProvidersAndInjectables.class)));
     }
 
     @Test
     @DisplayName("Positive: Should correctly determine simple field and method return types")
     void shouldDetermineFieldAndMethodType() {
         //given
-        CafeClassMetadata cafeClassMetadata = CafeBeansRegistry
+        CafeClass cafeClass = CafeMetadataRegistry
                 .builder()
                 .withClass(CafeClassMetadataTestFixtures.IntegerProviderAndStringInjectable.class)
                 .build()
-                .findClassMetadata(CafeClassMetadataTestFixtures.IntegerProviderAndStringInjectable.class);
+                .getClassMetadata(CafeClassMetadataTestFixtures.IntegerProviderAndStringInjectable.class);
 
         //when
-        CafeFieldMetadata genericField = cafeClassMetadata.getFields().stream().findFirst().orElse(null);
-        CafeMethodMetadata genericMethod = cafeClassMetadata.getMethods().stream().findFirst().orElse(null);
-        CafeConstructorMetadata cafeConstructorDescriptor = cafeClassMetadata.getConstructor();
+        CafeField genericField = cafeClass.getFields().stream().findFirst().orElse(null);
+        CafeMethod genericMethod = cafeClass.getMethods().stream().findFirst().orElse(null);
+        CafeConstructor cafeConstructorDescriptor = cafeClass.getConstructor();
 
         //then
         assertNotNull(genericField);
         assertNotNull(genericMethod);
         assertNotNull(cafeConstructorDescriptor);
 
-        assertEquals(3, cafeConstructorDescriptor.getProvidedTypes().size());
+        assertEquals(2, cafeConstructorDescriptor.getProvidedTypeKeys().size());
         assertEquals(String.class, genericField.getFieldTypeKey().getType());
         assertEquals(Integer.class, genericMethod.getMethodReturnTypeKey().getType());
     }
@@ -84,32 +84,32 @@ class CafeClassMetadataTest {
     @DisplayName("Positive: Should correctly resolve generic types from class hierarchy for members")
     void shouldDetermineFieldAndMethodTypeAndParameterType() {
         //given
-        CafeClassMetadata cafeClassMetadata = CafeBeansRegistry
+        CafeClass cafeClass = CafeMetadataRegistry
                 .builder()
                 .withClass(CafeClassMetadataTestFixtures.DateProviderWithInstantParameterAndLongInjectable.class)
                 .build()
-                .findClassMetadata(CafeClassMetadataTestFixtures.DateProviderWithInstantParameterAndLongInjectable.class);
+                .getClassMetadata(CafeClassMetadataTestFixtures.DateProviderWithInstantParameterAndLongInjectable.class);
 
         //when
-        CafeFieldMetadata genericField = cafeClassMetadata.getFields().stream().findFirst().orElse(null);
-        CafeMethodMetadata genericMethod = cafeClassMetadata.getMethods().stream().findFirst().orElse(null);
-        CafeConstructorMetadata cafeConstructorDescriptor = cafeClassMetadata.getConstructor();
+        CafeField genericField = cafeClass.getFields().stream().findFirst().orElse(null);
+        CafeMethod genericMethod = cafeClass.getMethods().stream().findFirst().orElse(null);
+        CafeConstructor cafeConstructorDescriptor = cafeClass.getConstructor();
 
         //then
         assertNotNull(genericField);
         assertNotNull(genericMethod);
         assertNotNull(cafeConstructorDescriptor);
 
-        assertEquals(3, cafeConstructorDescriptor.getProvidedTypes().size());
+        assertEquals(2, cafeConstructorDescriptor.getProvidedTypeKeys().size());
         assertEquals(Long.class, genericField.getFieldTypeKey().getType());
         assertEquals(Date.class, genericMethod.getMethodReturnTypeKey().getType());
-        assertTrue(genericMethod.getRequiredTypes().contains(BeanTypeKey.from(Instant.class)));
+        assertTrue(genericMethod.getRequiredTypeKeys().contains(BeanTypeKey.from(Instant.class)));
     }
 
     @Test
     @DisplayName("Positive: Should find annotated members inherited from superclass")
     void shouldFindInheritedAnnotatedMembers() {
-        CafeClassMetadata info = CafeClassMetadataFactory.create(CafeClassMetadataTestFixtures.Sub.class);
+        CafeClass info = CafeClassFactory.create(CafeClassMetadataTestFixtures.Sub.class);
 
         // inherited annotated field
         assertTrue(info.getFields().stream()
@@ -125,20 +125,20 @@ class CafeClassMetadataTest {
     @Test
     @DisplayName("Positive: Should correctly identify dependencies for static vs. instance provider methods")
     void staticMethodShouldNotDependOnOwner() throws NoSuchMethodException {
-        CafeClassMetadata info = CafeClassMetadataFactory.create(StaticProvider.class);
+        CafeClass info = CafeClassFactory.create(StaticProvider.class);
 
         Method staticM = StaticProvider.class.getDeclaredMethod("provideStatic");
         Method instM = StaticProvider.class.getDeclaredMethod("provideInstance");
 
-        CafeMethodMetadata staticDesc = info.getMethodMetadata(staticM);
-        CafeMethodMetadata instDesc = info.getMethodMetadata(instM);
+        CafeMethod staticDesc = info.getMethodMetadata(staticM);
+        CafeMethod instDesc = info.getMethodMetadata(instM);
 
         // static provider must not require owner class
-        assertFalse(staticDesc.getRequiredTypes().contains(BeanTypeKey.from(StaticProvider.class)),
+        assertFalse(staticDesc.getRequiredTypeKeys().contains(BeanTypeKey.from(StaticProvider.class)),
                 "Static method should not depend on owner class");
 
         // instance provider must require owner class
-        assertTrue(instDesc.getRequiredTypes().contains(BeanTypeKey.from(StaticProvider.class)),
+        assertTrue(instDesc.getRequiredTypeKeys().contains(BeanTypeKey.from(StaticProvider.class)),
                 "Instance method should depend on owner class");
     }
 
@@ -146,14 +146,14 @@ class CafeClassMetadataTest {
     @DisplayName("Positive: Should correctly identify 'primary' and 'named' beans")
     void shouldCorrectlyIdentifyPrimaryAndNamedBeans() {
         // given
-        CafeClassMetadata info = CafeClassMetadataFactory.create(CafeClassMetadataTestFixtures.PrimaryAndNamedProvider.class);
+        CafeClass info = CafeClassFactory.create(CafeClassMetadataTestFixtures.PrimaryAndNamedProvider.class);
 
         // when
-        CafeMethodMetadata primaryMethod = info.getMethods().stream()
+        CafeMethod primaryMethod = info.getMethods().stream()
                 .filter(m -> m.getMethod().getName().equals("providePrimary"))
                 .findFirst().orElseThrow();
 
-        CafeMethodMetadata namedMethod = info.getMethods().stream()
+        CafeMethod namedMethod = info.getMethods().stream()
                 .filter(m -> m.getMethod().getName().equals("provideNamed"))
                 .findFirst().orElseThrow();
 
@@ -169,14 +169,14 @@ class CafeClassMetadataTest {
     @DisplayName("Positive: Should correctly identify Optional dependencies via CafeOptional")
     void shouldIdentifyOptionalGetRequiredTypes() {
         // given
-        CafeClassMetadata info = CafeClassMetadataFactory.create(CafeClassMetadataTestFixtures.OptionalInjectionService.class);
+        CafeClass info = CafeClassFactory.create(CafeClassMetadataTestFixtures.OptionalInjectionService.class);
 
         // when
-        CafeFieldMetadata requiredField = info.getFields().stream()
+        CafeField requiredField = info.getFields().stream()
                 .filter(f -> f.getField().getName().equals("requiredDependency"))
                 .findFirst().orElseThrow();
 
-        CafeFieldMetadata optionalField = info.getFields().stream()
+        CafeField optionalField = info.getFields().stream()
                 .filter(f -> f.getField().getName().equals("optionalDependency"))
                 .findFirst().orElseThrow();
 
@@ -189,14 +189,14 @@ class CafeClassMetadataTest {
     @DisplayName("Positive: Should handle nested generic types (List<String>) in fields and methods")
     void shouldHandleNestedGenerics() {
         // given
-        CafeClassMetadata info = CafeClassMetadataFactory.create(CafeClassMetadataTestFixtures.NestedGenericsProvider.class);
+        CafeClass info = CafeClassFactory.create(CafeClassMetadataTestFixtures.NestedGenericsProvider.class);
 
         // when
-        CafeFieldMetadata listField = info.getFields().stream()
+        CafeField listField = info.getFields().stream()
                 .filter(f -> f.getField().getName().equals("listOfStrings"))
                 .findFirst().orElseThrow();
 
-        CafeMethodMetadata listProvider = info.getMethods().stream()
+        CafeMethod listProvider = info.getMethods().stream()
                 .filter(m -> m.getMethod().getName().equals("provideList"))
                 .findFirst().orElseThrow();
 
@@ -212,43 +212,43 @@ class CafeClassMetadataTest {
     @DisplayName("Positive: Should correctly resolve dependencies from Generic-typed Constructor")
     void shouldResolveGenericGetConstructorGetRequiredTypes() {
         // given
-        CafeClassMetadata info = CafeClassMetadataFactory.create(CafeClassMetadataTestFixtures.GenericConstructorService.class);
+        CafeClass info = CafeClassFactory.create(CafeClassMetadataTestFixtures.GenericConstructorService.class);
 
         // when
-        CafeConstructorMetadata constructor = info.getConstructor();
+        CafeConstructor constructor = info.getConstructor();
 
         // then
         // The constructor should depend on the generic type T, which is resolved to Integer
         assertTrue(constructor.hasDependencies());
-        assertTrue(constructor.getRequiredTypes().contains(BeanTypeKey.from(Integer.class)));
-        assertTrue(constructor.getProvidedTypes().contains(BeanTypeKey.from(CafeClassMetadataTestFixtures.GenericConstructorService.class)));
+        assertTrue(constructor.getRequiredTypeKeys().contains(BeanTypeKey.from(Integer.class)));
+        assertTrue(constructor.getProvidedTypeKeys().contains(BeanTypeKey.from(CafeClassMetadataTestFixtures.GenericConstructorService.class)));
     }
 
     @Test
     @DisplayName("Positive: Should correctly resolve dependencies from a SuperClass constructor")
     void shouldResolveSuperClassGetConstructorGetRequiredTypes() {
         // given
-        CafeClassMetadata info = CafeClassMetadataFactory.create(CafeClassMetadataTestFixtures.SubClassWithInheritedConstructor.class);
+        CafeClass info = CafeClassFactory.create(CafeClassMetadataTestFixtures.SubClassWithInheritedConstructor.class);
 
         // when
-        CafeConstructorMetadata constructor = info.getConstructor();
+        CafeConstructor constructor = info.getConstructor();
 
         // then
         // The effective constructor is from SuperClassWithConstructor and requires String
         assertTrue(constructor.hasDependencies());
-        assertTrue(constructor.getRequiredTypes().contains(BeanTypeKey.from(String.class)));
-        assertTrue(constructor.getProvidedTypes().contains(BeanTypeKey.from(CafeClassMetadataTestFixtures.SubClassWithInheritedConstructor.class)));
+        assertTrue(constructor.getRequiredTypeKeys().contains(BeanTypeKey.from(String.class)));
+        assertTrue(constructor.getProvidedTypeKeys().contains(BeanTypeKey.from(CafeClassMetadataTestFixtures.SubClassWithInheritedConstructor.class)));
     }
 
     @Test
     @DisplayName("Should categorize members correctly during initialization")
     void shouldCategorizeMembers() {
         // given
-        CafeClassMetadata metadata = CafeClassMetadataFactory.create(CafeClassMetadataTestFixtures.PerformanceTestBean.class);
+        CafeClass metadata = CafeClassFactory.create(CafeClassMetadataTestFixtures.PerformanceTestBean.class);
 
         // when
-        Set<CafeFieldMetadata> fields = metadata.getFields();
-        Set<CafeMethodMetadata> methods = metadata.getMethods();
+        Set<CafeField> fields = metadata.getFields();
+        Set<CafeMethod> methods = metadata.getMethods();
 
         // then
         assertEquals(2, fields.size(), "Should identify exactly 2 fields");
@@ -285,7 +285,7 @@ class CafeClassMetadataTest {
             }
         }
 
-        CafeClassMetadata metadata = CafeClassMetadataFactory.create(Concrete.class);
+        CafeClass metadata = CafeClassFactory.create(Concrete.class);
 
         // Java compiler creates a bridge method Object getVal() in Concrete class.
         // We expect only 1 visible CafeProvider method.

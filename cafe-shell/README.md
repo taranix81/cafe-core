@@ -1,19 +1,25 @@
 # Cafe Shell
 
-Cafe Shell is a lightweight, annotation-driven command-line framework built on top of [Cafe Beans](../cafe-beans). It enables you to quickly create CLI applications with dependency injection, automatic command mapping, robust argument parsing, and extensible command resolution.
+Cafe Shell is a lightweight, annotation-driven command-line framework built on top of [Cafe Beans](../cafe-beans). It
+enables you to quickly create CLI applications with dependency injection, automatic command mapping, robust argument
+parsing, and extensible command resolution.
 
 ---
 
 ## Features
 
-- **Annotation-based Command Registration:** Define CLI commands as Java classes or methods using `@CafeCommand` and `@CafeCommandRun`.
-- **Dependency Injection:** Integrates with Cafe Beans for DI, letting you inject services and configuration into commands and the shell runtime.
+- **Annotation-based Command Registration:** Define CLI commands as Java classes or methods using `@CafeCommand` and
+  `@CafeCommandRun`.
+- **Dependency Injection:** Integrates with Cafe Beans for DI, letting you inject services and configuration into
+  commands and the shell runtime.
 - **Apache Commons CLI Integration:** Leverages Commons CLI's `Options` and `CommandLineParser` for argument parsing.
 - **Custom Command Resolvers:** Extensible mechanism for mapping CLI arguments to command implementations.
 - **Automatic Help Generation:** Built-in help command and error handling for invalid or missing arguments.
-- **Runtime Object Repository:** Commands can produce objects that are stored and made available for subsequent commands.
+- **Runtime Object Repository:** Commands can produce objects that are stored and made available for subsequent
+  commands.
 - **@CafePrimary Support:** Control bean injection precedence when multiple sources of the same type exist.
-- **Flexible Parameter Injection:** Inject arguments, beans, services, and runtime-produced objects into your command methods.
+- **Flexible Parameter Injection:** Inject arguments, beans, services, and runtime-produced objects into your command
+  methods.
 
 ---
 
@@ -61,7 +67,7 @@ public class Main {
 Set up your root configuration class and any beans you need:
 
 ```java
-import org.taranix.cafe.beans.annotations.CafeApplication;
+import org.taranix.cafe.beans.annotations.classes.CafeApplication;
 
 @CafeApplication
 public class MyShellConfig {
@@ -104,24 +110,26 @@ public class RandomUUIDCommand {
 }
 ```
 
-
-
 ---
 
 ## Advanced Command Execution and Dependency Injection
 
 ### Command Method Parameters
 
-Methods annotated with `@CafeCommandRun` can declare parameters in their signature. These parameters are automatically resolved and injected at runtime using the following rules:
+Methods annotated with `@CafeCommandRun` can declare parameters in their signature. These parameters are automatically
+resolved and injected at runtime using the following rules:
 
 - **CafeCommandArguments**  
-  If a parameter is of type `CafeCommandArguments` (a built-in class), it receives the parsed CLI arguments, mapped from Apache Commons CLI options.
+  If a parameter is of type `CafeCommandArguments` (a built-in class), it receives the parsed CLI arguments, mapped from
+  Apache Commons CLI options.
 
 - **Beans & Services**  
-  Any other parameter is injected as a bean or service, produced by factory configuration classes or registered in the DI context.
+  Any other parameter is injected as a bean or service, produced by factory configuration classes or registered in the
+  DI context.
 
 - **Produced Objects from Previous Commands**  
-  If a previous command produced an object, it is stored in the runtime repository and can be injected into subsequent commands by declaring a parameter of the matching type.
+  If a previous command produced an object, it is stored in the runtime repository and can be injected into subsequent
+  commands by declaring a parameter of the matching type.
 
 #### Example
 
@@ -141,8 +149,10 @@ public class DoSomethingCommand {
 ### Command Result Reuse and @CafePrimary
 
 - Methods annotated with `@CafeCommandRun` can return objects. Returned objects are stored in the runtime repository.
-- If multiple objects of the same type are available (e.g., one produced by a command, another by a factory), you can control which to inject using the `@CafePrimary` annotation.
-    - Annotate the command method with `@CafePrimary` to give its produced object priority over factory beans when resolving parameters of that type for later commands.
+- If multiple objects of the same type are available (e.g., one produced by a command, another by a factory), you can
+  control which to inject using the `@CafePrimary` annotation.
+    - Annotate the command method with `@CafePrimary` to give its produced object priority over factory beans when
+      resolving parameters of that type for later commands.
 
 #### Example
 
@@ -163,7 +173,8 @@ public class ProduceDataCommand {
 ## How It Works
 
 - **Startup:** `CafeShell` initializes a dependency-injected context based on your configuration.
-- **Command Resolution:** CLI arguments are parsed using Apache Commons CLI. Each option or positional argument is mapped to a corresponding `@CafeCommand`.
+- **Command Resolution:** CLI arguments are parsed using Apache Commons CLI. Each option or positional argument is
+  mapped to a corresponding `@CafeCommand`.
 - **Execution:** Resolved commands are executed in order, according to your logic and the shell runtime.
 - **Help and Errors:** Invalid arguments or missing commands cause the shell to print the help screen automatically.
 
@@ -172,6 +183,7 @@ public class ProduceDataCommand {
 ## Error Handling & Exit Codes
 
 Cafe Shell includes robust error handling and uses exit codes for clarity:
+
 - `0` — Success
 - `1` — Error during execution
 - `2` — Wrong or missing argument(s)

@@ -1,8 +1,8 @@
 package org.taranix.cafe.beans.metadata;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.taranix.cafe.beans.annotations.CafeInject;
-import org.taranix.cafe.beans.annotations.CafeProvider;
+import org.taranix.cafe.beans.annotations.fields.CafeInject;
+import org.taranix.cafe.beans.annotations.methods.CafeProvider;
 import org.taranix.cafe.beans.annotations.modifiers.CafeName;
 
 /**

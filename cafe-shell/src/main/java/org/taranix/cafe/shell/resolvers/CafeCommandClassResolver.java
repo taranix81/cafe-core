@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.Option;
 import org.apache.commons.lang3.StringUtils;
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.metadata.CafeClassMetadata;
-import org.taranix.cafe.beans.metadata.CafeMethodMetadata;
+import org.taranix.cafe.beans.metadata.CafeClass;
+import org.taranix.cafe.beans.metadata.CafeMethod;
 import org.taranix.cafe.beans.resolvers.metadata.AbstractClassResolver;
 import org.taranix.cafe.shell.annotations.CafeCommand;
 import org.taranix.cafe.shell.commands.CafeCommandOptionBinding;
@@ -37,7 +37,7 @@ public class CafeCommandClassResolver extends AbstractClassResolver {
     }
 
     @Override
-    public Object resolve(CafeClassMetadata classInfo, CafeBeansFactory beansFactory) {
+    public Object resolve(CafeClass classInfo, CafeBeansFactory beansFactory) {
         CafeCommand cafeCommandAnnotation = classInfo.getRootClassAnnotation(CafeCommand.class);
         Object commandInstance = super.resolve(classInfo, beansFactory);
         Option option = buildOption(cafeCommandAnnotation);
@@ -51,11 +51,11 @@ public class CafeCommandClassResolver extends AbstractClassResolver {
     }
 
     @Override
-    protected void resolveMethod(CafeBeansFactory cafeBeansFactory, Object instance, CafeMethodMetadata descriptor) {
+    protected void resolveMethod(CafeBeansFactory cafeBeansFactory, Object instance, CafeMethod descriptor) {
         //We skip resolving method at this stage. Method will be resolved on demand.
     }
 
-    private CafeCommandOptionBinding buildCommandBinding(Object commandExecutable, CafeMethodMetadata executor, Option option) {
+    private CafeCommandOptionBinding buildCommandBinding(Object commandExecutable, CafeMethod executor, Option option) {
         return CafeCommandOptionBinding.builder()
                 .optionBinding(option)
                 .commandInstance(commandExecutable)
@@ -70,7 +70,7 @@ public class CafeCommandClassResolver extends AbstractClassResolver {
 //    }
 
     @Override
-    public boolean isApplicable(CafeClassMetadata cafeClassMetadata) {
+    public boolean isApplicable(CafeClass cafeClass) {
         return true;
     }
 

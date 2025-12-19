@@ -3,10 +3,10 @@ package org.taranix.cafe.desktop.components.application;
 import lombok.Getter;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.*;
-import org.taranix.cafe.beans.annotations.CafeInject;
+import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.beans.annotations.modifiers.CafeOptional;
-import org.taranix.cafe.beans.annotations.CafeProperty;
-import org.taranix.cafe.beans.annotations.CafeService;
+import org.taranix.cafe.beans.annotations.fields.CafeProperty;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
 import org.taranix.cafe.desktop.actions.HandlersService;
 import org.taranix.cafe.desktop.components.Component;
 import org.taranix.cafe.desktop.components.containers.ContainerComponent;
@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 @CafeService
 final class DefaultApplicationComponent implements ApplicationComponent {
 

@@ -3,7 +3,7 @@ package org.taranix.cafe.shell;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 import org.taranix.cafe.beans.CafeApplication;
-import org.taranix.cafe.beans.annotations.CafeInject;
+import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.beans.resolvers.metadata.CafeClassResolver;
 import org.taranix.cafe.beans.resolvers.metadata.method.CafeMethodResolver;
 import org.taranix.cafe.shell.commands.CafeCommandRuntime;

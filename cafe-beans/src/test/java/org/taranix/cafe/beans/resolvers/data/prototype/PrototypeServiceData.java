@@ -1,8 +1,8 @@
 package org.taranix.cafe.beans.resolvers.data.prototype;
 
 import lombok.Getter;
-import org.taranix.cafe.beans.annotations.CafeService;
-import org.taranix.cafe.beans.annotations.Scope;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.Scope;
 
 import java.util.UUID;
 

@@ -3,11 +3,11 @@ package org.taranix.cafe.beans.resolvers;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.taranix.cafe.beans.annotations.CafeInject;
-import org.taranix.cafe.beans.annotations.CafeProvider;
-import org.taranix.cafe.beans.annotations.CafeService;
-import org.taranix.cafe.beans.metadata.CafeBeansRegistry;
-import org.taranix.cafe.beans.metadata.CafeMemberMetadata;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.fields.CafeInject;
+import org.taranix.cafe.beans.annotations.methods.CafeProvider;
+import org.taranix.cafe.beans.metadata.CafeMember;
+import org.taranix.cafe.beans.metadata.CafeMetadataRegistry;
 import org.taranix.cafe.beans.services.CafeOrderedBeansService;
 
 import java.util.List;
@@ -17,13 +17,13 @@ class CafeOrderedBeansServiceTests {
     @Test
     void shouldProperOrderedForSingleClassWithoutDependencies() {
         //given
-        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry cafeMetadataRegistry = CafeMetadataRegistry.builder()
                 .withClass(SubjectClassProvider.class)
                 .build();
-        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeansRegistry);
+        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeMetadataRegistry);
 
         //when
-        List<CafeMemberMetadata> ordered = orderDescriptor.orderedMembers();
+        List<CafeMember> ordered = orderDescriptor.orderedMembers();
 
         //then
         Assertions.assertEquals(2, ordered.size());
@@ -34,15 +34,15 @@ class CafeOrderedBeansServiceTests {
     @Test
     void shouldProperOrderedForSingleClassWithDependencyToProviderClass() {
         //given
-        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry cafeMetadataRegistry = CafeMetadataRegistry.builder()
                 .withClass(SubjectClassProvider.class)
                 .withClass(SubjectClass.class)
                 .build();
 
-        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeansRegistry);
+        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeMetadataRegistry);
 
         //when
-        List<CafeMemberMetadata> ordered = orderDescriptor.orderedMembers();
+        List<CafeMember> ordered = orderDescriptor.orderedMembers();
 
         //then
         Assertions.assertEquals(3, ordered.size());
@@ -55,14 +55,14 @@ class CafeOrderedBeansServiceTests {
     @Test
     void shouldProperOrderedForSingleClassWithDependencyToServiceClass() {
         //given
-        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry cafeMetadataRegistry = CafeMetadataRegistry.builder()
                 .withClass(ServiceClassInjectable.class)
                 .withClass(ServiceClass.class)
                 .build();
-        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeansRegistry);
+        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeMetadataRegistry);
 
         //when
-        List<CafeMemberMetadata> ordered = orderDescriptor.orderedMembers();
+        List<CafeMember> ordered = orderDescriptor.orderedMembers();
 
         //then
         Assertions.assertEquals(3, ordered.size());
@@ -75,15 +75,15 @@ class CafeOrderedBeansServiceTests {
     @Test
     void shouldProperOrderedForSingleClassWithDependencyToServiceClassWithConstructorParameter() {
         //given
-        CafeBeansRegistry cafeBeansRegistry = CafeBeansRegistry.builder()
+        CafeMetadataRegistry cafeMetadataRegistry = CafeMetadataRegistry.builder()
                 .withClass(ServiceClassWCAInjectable.class)
                 .withClass(ServiceClassWCA.class)
                 .withClass(StringProvider.class)
                 .build();
-        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeBeansRegistry);
+        CafeOrderedBeansService orderDescriptor = CafeOrderedBeansService.from(cafeMetadataRegistry);
 
         //when
-        List<CafeMemberMetadata> ordered = orderDescriptor.orderedMembers();
+        List<CafeMember> ordered = orderDescriptor.orderedMembers();
 
         //then
         Assertions.assertEquals(5, ordered.size());

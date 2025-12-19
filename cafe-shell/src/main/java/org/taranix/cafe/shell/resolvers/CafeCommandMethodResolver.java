@@ -3,8 +3,8 @@ package org.taranix.cafe.shell.resolvers;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.metadata.CafeMethodMetadata;
-import org.taranix.cafe.beans.resolvers.metadata.method.DefaultMethodResolver;
+import org.taranix.cafe.beans.metadata.CafeMethod;
+import org.taranix.cafe.beans.resolvers.metadata.method.PrototypeWireMethodResolver;
 import org.taranix.cafe.shell.annotations.CafeCommandRun;
 
 import java.lang.annotation.Annotation;
@@ -13,13 +13,13 @@ import java.util.Objects;
 
 @Slf4j
 @NoArgsConstructor()
-public class CafeCommandMethodResolver extends DefaultMethodResolver {
+public class CafeCommandMethodResolver extends PrototypeWireMethodResolver {
 
     @Override
-    public Object resolve(Object instance, CafeMethodMetadata methodInfo, CafeBeansFactory cafeBeansFactory) {
+    public Object resolve(Object instance, CafeMethod methodInfo, CafeBeansFactory cafeBeansFactory) {
         //We want to execute method more than once and we always persist result
         Object result = executeMethod(instance, methodInfo, cafeBeansFactory);
-        cafeBeansFactory.persistAny(methodInfo, result, null);
+        cafeBeansFactory.persist(methodInfo, result, null);
         return result;
     }
 

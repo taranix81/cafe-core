@@ -2,7 +2,7 @@ package org.taranix.cafe.desktop.components_old.datasource;
 
 import lombok.Getter;
 import org.eclipse.swt.widgets.Display;
-import org.taranix.cafe.beans.annotations.CafeInject;
+import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.desktop.components_old.AbstractComponent;
 import org.taranix.cafe.desktop.services.FileReader;
 import org.taranix.cafe.desktop.services.FileWriter;

@@ -1,8 +1,8 @@
 package org.taranix.cafe.beans.app;
 
 import lombok.extern.slf4j.Slf4j;
-import org.taranix.cafe.beans.annotations.CafeApplication;
-import org.taranix.cafe.beans.annotations.CafePostInit;
+import org.taranix.cafe.beans.annotations.classes.CafeApplication;
+import org.taranix.cafe.beans.annotations.methods.CafePostInit;
 
 import java.util.Date;
 

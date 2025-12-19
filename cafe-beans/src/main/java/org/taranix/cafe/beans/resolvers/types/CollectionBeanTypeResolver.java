@@ -3,7 +3,7 @@ package org.taranix.cafe.beans.resolvers.types;
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.exceptions.CollectionTypeResolverException;
-import org.taranix.cafe.beans.metadata.CafeMemberMetadata;
+import org.taranix.cafe.beans.metadata.CafeMember;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 
 import java.lang.reflect.Type;
@@ -54,13 +54,13 @@ public class CollectionBeanTypeResolver implements CafeBeanTypeResolver {
 
     public Collection<Object> resolveBeansByProvider(CafeBeansFactory beansFactory, BeanTypeKey typeKey) {
         //Resolve Singletons not yet resolved
-        beansFactory.getCafeBeansRegistry().findSingletonProviders(typeKey)
+        beansFactory.getCafeMetadataRegistry().findSingletonProviders(typeKey)
                 .forEach(memberInfo -> resolveProvider(beansFactory, memberInfo));
         //Gather all singletons
         Collection<Object> singletons = beansFactory.getAllResolved(typeKey);
 
         //Resolve prototypes
-        Collection<Object> prototypes = beansFactory.getCafeBeansRegistry().findPrototypeProviders(typeKey).stream()
+        Collection<Object> prototypes = beansFactory.getCafeMetadataRegistry().findPrototypeProviders(typeKey).stream()
                 .map(memberInfo -> resolveProvider(beansFactory, memberInfo))
                 .collect(Collectors.toSet());
 
@@ -68,7 +68,7 @@ public class CollectionBeanTypeResolver implements CafeBeanTypeResolver {
                 .collect(Collectors.toSet());
     }
 
-    private Object resolveProvider(CafeBeansFactory beansFactory, CafeMemberMetadata memberInfo) {
+    private Object resolveProvider(CafeBeansFactory beansFactory, CafeMember memberInfo) {
         return beansFactory.getResolvers()
                 .findProviderResolver(memberInfo)
                 .resolve(memberInfo, beansFactory);

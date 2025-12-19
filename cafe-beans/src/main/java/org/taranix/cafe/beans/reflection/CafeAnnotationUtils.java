@@ -3,8 +3,8 @@ package org.taranix.cafe.beans.reflection;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.taranix.cafe.beans.annotations.CafeService;
-import org.taranix.cafe.beans.annotations.Scope;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.Scope;
 import org.taranix.cafe.beans.annotations.modifiers.CafeName;
 
 import java.lang.annotation.Annotation;
@@ -75,13 +75,6 @@ public class CafeAnnotationUtils {
      * @return The determined Scope, defaults to Singleton.
      */
     public static Scope getScope(Member member) {
-//        if (member instanceof Method method) {
-//            // Check method annotation for factory methods
-//            return Optional.ofNullable(method.getAnnotation(CafeProvider.class))
-//                    .map(CafeProvider::scope)
-//                    .orElse(Scope.Singleton);
-//        }
-
         if (member instanceof Constructor<?>) {
             // Check declaring class annotation for constructors
             return Optional.ofNullable(member.getDeclaringClass().getAnnotation(CafeService.class))
@@ -177,27 +170,39 @@ public class CafeAnnotationUtils {
      * @return true if the annotation is extended by the marker.
      */
     public static boolean isAnnotationMarkedBy(Annotation annotation, Class<? extends Annotation> otherAnnotationClass) {
+        return isAnnotationMarkedBy(annotation.annotationType(), otherAnnotationClass);
+    }
+
+    public static boolean isAnnotationMarkedBy(Class<? extends Annotation> annotationType, Class<? extends Annotation> otherAnnotationClass) {
         // 1. Check if the annotation type is directly marked by the otherAnnotationClass
-        if (annotation.annotationType().isAnnotationPresent(otherAnnotationClass)) {
+        if (annotationType.isAnnotationPresent(otherAnnotationClass)) {
             return true;
         }
 
         // 2. Check all annotations *on* this annotation for the marker.
-        return Arrays.stream(annotation.annotationType().getAnnotations())
+        return Arrays.stream(annotationType.getAnnotations())
                 .filter(a -> !a.annotationType().getPackageName().contains("java.lang"))
                 .anyMatch(a -> isAnnotationMarkedBy(a, otherAnnotationClass));
     }
 
     /**
-     * Unified method to check if an AnnotatedElement (Class, Field, Method, Constructor)
-     * has any annotation that is marked by the given markerClass.
+     * Unified method to check if an AnnotatedElement has any annotation
+     * that is marked by any of the given markerClasses.
      *
-     * @param element     The reflective element to check.
-     * @param markerClass The marker annotation (e.g., Initable.class, Taskable.class).
-     * @return true if any annotation on the element is extended by the markerClass.
+     * @param element       The reflective element to check.
+     * @param markerClasses One or more marker annotations (e.g., Initable.class, Taskable.class).
+     * @return true if any annotation on the element is extended by at least one of the markerClasses.
      */
-    public static boolean hasMarker(AnnotatedElement element, Class<? extends Annotation> markerClass) {
+    @SafeVarargs
+    public static boolean hasAnnotationMarker(AnnotatedElement element, Class<? extends Annotation>... markerClasses) {
+        if (element == null || markerClasses == null || markerClasses.length == 0) {
+            return false;
+        }
+
         return Arrays.stream(element.getAnnotations())
-                .anyMatch(annotation -> isAnnotationMarkedBy(annotation, markerClass));
+                .anyMatch(annotation ->
+                        Arrays.stream(markerClasses)
+                                .anyMatch(marker -> isAnnotationMarkedBy(annotation, marker))
+                );
     }
 }

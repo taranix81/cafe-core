@@ -8,7 +8,7 @@ import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 
 import java.util.Set;
 
-class CafeBeansRegistryTest {
+class CafeMetadataRegistryTest {
 
     @Test
     @DisplayName("Should link List<Service> field dependency to Service constructor provider")
@@ -17,17 +17,17 @@ class CafeBeansRegistryTest {
         // The registry should identify that this field depends on the constructor of ServiceClass.
 
         // given
-        CafeBeansRegistry registry = createRegistry(ListServiceClassInjectable.class, ServiceClass.class);
+        CafeMetadataRegistry registry = createRegistry(ListServiceClassInjectable.class, ServiceClass.class);
 
         // when
         // We look for the 'serviceClass' field which is of type List<ServiceClass>
-        CafeMemberMetadata field = registry.findClassMetadata(ListServiceClassInjectable.class)
+        CafeMember field = registry.getClassMetadata(ListServiceClassInjectable.class)
                 .getField("serviceClass");
 
-        CafeMemberMetadata serviceConstructor = registry.findClassMetadata(ServiceClass.class).getConstructor();
+        CafeMember serviceConstructor = registry.getClassMetadata(ServiceClass.class).getConstructor();
 
-        CafeClassMetadata dependantClass = registry.findClassMetadata(ListServiceClassInjectable.class);
-        CafeClassMetadata providerClass = registry.findClassMetadata(ServiceClass.class);
+        CafeClass dependantClass = registry.getClassMetadata(ListServiceClassInjectable.class);
+        CafeClass providerClass = registry.getClassMetadata(ServiceClass.class);
 
         // then
         Assertions.assertAll("Dependencies Check",
@@ -52,16 +52,16 @@ class CafeBeansRegistryTest {
         // Scenario: Similar to List, but checking Set<ServiceClass> injection.
 
         // given
-        CafeBeansRegistry registry = createRegistry(SetServiceClassInjectable.class, ServiceClass.class);
+        CafeMetadataRegistry registry = createRegistry(SetServiceClassInjectable.class, ServiceClass.class);
 
         // when
-        CafeMemberMetadata field = registry.findClassMetadata(SetServiceClassInjectable.class)
+        CafeMember field = registry.getClassMetadata(SetServiceClassInjectable.class)
                 .getField("serviceClass");
 
-        CafeMemberMetadata serviceConstructor = registry.findClassMetadata(ServiceClass.class).getConstructor();
+        CafeMember serviceConstructor = registry.getClassMetadata(ServiceClass.class).getConstructor();
 
-        CafeClassMetadata dependantClass = registry.findClassMetadata(SetServiceClassInjectable.class);
-        CafeClassMetadata providerClass = registry.findClassMetadata(ServiceClass.class);
+        CafeClass dependantClass = registry.getClassMetadata(SetServiceClassInjectable.class);
+        CafeClass providerClass = registry.getClassMetadata(ServiceClass.class);
 
         // then
         Assertions.assertAll("Set Dependency Check",
@@ -83,15 +83,15 @@ class CafeBeansRegistryTest {
         // The field 'unknown' (type T) in parent should be resolved as String in the child context.
 
         // given
-        CafeBeansRegistry registry = createRegistry(IntegerProviderAndStringInjectable.class, StringProvider.class);
+        CafeMetadataRegistry registry = createRegistry(IntegerProviderAndStringInjectable.class, StringProvider.class);
 
         // when
         // The field 'unknown' comes from the generic parent class
-        CafeFieldMetadata stringField = registry.findClassMetadata(IntegerProviderAndStringInjectable.class)
+        CafeField stringField = registry.getClassMetadata(IntegerProviderAndStringInjectable.class)
                 .getField("unknown");
 
         // We explicitly check if there is a provider for String.class for this field
-        Set<CafeMemberMetadata> stringProviders = registry.getMemberDependencyRegistry()
+        Set<CafeMember> stringProviders = registry.getMemberDependencyRegistry()
                 .providers(stringField, BeanTypeKey.from(String.class));
 
         // then
@@ -106,14 +106,14 @@ class CafeBeansRegistryTest {
         // The dependency should point to the method, not a constructor.
 
         // given
-        CafeBeansRegistry registry = createRegistry(ServiceClassInjectable.class, ServiceClassProvider.class);
+        CafeMetadataRegistry registry = createRegistry(ServiceClassInjectable.class, ServiceClassProvider.class);
 
         // when
-        CafeMemberMetadata field = registry.findClassMetadata(ServiceClassInjectable.class)
+        CafeMember field = registry.getClassMetadata(ServiceClassInjectable.class)
                 .getField("serviceClass");
 
         // We assume ServiceClassProvider has a method providing the service
-        CafeMemberMetadata providerMethod = registry.findClassMetadata(ServiceClassProvider.class)
+        CafeMember providerMethod = registry.getClassMetadata(ServiceClassProvider.class)
                 .getMethods().stream()
                 .findFirst()
                 .orElse(null);
@@ -135,13 +135,13 @@ class CafeBeansRegistryTest {
 
         // given
         // Note: We only register the injectable class, no external providers.
-        CafeBeansRegistry registry = createRegistry(ServiceClassInjectable.class);
+        CafeMetadataRegistry registry = createRegistry(ServiceClassInjectable.class);
 
         // when
-        CafeMemberMetadata field = registry.findClassMetadata(ServiceClassInjectable.class)
+        CafeMember field = registry.getClassMetadata(ServiceClassInjectable.class)
                 .getField("serviceClass");
 
-        CafeMemberMetadata constructor = registry.findClassMetadata(ServiceClassInjectable.class)
+        CafeMember constructor = registry.getClassMetadata(ServiceClassInjectable.class)
                 .getConstructor();
 
         // then
@@ -168,13 +168,13 @@ class CafeBeansRegistryTest {
         // Scenario: Simple Injection. Field ServiceClass -> ServiceClass Constructor.
 
         // given
-        CafeBeansRegistry registry = createRegistry(ServiceClassInjectable.class, ServiceClass.class);
+        CafeMetadataRegistry registry = createRegistry(ServiceClassInjectable.class, ServiceClass.class);
 
         // when
-        CafeMemberMetadata field = registry.findClassMetadata(ServiceClassInjectable.class)
+        CafeMember field = registry.getClassMetadata(ServiceClassInjectable.class)
                 .getField("serviceClass");
 
-        CafeMemberMetadata constructor = registry.findClassMetadata(ServiceClass.class).getConstructor();
+        CafeMember constructor = registry.getClassMetadata(ServiceClass.class).getConstructor();
 
         // then
         Assertions.assertTrue(
@@ -190,16 +190,16 @@ class CafeBeansRegistryTest {
         // The registry should handle array types and link them to the provider of the component type.
 
         // given
-        CafeBeansRegistry registry = createRegistry(ArrayServiceClassInjectable.class, ServiceClass.class);
+        CafeMetadataRegistry registry = createRegistry(ArrayServiceClassInjectable.class, ServiceClass.class);
 
         // when
-        CafeMemberMetadata field = registry.findClassMetadata(ArrayServiceClassInjectable.class)
+        CafeMember field = registry.getClassMetadata(ArrayServiceClassInjectable.class)
                 .getField("serviceClass");
 
-        CafeMemberMetadata constructor = registry.findClassMetadata(ServiceClass.class).getConstructor();
+        CafeMember constructor = registry.getClassMetadata(ServiceClass.class).getConstructor();
 
-        CafeClassMetadata dependant = registry.findClassMetadata(ArrayServiceClassInjectable.class);
-        CafeClassMetadata provider = registry.findClassMetadata(ServiceClass.class);
+        CafeClass dependant = registry.getClassMetadata(ArrayServiceClassInjectable.class);
+        CafeClass provider = registry.getClassMetadata(ServiceClass.class);
 
         // then
         Assertions.assertAll("Array Dependency Check",
@@ -217,8 +217,8 @@ class CafeBeansRegistryTest {
 
     // --- Helper Methods ---
 
-    private CafeBeansRegistry createRegistry(Class<?>... classes) {
-        return CafeBeansRegistry.builder()
+    private CafeMetadataRegistry createRegistry(Class<?>... classes) {
+        return CafeMetadataRegistry.builder()
                 .withClasses(Set.of(classes))
                 .build();
     }

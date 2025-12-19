@@ -3,7 +3,9 @@ package org.taranix.cafe.beans.metadata;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.taranix.cafe.beans.annotations.types.CafeType;
+import org.taranix.cafe.beans.annotations.base.CafeHandlerType;
+import org.taranix.cafe.beans.annotations.base.CafePropertyType;
+import org.taranix.cafe.beans.annotations.base.CafeWirerType;
 import org.taranix.cafe.beans.exceptions.CafeClassMetadataException;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
@@ -25,7 +27,7 @@ import java.util.stream.Collectors;
  */
 @ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class CafeClassMetadata {
+public class CafeClass {
 
     /**
      * The underlying Class object for which this metadata was created.
@@ -39,27 +41,26 @@ public class CafeClassMetadata {
      * An unmodifiable set of all members (fields, constructor, methods) relevant to the container.
      */
     @Getter
-    private final Set<CafeMemberMetadata> members;
+    private final Set<CafeMember> members;
 
     /**
      * The metadata for the constructor used for bean instantiation, or null if not applicable.
      */
     @Getter
-    private final CafeConstructorMetadata constructor;
+    private final CafeConstructor constructor;
 
     /**
      * An unmodifiable set of field metadata, pre-filtered from all members.
      */
     @Getter
-    private final Set<CafeFieldMetadata> fields;
+    private final Set<CafeField> fields;
 
     /**
      * An unmodifiable set of method metadata, pre-filtered from all members.
      */
     @Getter
-    private final Set<CafeMethodMetadata> methods;
+    private final Set<CafeMethod> methods;
 
-    // Caches for pre-calculated dependency graph information
     private final Set<BeanTypeKey> cachedDependencies;
     private final Set<BeanTypeKey> cachedProvides;
 
@@ -70,44 +71,37 @@ public class CafeClassMetadata {
      * @param rootClass The class being analyzed.
      * @throws IllegalStateException if the class has multiple constructors annotated for dependency injection.
      */
-    protected CafeClassMetadata(final Class<?> rootClass) {
+    protected CafeClass(final Class<?> rootClass) {
         this.rootClass = Objects.requireNonNull(rootClass, "Root class cannot be null");
 
-        // 1. Inicjalizacja kolekcji
-        Set<CafeMemberMetadata> tempMembers = new HashSet<>();
-        CafeConstructorMetadata foundConstructor = null;
-        Set<CafeFieldMetadata> foundFields = new HashSet<>();
-        Set<CafeMethodMetadata> foundMethods = new HashSet<>();
+        Set<CafeMember> tempMembers = new HashSet<>();
+        CafeConstructor foundConstructor = null;
+        Set<CafeField> foundFields = new HashSet<>();
+        Set<CafeMethod> foundMethods = new HashSet<>();
 
-        // 2. Logika skanowania (przeniesiona z CafeClassMetadataFactory) [cite: 1513]
         if (!isNotScannable(rootClass)) {
 
-            // A. Konstruktory
             if (!rootClass.isInterface()) {
                 Constructor<?> rawConstructor = extractConstructor(rootClass);
-                // Tworzymy metadane przekazując 'this'
-                foundConstructor = new CafeConstructorMetadata(rawConstructor, this);
+                foundConstructor = new CafeConstructor(rawConstructor, this);
                 tempMembers.add(foundConstructor);
             }
 
-            // B. Pola
             Set<Field> rawFields = extractAnnotatedFields(rootClass);
             for (Field field : rawFields) {
-                CafeFieldMetadata fieldMetadata = new CafeFieldMetadata(field, this);
+                CafeField fieldMetadata = new CafeField(field, this);
                 foundFields.add(fieldMetadata);
                 tempMembers.add(fieldMetadata);
             }
 
-            // C. Metody
             Set<Method> rawMethods = extractAnnotatedMethods(rootClass);
             for (Method method : rawMethods) {
-                CafeMethodMetadata methodMetadata = new CafeMethodMetadata(method, this);
+                CafeMethod methodMetadata = new CafeMethod(method, this);
                 foundMethods.add(methodMetadata);
                 tempMembers.add(methodMetadata);
             }
         }
 
-        // 3. Finalizacja pól
         this.members = Collections.unmodifiableSet(tempMembers);
         this.constructor = foundConstructor;
         this.fields = Collections.unmodifiableSet(foundFields);
@@ -139,7 +133,7 @@ public class CafeClassMetadata {
             return Collections.emptySet();
         }
         Set<Field> allFields = Arrays.stream(introspectedClass.getDeclaredFields())
-                .filter(field -> CafeAnnotationUtils.hasMarker(field, CafeType.class))
+                .filter(field -> CafeAnnotationUtils.hasAnnotationMarker(field, CafeWirerType.class, CafePropertyType.class))
                 .collect(Collectors.toSet());
         allFields.addAll(extractAnnotatedFields(introspectedClass.getSuperclass()));
         return allFields;
@@ -165,7 +159,7 @@ public class CafeClassMetadata {
                 if (method.isBridge() || method.isSynthetic()) {
                     continue;
                 }
-                if (!CafeAnnotationUtils.hasMarker(method, CafeType.class)) {
+                if (!CafeAnnotationUtils.hasAnnotationMarker(method, CafeWirerType.class, CafeHandlerType.class)) {
                     continue;
                 }
                 String methodSignature = generateMethodSignature(method);
@@ -202,23 +196,23 @@ public class CafeClassMetadata {
      * Retrieves the metadata for a specific field by its name.
      *
      * @param fieldName The name of the field.
-     * @return The {@link CafeFieldMetadata} or {@code null} if the field is not found or not managed.
+     * @return The {@link CafeField} or {@code null} if the field is not found or not managed.
      */
-    public CafeFieldMetadata getField(String fieldName) {
+    public CafeField getField(String fieldName) {
         return fields.stream()
                 .filter(f -> f.getField().getName().equals(fieldName))
                 .findFirst()
                 .orElse(null);
     }
 
-    public CafeMethodMetadata getMethodMetadata(Method method) {
+    public CafeMethod getMethodMetadata(Method method) {
         return methods.stream()
                 .filter(cafeMethodMetadata -> cafeMethodMetadata.getMethod().equals(method))
                 .findFirst()
                 .orElse(null);
     }
 
-    public CafeMethodMetadata getMethodMetadata(String methodName, BeanTypeKey... requiredTypes) {
+    public CafeMethod getMethodMetadata(String methodName, BeanTypeKey... requiredTypes) {
         return methods.stream()
                 .filter(cafeMethodMetadata -> cafeMethodMetadata.getMethod().getName().equals(methodName))
                 .filter(cafeMethodMetadata -> Arrays.equals(cafeMethodMetadata.getMethodParameterTypeKeys(), requiredTypes))
@@ -300,7 +294,7 @@ public class CafeClassMetadata {
      */
     private Set<BeanTypeKey> calculateProvides() {
         return members.stream()
-                .map(CafeMemberMetadata::getProvidedTypes)
+                .map(CafeMember::getProvidedTypeKeys)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toUnmodifiableSet());
     }
@@ -313,10 +307,10 @@ public class CafeClassMetadata {
     private Set<BeanTypeKey> calculateDependencies() {
         Set<BeanTypeKey> result = new HashSet<>();
         if (constructor != null) {
-            result.addAll(constructor.getRequiredTypes());
+            result.addAll(constructor.getRequiredTypeKeys());
         }
-        methods.forEach(m -> result.addAll(m.getRequiredTypes()));
-        fields.forEach(f -> result.addAll(f.getRequiredTypes()));
+        methods.forEach(m -> result.addAll(m.getRequiredTypeKeys()));
+        fields.forEach(f -> result.addAll(f.getRequiredTypeKeys()));
         return Collections.unmodifiableSet(result);
     }
 }

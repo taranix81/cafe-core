@@ -15,7 +15,7 @@ class CafeFieldInfoTest {
     @DisplayName("Positive: Should create CafeFieldInfo from standard field in basic class")
     void shouldCreateFieldInfo() {
         //given
-        CafeFieldMetadata cafeFieldDescriptor = CafeClassMetadataFactory.create(CafeFieldInfoTestFixtures.StringClass.class).getField("string");
+        CafeField cafeFieldDescriptor = CafeClassFactory.create(CafeFieldInfoTestFixtures.StringClass.class).getField("string");
 
         //when - then
         Assertions.assertNotNull(cafeFieldDescriptor);
@@ -23,18 +23,18 @@ class CafeFieldInfoTest {
         Assertions.assertFalse(cafeFieldDescriptor.isConstructor());
         Assertions.assertFalse(cafeFieldDescriptor.isMethod());
         Assertions.assertEquals(String.class, cafeFieldDescriptor.getFieldTypeKey().getType());
-        Assertions.assertTrue(cafeFieldDescriptor.getRequiredTypes().contains(BeanTypeKey.from(CafeFieldInfoTestFixtures.StringClass.class)));
-        Assertions.assertTrue(cafeFieldDescriptor.getRequiredTypes().contains(BeanTypeKey.from(String.class)));
+        Assertions.assertTrue(cafeFieldDescriptor.getRequiredTypeKeys().contains(BeanTypeKey.from(CafeFieldInfoTestFixtures.StringClass.class)));
+        Assertions.assertTrue(cafeFieldDescriptor.getRequiredTypeKeys().contains(BeanTypeKey.from(String.class)));
         Assertions.assertEquals(cafeFieldDescriptor.getField(), cafeFieldDescriptor.getMember());
-        Assertions.assertTrue(cafeFieldDescriptor.getProvidedTypes().isEmpty());
+        Assertions.assertTrue(cafeFieldDescriptor.getProvidedTypeKeys().isEmpty());
     }
 
     @Test
     @DisplayName("Positive: Should create CafeFieldInfo from generic field in inherited class")
     void shouldCreateFieldInfoForGenericClass() {
         //given
-        CafeFieldMetadata genericFieldInfo = CafeClassMetadataFactory.create(CafeFieldInfoTestFixtures.IntegerClass.class).getField("unknownField");
-        CafeFieldMetadata integerFieldInfo = CafeClassMetadataFactory.create(CafeFieldInfoTestFixtures.IntegerClass.class).getField("integer");
+        CafeField genericFieldInfo = CafeClassFactory.create(CafeFieldInfoTestFixtures.IntegerClass.class).getField("unknownField");
+        CafeField integerFieldInfo = CafeClassFactory.create(CafeFieldInfoTestFixtures.IntegerClass.class).getField("integer");
 
         //when - then
         Assertions.assertTrue(genericFieldInfo.isField());
@@ -46,16 +46,16 @@ class CafeFieldInfoTest {
         Assertions.assertNotNull(integerFieldInfo);
         Assertions.assertEquals(Integer.class, genericFieldInfo.getFieldTypeKey().getType());
         Assertions.assertEquals(Integer.class, integerFieldInfo.getFieldTypeKey().getType());
-        Assertions.assertTrue(genericFieldInfo.getRequiredTypes().contains(BeanTypeKey.from(CafeFieldInfoTestFixtures.IntegerClass.class)));
-        Assertions.assertTrue(integerFieldInfo.getRequiredTypes().contains(BeanTypeKey.from(CafeFieldInfoTestFixtures.IntegerClass.class)));
-        Assertions.assertTrue(genericFieldInfo.getRequiredTypes().contains(BeanTypeKey.from(Integer.class)));
-        Assertions.assertTrue(integerFieldInfo.getRequiredTypes().contains(BeanTypeKey.from(Integer.class)));
+        Assertions.assertTrue(genericFieldInfo.getRequiredTypeKeys().contains(BeanTypeKey.from(CafeFieldInfoTestFixtures.IntegerClass.class)));
+        Assertions.assertTrue(integerFieldInfo.getRequiredTypeKeys().contains(BeanTypeKey.from(CafeFieldInfoTestFixtures.IntegerClass.class)));
+        Assertions.assertTrue(genericFieldInfo.getRequiredTypeKeys().contains(BeanTypeKey.from(Integer.class)));
+        Assertions.assertTrue(integerFieldInfo.getRequiredTypeKeys().contains(BeanTypeKey.from(Integer.class)));
 
         Assertions.assertEquals(genericFieldInfo.getField(), genericFieldInfo.getMember());
         Assertions.assertEquals(integerFieldInfo.getField(), integerFieldInfo.getMember());
 
-        Assertions.assertTrue(genericFieldInfo.getProvidedTypes().isEmpty());
-        Assertions.assertTrue(integerFieldInfo.getProvidedTypes().isEmpty());
+        Assertions.assertTrue(genericFieldInfo.getProvidedTypeKeys().isEmpty());
+        Assertions.assertTrue(integerFieldInfo.getProvidedTypeKeys().isEmpty());
 
     }
 
@@ -63,8 +63,8 @@ class CafeFieldInfoTest {
     @DisplayName("Positive: Should create CafeFieldInfo from generic parametrized field in inherited class")
     void shouldCreateFieldInfoForGenericCollectionClass() {
         //given
-        CafeFieldMetadata genericFieldInfo = CafeClassMetadataFactory.create(CafeFieldInfoTestFixtures.CollectionOfIntegersClass.class).getField("unknownField");
-        CafeFieldMetadata integerFieldInfo = CafeClassMetadataFactory.create(CafeFieldInfoTestFixtures.CollectionOfIntegersClass.class).getField("integer");
+        CafeField genericFieldInfo = CafeClassFactory.create(CafeFieldInfoTestFixtures.CollectionOfIntegersClass.class).getField("unknownField");
+        CafeField integerFieldInfo = CafeClassFactory.create(CafeFieldInfoTestFixtures.CollectionOfIntegersClass.class).getField("integer");
 
         //when - then
         Assertions.assertTrue(genericFieldInfo.isField());
@@ -77,17 +77,17 @@ class CafeFieldInfoTest {
         Assertions.assertEquals(BeanTypeKey.from(List.class, Integer.class).getType(), genericFieldInfo.getFieldTypeKey().getType());
         Assertions.assertEquals(Integer.class, integerFieldInfo.getFieldTypeKey().getType());
 
-        Assertions.assertTrue(genericFieldInfo.getRequiredTypes().contains(BeanTypeKey.from(List.class, Integer.class)));
-        Assertions.assertTrue(genericFieldInfo.getRequiredTypes().contains(BeanTypeKey.from(CafeFieldInfoTestFixtures.CollectionOfIntegersClass.class)));
+        Assertions.assertTrue(genericFieldInfo.getRequiredTypeKeys().contains(BeanTypeKey.from(List.class, Integer.class)));
+        Assertions.assertTrue(genericFieldInfo.getRequiredTypeKeys().contains(BeanTypeKey.from(CafeFieldInfoTestFixtures.CollectionOfIntegersClass.class)));
 
-        Assertions.assertTrue(integerFieldInfo.getRequiredTypes().contains(BeanTypeKey.from(Integer.class)));
-        Assertions.assertTrue(integerFieldInfo.getRequiredTypes().contains(BeanTypeKey.from(CafeFieldInfoTestFixtures.CollectionOfIntegersClass.class)));
+        Assertions.assertTrue(integerFieldInfo.getRequiredTypeKeys().contains(BeanTypeKey.from(Integer.class)));
+        Assertions.assertTrue(integerFieldInfo.getRequiredTypeKeys().contains(BeanTypeKey.from(CafeFieldInfoTestFixtures.CollectionOfIntegersClass.class)));
 
         Assertions.assertEquals(genericFieldInfo.getField(), genericFieldInfo.getMember());
         Assertions.assertEquals(integerFieldInfo.getField(), integerFieldInfo.getMember());
 
-        Assertions.assertTrue(genericFieldInfo.getProvidedTypes().isEmpty());
-        Assertions.assertTrue(integerFieldInfo.getProvidedTypes().isEmpty());
+        Assertions.assertTrue(genericFieldInfo.getProvidedTypeKeys().isEmpty());
+        Assertions.assertTrue(integerFieldInfo.getProvidedTypeKeys().isEmpty());
 
     }
 
@@ -95,21 +95,21 @@ class CafeFieldInfoTest {
     @DisplayName("Positive: Should correctly identify 'named' field and check provides/dependencies")
     void shouldIdentifyNamedFieldAndDependencies() {
         //given
-        CafeFieldMetadata namedFieldInfo = CafeClassMetadataFactory.create(CafeFieldInfoTestFixtures.NamedStringClass.class).getField("string");
+        CafeField namedFieldInfo = CafeClassFactory.create(CafeFieldInfoTestFixtures.NamedStringClass.class).getField("string");
 
         //when - then
         Assertions.assertNotNull(namedFieldInfo);
         Assertions.assertEquals("myString", namedFieldInfo.getAnnotation(CafeName.class).value(), "Field should have the name 'myString'");
-        Assertions.assertTrue(namedFieldInfo.getRequiredTypes().contains(BeanTypeKey.from(CafeFieldInfoTestFixtures.NamedStringClass.class)), "Field must depend on its owner class");
-        Assertions.assertTrue(namedFieldInfo.getRequiredTypes().contains(BeanTypeKey.from(String.class, "myString")), "Field must depend on its type (String)");
-        Assertions.assertTrue(namedFieldInfo.getProvidedTypes().isEmpty(), "Field should not provide a bean");
+        Assertions.assertTrue(namedFieldInfo.getRequiredTypeKeys().contains(BeanTypeKey.from(CafeFieldInfoTestFixtures.NamedStringClass.class)), "Field must depend on its owner class");
+        Assertions.assertTrue(namedFieldInfo.getRequiredTypeKeys().contains(BeanTypeKey.from(String.class, "myString")), "Field must depend on its type (String)");
+        Assertions.assertTrue(namedFieldInfo.getProvidedTypeKeys().isEmpty(), "Field should not provide a bean");
     }
 
     @Test
     @DisplayName("Positive: Should handle non-annotated field correctly (only dependency on owner)")
     void shouldHandleNonAnnotatedField() {
         //given
-        CafeFieldMetadata nonAnnotatedFieldInfo = CafeClassMetadataFactory.create(CafeFieldInfoTestFixtures.NamedStringClass.class).getField("notInjected");
+        CafeField nonAnnotatedFieldInfo = CafeClassFactory.create(CafeFieldInfoTestFixtures.NamedStringClass.class).getField("notInjected");
 
         //when - then
         Assertions.assertNull(nonAnnotatedFieldInfo);

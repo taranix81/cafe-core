@@ -2,7 +2,7 @@ package org.taranix.cafe.desktop.resolvers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeBeansFactory;
-import org.taranix.cafe.beans.metadata.CafeMethodMetadata;
+import org.taranix.cafe.beans.metadata.CafeMethod;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 import org.taranix.cafe.beans.resolvers.metadata.method.CafeMethodResolver;
 import org.taranix.cafe.desktop.actions.ActionHandlers;
@@ -16,7 +16,7 @@ public class ActionHandlerMethodResolver implements CafeMethodResolver {
 
 
     @Override
-    public Object resolve(final Object instance, final CafeMethodMetadata methodInfo, final CafeBeansFactory cafeBeansFactory) {
+    public Object resolve(final Object instance, final CafeMethod methodInfo, final CafeBeansFactory cafeBeansFactory) {
         ActionHandlers actionHandlers = (ActionHandlers) cafeBeansFactory.getBeanOrNull(BeanTypeKey.from(ActionHandlers.class));
         if (actionHandlers == null) {
             actionHandlers = new ActionHandlers();
@@ -27,7 +27,7 @@ public class ActionHandlerMethodResolver implements CafeMethodResolver {
     }
 
     @Override
-    public boolean isApplicable(CafeMethodMetadata methodInfo) {
+    public boolean isApplicable(CafeMethod methodInfo) {
         return methodInfo.getMethod().getParameterCount() < 2;
     }
 

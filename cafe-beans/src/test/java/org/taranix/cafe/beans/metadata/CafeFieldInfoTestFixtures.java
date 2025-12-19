@@ -1,7 +1,7 @@
 package org.taranix.cafe.beans.metadata;
 
-import org.taranix.cafe.beans.annotations.CafeInject;
-import org.taranix.cafe.beans.annotations.CafeService;
+import org.taranix.cafe.beans.annotations.fields.CafeInject;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
 import org.taranix.cafe.beans.annotations.modifiers.CafeName;
 
 import java.util.List;

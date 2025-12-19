@@ -1,9 +1,9 @@
 package org.taranix.cafe.desktop.components.menubar.model;
 
 import lombok.extern.slf4j.Slf4j;
-import org.taranix.cafe.beans.annotations.CafePostInit;
-import org.taranix.cafe.beans.annotations.CafeProperty;
-import org.taranix.cafe.beans.annotations.CafeService;
+import org.taranix.cafe.beans.annotations.methods.CafePostInit;
+import org.taranix.cafe.beans.annotations.fields.CafeProperty;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
 
 import java.util.*;
 

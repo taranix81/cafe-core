@@ -1,8 +1,8 @@
 package org.taranix.cafe.beans.properties;
 
 import lombok.Getter;
-import org.taranix.cafe.beans.annotations.CafeProperty;
-import org.taranix.cafe.beans.annotations.CafeService;
+import org.taranix.cafe.beans.annotations.fields.CafeProperty;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
 
 @CafeService
 public class ServiceClassWithProperty {

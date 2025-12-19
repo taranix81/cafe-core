@@ -2,7 +2,7 @@ package org.taranix.cafe.beans.reflection;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.taranix.cafe.beans.annotations.types.CafeType;
+import org.taranix.cafe.beans.annotations.base.CafeWirerType;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -24,7 +24,7 @@ public class ClassScanner {
 
         return Arrays.stream(packages)
                 .flatMap(pkg -> CafeReflectionUtils.getAllClassesFromPackage(CafeReflectionUtils.getDefault(), pkg))
-                .filter(aClass -> CafeAnnotationUtils.hasMarker(aClass, CafeType.class))
+                .filter(aClass -> CafeAnnotationUtils.hasAnnotationMarker(aClass, CafeWirerType.class))
                 .collect(Collectors.toSet());
     }
 

@@ -1,6 +1,4 @@
-package org.taranix.cafe.beans.annotations;
-
-import org.taranix.cafe.beans.annotations.types.CafeInitable;
+package org.taranix.cafe.beans.annotations.base;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,8 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-@CafeInitable
-public @interface CafeProvider {
-    
+@Target(ElementType.ANNOTATION_TYPE)
+public @interface CafeWirerType {
 }

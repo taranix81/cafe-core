@@ -3,7 +3,7 @@ package org.taranix.cafe.desktop.services;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import org.taranix.cafe.beans.annotations.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
 import org.taranix.cafe.shell.exceptions.CafeCommandRuntimeException;
 
 import java.io.IOException;

@@ -1,9 +1,9 @@
 package org.taranix.cafe.beans.resolvers.data;
 
-import org.taranix.cafe.beans.annotations.CafeFactory;
-import org.taranix.cafe.beans.annotations.CafeProvider;
+import org.taranix.cafe.beans.annotations.methods.CafeProvider;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
 
-@CafeFactory
+@CafeService
 public class InterfaceServiceProvider {
 
     @CafeProvider
