@@ -19,7 +19,7 @@ class CafeMethodMetadataTest {
     void shouldCreateMethodInfoWithEmptyParameters() throws NoSuchMethodException {
         CafeClass cafeClass = CafeClassFactory.create(SimpleBeanWithProvider.class);
         Method method = SimpleBeanWithProvider.class.getDeclaredMethod("getNamedProvidedString");
-        CafeMethod methodMetadata = cafeClass.getMethodMetadata(method);
+        CafeMethod methodMetadata = cafeClass.getMethod(method);
 
         Assertions.assertNotNull(methodMetadata);
         Assertions.assertEquals(String.class, methodMetadata.getMethodReturnTypeKey().getType());
@@ -34,7 +34,7 @@ class CafeMethodMetadataTest {
     @DisplayName("Positive: Should create MethodInfo for a method with parameter dependencies")
     void shouldCreateMethodInfoWithParameters() throws NoSuchMethodException {
         CafeClass cafeClass = CafeClassFactory.create(CafeMethodMetadataTestFixtures.StringClass.class);
-        CafeMethod methodInfo = cafeClass.getMethodMetadata("getStringProviderWithParameter", BeanTypeKey.from(String.class));
+        CafeMethod methodInfo = cafeClass.getMethod("getStringProviderWithParameter", BeanTypeKey.from(String.class));
 
         Assertions.assertNotNull(methodInfo);
         Assertions.assertEquals(String.class, methodInfo.getMethodReturnTypeKey().getType());
@@ -48,7 +48,7 @@ class CafeMethodMetadataTest {
     void shouldResolveGenericReturnType() throws NoSuchMethodException {
         // given
         CafeClass cafeClass = CafeClassFactory.create(IntegerClass.class);
-        CafeMethod methodInfo = cafeClass.getMethodMetadata("getUnknownValue");
+        CafeMethod methodInfo = cafeClass.getMethod("getUnknownValue");
 
         // then
         Assertions.assertEquals(Integer.class, methodInfo.getMethodReturnTypeKey().getType());
@@ -62,8 +62,8 @@ class CafeMethodMetadataTest {
         // given
         CafeClass cafeClass = CafeClassFactory.create(CafeMethodMetadataTestFixtures.StaticMethodProvider.class);
 
-        CafeMethod staticMethodInfo = cafeClass.getMethodMetadata("provideStaticInteger");
-        CafeMethod instanceMethodInfo = cafeClass.getMethodMetadata("provideInstanceString");
+        CafeMethod staticMethodInfo = cafeClass.getMethod("provideStaticInteger");
+        CafeMethod instanceMethodInfo = cafeClass.getMethod("provideInstanceString");
 
         // then
         Assertions.assertFalse(staticMethodInfo.getRequiredTypeKeys().contains(BeanTypeKey.from(CafeMethodMetadataTestFixtures.StaticMethodProvider.class)),
@@ -77,7 +77,7 @@ class CafeMethodMetadataTest {
     void shouldNotProvideBeanForNonAnnotatedMethod() throws NoSuchMethodException {
         // given
         CafeClass cafeClass = CafeClassFactory.create(CafeMethodMetadataTestFixtures.SimpleBeanWithProvider.class);
-        CafeMethod methodInfo = cafeClass.getMethodMetadata("getNonProviderString", BeanTypeKey.from(String.class));
+        CafeMethod methodInfo = cafeClass.getMethod("getNonProviderString", BeanTypeKey.from(String.class));
 
         // then
         Assertions.assertNull(methodInfo, "Non-provider method should not be available from CafeClassMetadata.");
@@ -90,7 +90,7 @@ class CafeMethodMetadataTest {
     void shouldResolveProviderMethodParametersInGenericContext() {
         // given
         CafeClass cafeClass = CafeClassFactory.create(CafeMethodMetadataTestFixtures.GenericClass.class);
-        CafeMethod methodInfo = cafeClass.getMethodMetadata("getStringProviderWithParameter", BeanTypeKey.from(String.class));
+        CafeMethod methodInfo = cafeClass.getMethod("getStringProviderWithParameter", BeanTypeKey.from(String.class));
 
         // then
         Assertions.assertTrue(methodInfo.getProvidedTypeKeys().contains(BeanTypeKey.from(String.class)), "Should provide String bean.");

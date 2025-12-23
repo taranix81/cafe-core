@@ -133,7 +133,7 @@ public class CafeClass {
             return Collections.emptySet();
         }
         Set<Field> allFields = Arrays.stream(introspectedClass.getDeclaredFields())
-                .filter(field -> CafeAnnotationUtils.hasAnnotationMarker(field, CafeWirerType.class, CafePropertyType.class))
+                .filter(field -> CafeAnnotationUtils.hasAnnotationMarker(field, CafeWirerType.class, CafePropertyType.class, CafeHandlerType.class))
                 .collect(Collectors.toSet());
         allFields.addAll(extractAnnotatedFields(introspectedClass.getSuperclass()));
         return allFields;
@@ -205,14 +205,14 @@ public class CafeClass {
                 .orElse(null);
     }
 
-    public CafeMethod getMethodMetadata(Method method) {
+    public CafeMethod getMethod(Method method) {
         return methods.stream()
                 .filter(cafeMethodMetadata -> cafeMethodMetadata.getMethod().equals(method))
                 .findFirst()
                 .orElse(null);
     }
 
-    public CafeMethod getMethodMetadata(String methodName, BeanTypeKey... requiredTypes) {
+    public CafeMethod getMethod(String methodName, BeanTypeKey... requiredTypes) {
         return methods.stream()
                 .filter(cafeMethodMetadata -> cafeMethodMetadata.getMethod().getName().equals(methodName))
                 .filter(cafeMethodMetadata -> Arrays.equals(cafeMethodMetadata.getMethodParameterTypeKeys(), requiredTypes))

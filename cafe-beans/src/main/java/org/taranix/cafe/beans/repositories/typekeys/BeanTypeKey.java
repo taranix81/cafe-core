@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class BeanTypeKey extends TypeKey {
+public class BeanTypeKey extends AbstractTypeKey {
 
     public BeanTypeKey(Type type, String typeIdentifier) {
         super(type, typeIdentifier);

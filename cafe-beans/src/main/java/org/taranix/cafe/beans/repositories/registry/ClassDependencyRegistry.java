@@ -11,11 +11,11 @@ public class ClassDependencyRegistry extends AbstractDependencyRegistry<CafeClas
     public static ClassDependencyRegistry from(Set<CafeClass> cafeClassMetadata) {
         ClassDependencyRegistry classDependencyRegistry = new ClassDependencyRegistry();
 
-        for (CafeClass descriptor : cafeClassMetadata) {
+        for (CafeClass cafeClass : cafeClassMetadata) {
             cafeClassMetadata.stream()
-                    .filter(item -> !item.equals(descriptor))
-                    .filter(provider -> containsAtLeastOneElement(descriptor.getRequiredTypes(), provider.getProvidedTypes()))
-                    .forEach(provider -> classDependencyRegistry.set(descriptor, provider));
+                    .filter(item -> !item.equals(cafeClass))
+                    .filter(provider -> containsAtLeastOneElement(cafeClass.getRequiredTypes(), provider.getProvidedTypes()))
+                    .forEach(provider -> classDependencyRegistry.set(cafeClass, provider));
         }
         return classDependencyRegistry;
     }

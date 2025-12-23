@@ -4,7 +4,7 @@ package org.taranix.cafe.beans.repositories.typekeys;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
-public class PropertyTypeKey extends TypeKey {
+public class PropertyTypeKey extends AbstractTypeKey {
 
 
     private PropertyTypeKey(Type type, String typeIdentifier) {

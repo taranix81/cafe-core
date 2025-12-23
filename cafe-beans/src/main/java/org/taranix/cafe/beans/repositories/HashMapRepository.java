@@ -6,8 +6,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public class HashMapRepository<TKey, TValue> implements Repository<TKey, TValue> {
+public abstract class HashMapRepository<TKey, TValue> implements Repository<TKey, TValue> {
 
     private final HashMap<TKey, Set<TValue>> mappings = new HashMap<>();
 
@@ -51,4 +53,13 @@ public class HashMapRepository<TKey, TValue> implements Repository<TKey, TValue>
     public void unSet(TKey typeKey) {
         mappings.remove(typeKey);
     }
+
+    @Override
+    public Collection<TKey> getKeys(Function<TKey, Boolean> filter) {
+        return mappings.keySet().stream()
+                .filter(filter::apply)
+                .collect(Collectors.toSet());
+    }
+
+
 }

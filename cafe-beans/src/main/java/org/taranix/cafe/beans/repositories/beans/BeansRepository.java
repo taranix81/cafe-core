@@ -42,6 +42,7 @@ public class BeansRepository extends HashMapRepository<TypeKey, BeanRepositoryEn
         }
     }
 
+
     private void validate(TypeKey typeKey, BeanRepositoryEntry entry) {
         //double primary validation
         if (entry.isPrimary() && getMany(typeKey).stream().anyMatch(BeanRepositoryEntry::isPrimary)) {

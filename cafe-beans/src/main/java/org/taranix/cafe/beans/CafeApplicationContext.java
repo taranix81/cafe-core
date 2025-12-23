@@ -8,11 +8,8 @@ import org.taranix.cafe.beans.metadata.CafeClass;
 import org.taranix.cafe.beans.metadata.CafeClassFactory;
 import org.taranix.cafe.beans.metadata.CafeMetadataRegistry;
 import org.taranix.cafe.beans.reflection.ClassScanner;
-import org.taranix.cafe.beans.repositories.ListMultiRepository;
-import org.taranix.cafe.beans.repositories.beans.BeanRepositoryEntry;
 import org.taranix.cafe.beans.repositories.beans.BeansRepository;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
-import org.taranix.cafe.beans.repositories.typekeys.TypeKey;
 import org.taranix.cafe.beans.resolvers.CafeResolvers;
 import org.taranix.cafe.beans.resolvers.metadata.CafeClassResolver;
 import org.taranix.cafe.beans.resolvers.metadata.constructor.CafeConstructorResolver;
@@ -20,12 +17,13 @@ import org.taranix.cafe.beans.resolvers.metadata.field.CafeFieldResolver;
 import org.taranix.cafe.beans.resolvers.metadata.method.CafeMethodResolver;
 import org.taranix.cafe.beans.resolvers.types.CafeBeanTypeResolver;
 import org.taranix.cafe.beans.validation.CafeCycleDetectionValidator;
+import org.taranix.cafe.beans.validation.CafeHandlerMethodsParameterValidator;
 import org.taranix.cafe.beans.validation.CafeResolvableBeansValidator;
 import org.taranix.cafe.beans.validation.CafeValidationService;
 
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,16 +37,16 @@ public class CafeApplicationContext {
     private final CafeBeansFactory beansFactory;
 
     @Getter
-    private final CafeHandlersRegistry handlersRegistry;
+    private final CafeHandlersService handlersService;
 
     private CafeApplicationContext(
             CafeBeansFactory cafeBeansFactory,
-            CafeHandlersRegistry handlersRegistry,
+            CafeHandlersService handlersService,
             final ClassLoader classLoader
     ) {
         this.beansFactory = cafeBeansFactory;
-        this.handlersRegistry = handlersRegistry;
-        CafePropertiesContext.load(beansFactory.getRepository(), classLoader);
+        this.handlersService = handlersService;
+        CafePropertiesService.load(beansFactory.getRepository(), classLoader);
     }
 
     public static BeansContextBuilder builder() {
@@ -59,6 +57,14 @@ public class CafeApplicationContext {
     public void initialize() {
         log.debug("Resolving all beans");
         beansFactory.resolveAllBeans();
+    }
+
+    public Object executeHandler(Class<? extends Annotation> annotationType, Object... parameters) {
+        return handlersService.executeSingletonHandler(annotationType, parameters);
+    }
+
+    public Object executeHandler(String handlerId, Class<? extends Annotation> annotationType, Object... parameters) {
+        return handlersService.executeSingletonHandler(handlerId, annotationType, parameters);
     }
 
 
@@ -104,9 +110,6 @@ public class CafeApplicationContext {
         throw new CafeApplicationContextException("Now instance of %s found".formatted(clz));
     }
 
-//    public CafeClassMetadata getClassDescriptor(Class<?> clz) {
-//        return beansFactory.getCafeBeansRegistry().findClassMetadata(clz);
-//    }
 
     public Object getProperty(String propertyName) {
         return beansFactory.getProperty(propertyName);
@@ -135,7 +138,7 @@ public class CafeApplicationContext {
         private final Set<CafeBeanTypeResolver> typeResolvers = new HashSet<>();
         private String[] packages;
 
-        private ListMultiRepository<TypeKey, BeanRepositoryEntry> repository;
+        private BeansRepository repository;
 
         private CafeValidationService cafeValidationService;
 
@@ -153,7 +156,7 @@ public class CafeApplicationContext {
             return this;
         }
 
-        public BeansContextBuilder repository(ListMultiRepository<TypeKey, BeanRepositoryEntry> repository) {
+        public BeansContextBuilder repository(BeansRepository repository) {
             this.repository = repository;
             return this;
         }
@@ -192,7 +195,8 @@ public class CafeApplicationContext {
                 cafeValidationService = new CafeValidationService(
                         Set.of(
                                 new CafeCycleDetectionValidator(),
-                                new CafeResolvableBeansValidator())
+                                new CafeResolvableBeansValidator(),
+                                new CafeHandlerMethodsParameterValidator())
                 );
             }
 
@@ -202,7 +206,7 @@ public class CafeApplicationContext {
             }
 
             if (repository == null) {
-                repository = new ListMultiRepository<>(List.of(new BeansRepository()));
+                repository = new BeansRepository();
             }
 
             CafeResolvers cafeResolvers = new CafeResolvers();
@@ -213,7 +217,7 @@ public class CafeApplicationContext {
             cafeResolvers.add(typeResolvers.toArray(CafeBeanTypeResolver[]::new));
 
             CafeBeansFactory beansFactory1 = new CafeBeansFactory(repository, cafeValidationService, metadataRegistry, cafeResolvers);
-            CafeHandlersRegistry handlersRegistry1 = new CafeHandlersRegistry();
+            CafeHandlersService handlersRegistry1 = new CafeHandlersService(repository);
 
             return new CafeApplicationContext(beansFactory1, handlersRegistry1, classLoader);
         }

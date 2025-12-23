@@ -130,8 +130,8 @@ class CafeClassTest {
         Method staticM = StaticProvider.class.getDeclaredMethod("provideStatic");
         Method instM = StaticProvider.class.getDeclaredMethod("provideInstance");
 
-        CafeMethod staticDesc = info.getMethodMetadata(staticM);
-        CafeMethod instDesc = info.getMethodMetadata(instM);
+        CafeMethod staticDesc = info.getMethod(staticM);
+        CafeMethod instDesc = info.getMethod(instM);
 
         // static provider must not require owner class
         assertFalse(staticDesc.getRequiredTypeKeys().contains(BeanTypeKey.from(StaticProvider.class)),

@@ -1,6 +1,7 @@
 package org.taranix.cafe.beans.repositories;
 
 import java.util.Collection;
+import java.util.function.Function;
 
 public interface Repository<TKey, TValue> {
     TValue getOne(TKey key);
@@ -16,4 +17,6 @@ public interface Repository<TKey, TValue> {
     Collection<TKey> getAllKeys();
 
     void unSet(TKey typeKey);
+
+    Collection<TKey> getKeys(Function<TKey, Boolean> filter);
 }
