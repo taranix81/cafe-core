@@ -1,12 +1,12 @@
 package org.taranix.cafe.beans.resolvers.metadata.method;
 
 import org.apache.commons.lang3.StringUtils;
-import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.annotations.base.CafeHandlerType;
 import org.taranix.cafe.beans.annotations.modifiers.CafeName;
 import org.taranix.cafe.beans.metadata.CafeMethod;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.repositories.typekeys.HandlerTypeKey;
+import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.Optional;

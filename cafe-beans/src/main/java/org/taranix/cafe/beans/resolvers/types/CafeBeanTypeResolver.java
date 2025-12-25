@@ -1,7 +1,7 @@
 package org.taranix.cafe.beans.resolvers.types;
 
-import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
+import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
 
 public interface CafeBeanTypeResolver {
 

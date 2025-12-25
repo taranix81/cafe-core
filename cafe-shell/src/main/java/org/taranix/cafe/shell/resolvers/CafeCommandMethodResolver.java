@@ -2,8 +2,8 @@ package org.taranix.cafe.shell.resolvers;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.metadata.CafeMethod;
+import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
 import org.taranix.cafe.beans.resolvers.metadata.method.PrototypeWireMethodResolver;
 import org.taranix.cafe.shell.annotations.CafeCommandRun;
 

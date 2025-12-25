@@ -1,12 +1,12 @@
 package org.taranix.cafe.beans.resolvers.metadata;
 
 import lombok.extern.slf4j.Slf4j;
-import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.exceptions.ClassResolverException;
 import org.taranix.cafe.beans.metadata.CafeClass;
 import org.taranix.cafe.beans.metadata.CafeConstructor;
 import org.taranix.cafe.beans.metadata.CafeField;
 import org.taranix.cafe.beans.metadata.CafeMethod;
+import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
 
 import java.util.Objects;
 

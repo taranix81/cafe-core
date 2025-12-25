@@ -1,11 +1,11 @@
 package org.taranix.cafe.beans.resolvers.metadata;
 
 import lombok.extern.slf4j.Slf4j;
-import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.metadata.CafeClass;
 import org.taranix.cafe.beans.metadata.CafeMember;
 import org.taranix.cafe.beans.metadata.CafeMethod;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
+import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
 
 @Slf4j
 public class DefaultProviderResolver implements CafeProviderResolver {

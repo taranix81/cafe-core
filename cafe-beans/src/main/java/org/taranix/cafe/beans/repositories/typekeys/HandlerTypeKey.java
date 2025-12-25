@@ -27,7 +27,7 @@ public class HandlerTypeKey extends AbstractTypeKey {
         return new HandlerTypeKey(annotationType, handlerId, handlerParameters);
     }
 
-    public Class<? extends Annotation> getAnnotation() {
+    public Class<? extends Annotation> getAnnotationType() {
         if (getType() instanceof Class<?> clazz) {
             if (clazz.isAnnotation()) {
                 return (Class<? extends Annotation>) clazz;

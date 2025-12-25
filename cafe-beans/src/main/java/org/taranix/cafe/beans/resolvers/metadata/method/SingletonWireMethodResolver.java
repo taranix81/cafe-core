@@ -1,11 +1,11 @@
 package org.taranix.cafe.beans.resolvers.metadata.method;
 
 import lombok.extern.slf4j.Slf4j;
-import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.annotations.base.CafeWirerType;
 import org.taranix.cafe.beans.metadata.CafeMethod;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
+import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
 
 import java.lang.annotation.Annotation;
 

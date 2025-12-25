@@ -3,9 +3,9 @@ package org.taranix.cafe.beans.properties;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.taranix.cafe.beans.CafeApplicationContext;
-import org.taranix.cafe.beans.CafePropertiesService;
 import org.taranix.cafe.beans.converters.CafeConverter;
 import org.taranix.cafe.beans.repositories.beans.BeansRepository;
+import org.taranix.cafe.beans.resolvers.CafePropertiesService;
 
 import java.nio.file.Path;
 import java.util.Properties;

@@ -1,7 +1,7 @@
 package org.taranix.cafe.desktop.components;
 
-import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
+import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
 import org.taranix.cafe.desktop.components_old.Component;
 
 //@CafeService

@@ -3,7 +3,6 @@ package org.taranix.cafe.beans.resolvers.metadata.field;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.annotations.base.CafePropertyType;
 import org.taranix.cafe.beans.annotations.fields.CafeProperty;
 import org.taranix.cafe.beans.converters.CafeConverter;
@@ -11,6 +10,7 @@ import org.taranix.cafe.beans.metadata.CafeField;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
+import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;

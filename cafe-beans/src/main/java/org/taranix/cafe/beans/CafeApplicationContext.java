@@ -3,6 +3,7 @@ package org.taranix.cafe.beans;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.taranix.cafe.beans.events.CafeDispatcherService;
 import org.taranix.cafe.beans.exceptions.CafeApplicationContextException;
 import org.taranix.cafe.beans.metadata.CafeClass;
 import org.taranix.cafe.beans.metadata.CafeClassFactory;
@@ -10,6 +11,8 @@ import org.taranix.cafe.beans.metadata.CafeMetadataRegistry;
 import org.taranix.cafe.beans.reflection.ClassScanner;
 import org.taranix.cafe.beans.repositories.beans.BeansRepository;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
+import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
+import org.taranix.cafe.beans.resolvers.CafePropertiesService;
 import org.taranix.cafe.beans.resolvers.CafeResolvers;
 import org.taranix.cafe.beans.resolvers.metadata.CafeClassResolver;
 import org.taranix.cafe.beans.resolvers.metadata.constructor.CafeConstructorResolver;
@@ -37,15 +40,15 @@ public class CafeApplicationContext {
     private final CafeBeansFactory beansFactory;
 
     @Getter
-    private final CafeHandlersService handlersService;
+    private final CafeDispatcherService dispatcherService;
 
     private CafeApplicationContext(
             CafeBeansFactory cafeBeansFactory,
-            CafeHandlersService handlersService,
+            CafeDispatcherService dispatcherService,
             final ClassLoader classLoader
     ) {
         this.beansFactory = cafeBeansFactory;
-        this.handlersService = handlersService;
+        this.dispatcherService = dispatcherService;
         CafePropertiesService.load(beansFactory.getRepository(), classLoader);
     }
 
@@ -60,11 +63,11 @@ public class CafeApplicationContext {
     }
 
     public Object executeHandler(Class<? extends Annotation> annotationType, Object... parameters) {
-        return handlersService.executeSingletonHandler(annotationType, parameters);
+        return dispatcherService.dispatch(annotationType, parameters);
     }
 
     public Object executeHandler(String handlerId, Class<? extends Annotation> annotationType, Object... parameters) {
-        return handlersService.executeSingletonHandler(handlerId, annotationType, parameters);
+        return dispatcherService.dispatch(handlerId, annotationType, parameters);
     }
 
 
@@ -217,7 +220,7 @@ public class CafeApplicationContext {
             cafeResolvers.add(typeResolvers.toArray(CafeBeanTypeResolver[]::new));
 
             CafeBeansFactory beansFactory1 = new CafeBeansFactory(repository, cafeValidationService, metadataRegistry, cafeResolvers);
-            CafeHandlersService handlersRegistry1 = new CafeHandlersService(repository);
+            CafeDispatcherService handlersRegistry1 = new CafeDispatcherService(repository);
 
             return new CafeApplicationContext(beansFactory1, handlersRegistry1, classLoader);
         }

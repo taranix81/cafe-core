@@ -6,6 +6,7 @@ import org.taranix.cafe.beans.exceptions.CafeApplicationException;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.repositories.beans.BeanRepositoryEntry;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
+import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
 import org.taranix.cafe.beans.resolvers.metadata.CafeClassResolver;
 import org.taranix.cafe.beans.resolvers.metadata.method.CafeMethodResolver;
 

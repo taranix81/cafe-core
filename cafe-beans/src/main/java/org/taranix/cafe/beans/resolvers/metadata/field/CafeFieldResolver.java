@@ -1,8 +1,8 @@
 package org.taranix.cafe.beans.resolvers.metadata.field;
 
 
-import org.taranix.cafe.beans.CafeBeansFactory;
 import org.taranix.cafe.beans.metadata.CafeField;
+import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
 
 import java.lang.annotation.Annotation;
 
