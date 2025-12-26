@@ -15,8 +15,6 @@ import org.taranix.cafe.beans.repositories.typekeys.TypeKey;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
@@ -86,7 +84,7 @@ public class CafeDispatcherService {
                 continue;
             }
 
-            Object finalInstance = (targetInstance != null && isTypeCompatible(handlerMethod.getDeclaringClass(), targetInstance.getClass()))
+            Object finalInstance = (targetInstance != null && CafeTypesUtils.isTypeCompatible(handlerMethod.getDeclaringClass(), targetInstance.getClass()))
                     ? targetInstance : e.getValue();
 
             if (finalInstance == null) {
@@ -106,27 +104,12 @@ public class CafeDispatcherService {
         }
 
         for (int i = 0; i < referenceParams.length; i++) {
-            if (!isTypeCompatible(referenceParams[i].getType(), inputParams[i].getType())) {
+            if (!CafeTypesUtils.isTypeCompatible(referenceParams[i].getType(), inputParams[i].getType())) {
                 return false;
             }
         }
         return true;
     }
 
-    private boolean isTypeCompatible(Type referenceType, Type inputType) {
-        log.debug("Checking compatibility: {} vs. {}", referenceType, inputType);
-        if (inputType instanceof Class<?> inputClass) {
-            if (referenceType instanceof Class<?> refClass) {
-                return refClass.isAssignableFrom(inputClass);
-            }
 
-            if (referenceType instanceof ParameterizedType refParameterizedType) {
-                Set<Type> allSuperTypes = CafeTypesUtils.getAllSuperTypes(inputClass); //
-                return allSuperTypes.stream()
-                        .anyMatch(superType -> TypeUtils.equals(superType, refParameterizedType));
-            }
-        }
-
-        return TypeUtils.equals(referenceType, inputType);
-    }
 }

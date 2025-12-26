@@ -200,6 +200,73 @@ class CafeTypesUtilsTest {
         assertTrue(TypeUtils.equals(expected, resolved), "Should resolve to Map<String, Integer>");
     }
 
+    // --- Tests for isTypeCompatible ---
+
+    @Test
+    @DisplayName("Should return true for identical simple classes")
+    void testIsTypeCompatibleSimpleIdentical() {
+        assertTrue(CafeTypesUtils.isTypeCompatible(String.class, String.class));
+    }
+
+    @Test
+    @DisplayName("Should return true for assignable simple classes (inheritance)")
+    void testIsTypeCompatibleSimpleInheritance() {
+        // Declared: Number, Provided: Integer
+        assertTrue(CafeTypesUtils.isTypeCompatible(Number.class, Integer.class));
+        // Declared: List, Provided: ArrayList
+        assertTrue(CafeTypesUtils.isTypeCompatible(List.class, ArrayList.class));
+    }
+
+    @Test
+    @DisplayName("Should return false for non-assignable simple classes")
+    void testIsTypeCompatibleIncompatible() {
+        assertFalse(CafeTypesUtils.isTypeCompatible(String.class, Integer.class));
+    }
+
+    @Test
+    @DisplayName("Should match concrete class against ParameterizedType (Case B)")
+    void testIsTypeCompatibleClassAgainstParameterized() {
+        // Declared: List<String>, Provided: ArrayList.class
+        Type declaredListString = TypeUtils.parameterize(List.class, String.class);
+        Class<?> providedArrayList = new ArrayList<String>() {
+        }.getClass();
+
+        assertTrue(CafeTypesUtils.isTypeCompatible(declaredListString, providedArrayList));
+    }
+
+    @Test
+    @DisplayName("Should recursively match nested ParameterizedTypes")
+    void testIsTypeCompatibleNestedGenerics() {
+        // Declared: List<List<String>>
+        Type innerList = TypeUtils.parameterize(List.class, String.class);
+        Type declaredNested = TypeUtils.parameterize(List.class, innerList);
+
+        // Provided: ArrayList<ArrayList<String>>
+        Type providedInner = TypeUtils.parameterize(ArrayList.class, String.class);
+        Type providedNested = TypeUtils.parameterize(ArrayList.class, providedInner);
+
+        assertTrue(CafeTypesUtils.isTypeCompatible(declaredNested, providedNested));
+    }
+
+    @Test
+    @DisplayName("Should return false when generic arguments do not match")
+    void testIsTypeCompatibleIncompatibleGenerics() {
+        // Declared: List<String>
+        Type declared = TypeUtils.parameterize(List.class, String.class);
+        // Provided: List<Integer>
+        Type provided = TypeUtils.parameterize(List.class, Integer.class);
+
+        assertFalse(CafeTypesUtils.isTypeCompatible(declared, provided));
+    }
+
+    @Test
+    @DisplayName("Should handle complex real-world hierarchy with generics")
+    void testIsTypeCompatibleComplexHierarchy() {
+        Type declared = TypeUtils.parameterize(BaseInterface.class, String.class);
+        Class<?> provided = StringImplementation.class;
+
+        assertTrue(CafeTypesUtils.isTypeCompatible(declared, provided));
+    }
     // --- Mock Classes and Interfaces for Testing ---
 
     interface GeneralRepository<K, V> {

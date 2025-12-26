@@ -7,6 +7,7 @@ import org.taranix.cafe.beans.exceptions.ReflectionUtilsException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.*;
 
 @Slf4j
@@ -83,6 +84,56 @@ public class CafeTypesUtils {
         // Apply mappings recursively
         return replaceTypeArguments(typeToResolve, mappings);
     }
+
+    public static boolean isTypeCompatible(Type declaredType, Type providedType) {
+        log.debug("Checking compatibility: {} vs. {}", declaredType, providedType);
+        if (providedType instanceof Class<?> providedClass) {
+            if (declaredType instanceof Class<?> declaredClass) {
+                return declaredClass.isAssignableFrom(providedClass);
+            }
+
+            if (declaredType instanceof ParameterizedType declaredParameterizedType) {
+                Set<Type> allSuperTypes = getAllSuperTypes(providedClass); //
+                return allSuperTypes.stream()
+                        .anyMatch(superType -> TypeUtils.equals(superType, declaredParameterizedType));
+            }
+        }
+
+        if (providedType instanceof ParameterizedType providedParameterized) {
+            if (declaredType instanceof ParameterizedType declaredParameterized) {
+                Class<?> declaredRaw = (Class<?>) declaredParameterized.getRawType();
+                Class<?> providedRaw = (Class<?>) providedParameterized.getRawType();
+
+                if (!declaredRaw.isAssignableFrom(providedRaw)) {
+                    return false;
+                }
+
+                Type[] declaredTypeArguments = declaredParameterized.getActualTypeArguments();
+                Type[] providedTypeArguments = providedParameterized.getActualTypeArguments();
+
+                if (declaredTypeArguments.length != providedTypeArguments.length) {
+                    return false;
+                }
+
+                for (int i = 0; i < declaredTypeArguments.length; i++) {
+                    if (!isTypeCompatible(declaredTypeArguments[i], providedTypeArguments[i])) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+
+        if (declaredType instanceof WildcardType declaredWildcard) {
+            return Arrays.stream(declaredWildcard.getUpperBounds())
+                    .allMatch(bound -> isTypeCompatible(bound, providedType)) &&
+                    Arrays.stream(declaredWildcard.getLowerBounds())
+                            .allMatch(bound -> isTypeCompatible(providedType, bound));
+        }
+
+        return TypeUtils.equals(declaredType, providedType);
+    }
+
 
     private static Class<?> findDeclaringClass(Type type) {
         if (type instanceof TypeVariable<?> tv) {
