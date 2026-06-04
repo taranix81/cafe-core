@@ -3,7 +3,7 @@ package org.taranix.cafe.beans;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.taranix.cafe.beans.events.CafeDispatcherService;
+import org.taranix.cafe.beans.events.CafeHandlerExecutorService;
 import org.taranix.cafe.beans.exceptions.CafeApplicationContextException;
 import org.taranix.cafe.beans.metadata.CafeClass;
 import org.taranix.cafe.beans.metadata.CafeClassFactory;
@@ -40,11 +40,11 @@ public class CafeApplicationContext {
     private final CafeBeansFactory beansFactory;
 
     @Getter
-    private final CafeDispatcherService dispatcherService;
+    private final CafeHandlerExecutorService dispatcherService;
 
     private CafeApplicationContext(
             CafeBeansFactory cafeBeansFactory,
-            CafeDispatcherService dispatcherService,
+            CafeHandlerExecutorService dispatcherService,
             final ClassLoader classLoader
     ) {
         this.beansFactory = cafeBeansFactory;
@@ -62,12 +62,8 @@ public class CafeApplicationContext {
         beansFactory.resolveAllBeans();
     }
 
-    public Object executeHandler(Class<? extends Annotation> annotationType, Object... parameters) {
-        return dispatcherService.dispatch(annotationType, parameters);
-    }
-
-    public Object executeHandler(String handlerId, Class<? extends Annotation> annotationType, Object... parameters) {
-        return dispatcherService.dispatch(handlerId, annotationType, parameters);
+    public Object executeHandler(Class<? extends Annotation> methodAnnotation, Object... parameters) {
+        return dispatcherService.dispatch(methodAnnotation, parameters);
     }
 
 
@@ -220,7 +216,7 @@ public class CafeApplicationContext {
             cafeResolvers.add(typeResolvers.toArray(CafeBeanTypeResolver[]::new));
 
             CafeBeansFactory beansFactory1 = new CafeBeansFactory(repository, cafeValidationService, metadataRegistry, cafeResolvers);
-            CafeDispatcherService handlersRegistry1 = new CafeDispatcherService(repository);
+            CafeHandlerExecutorService handlersRegistry1 = new CafeHandlerExecutorService(repository);
 
             return new CafeApplicationContext(beansFactory1, handlersRegistry1, classLoader);
         }

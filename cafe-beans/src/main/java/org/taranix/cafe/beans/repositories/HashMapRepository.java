@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class HashMapRepository<TKey, TValue> implements Repository<TKey, TValue> {
 
@@ -44,7 +44,7 @@ public abstract class HashMapRepository<TKey, TValue> implements Repository<TKey
     }
 
     @Override
-    public Collection<TKey> getAllKeys() {
+    public Collection<TKey> getKeys() {
         return mappings.keySet();
     }
 
@@ -55,11 +55,17 @@ public abstract class HashMapRepository<TKey, TValue> implements Repository<TKey
     }
 
     @Override
-    public Collection<TKey> getKeys(Function<TKey, Boolean> filter) {
+    public Stream<TKey> getKeys(Function<TKey, Boolean> filter) {
         return mappings.keySet().stream()
-                .filter(filter::apply)
-                .collect(Collectors.toSet());
+                .filter(filter::apply);
+
     }
 
+    @Override
+    public <TKeyType> Stream<TKeyType> getKeys(Class<TKeyType> typeClass) {
+        return mappings.keySet().stream()
+                .filter(typeClass::isInstance)
+                .map(typeClass::cast);
+    }
 
 }

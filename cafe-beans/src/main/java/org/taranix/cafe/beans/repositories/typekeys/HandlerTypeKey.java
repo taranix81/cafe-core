@@ -1,44 +1,45 @@
 package org.taranix.cafe.beans.repositories.typekeys;
 
+import lombok.Builder;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import org.taranix.cafe.beans.events.CafeHandlerSignature;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Objects;
 
+@Getter
+@Builder
 public class HandlerTypeKey extends AbstractTypeKey {
 
-    @Getter
-    private final BeanTypeKey[] parameters;
+    private final BeanTypeKey[] handlerParameters;
+    private final BeanTypeKey handlerReturnTypeKey;
+    private final Annotation[] handlerAnnotations;
+    private final Annotation[] handlerClassAnnotations;
 
-
-    protected HandlerTypeKey(Class<? extends Annotation> annotationType, String typeIdentifier, BeanTypeKey[] parameters) {
-        super(annotationType, StringUtils.defaultIfEmpty(typeIdentifier, StringUtils.EMPTY));
-        this.parameters = parameters;
-
+    protected HandlerTypeKey(
+            BeanTypeKey[] methodParameters,
+            BeanTypeKey handlerReturnTypeKey,
+            Annotation[] handlerAnnotations,
+            Annotation[] handlerClassAnnotations) {
+        super(CafeHandlerSignature.class, StringUtils.EMPTY);
+        this.handlerParameters = methodParameters;
+        this.handlerReturnTypeKey = handlerReturnTypeKey;
+        this.handlerAnnotations = handlerAnnotations;
+        this.handlerClassAnnotations = handlerClassAnnotations;
     }
 
-    public static HandlerTypeKey from(Class<? extends Annotation> annotationType, BeanTypeKey... handlerParameters) {
-        return new HandlerTypeKey(annotationType, StringUtils.EMPTY, handlerParameters);
-    }
-
-    public static HandlerTypeKey from(Class<? extends Annotation> annotationType, String handlerId, BeanTypeKey... handlerParameters) {
-        return new HandlerTypeKey(annotationType, handlerId, handlerParameters);
-    }
-
-    public Class<? extends Annotation> getAnnotationType() {
-        if (getType() instanceof Class<?> clazz) {
-            if (clazz.isAnnotation()) {
-                return (Class<? extends Annotation>) clazz;
-            }
-        }
-        return null;
-    }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getTypeIdentifier(), getType(), Arrays.hashCode(getParameters()));
+        return Objects.hash(
+                getType(),
+                getHandlerReturnTypeKey(),
+                Arrays.hashCode(getHandlerParameters()),
+                Arrays.hashCode(getHandlerAnnotations()),
+                Arrays.hashCode(getHandlerClassAnnotations())
+        );
     }
 
     @Override
@@ -52,19 +53,25 @@ public class HandlerTypeKey extends AbstractTypeKey {
         }
 
         final HandlerTypeKey other = (HandlerTypeKey) obj;
-        return this.getType().equals(other.getType()) && Arrays.equals(this.getParameters(), other.getParameters()) &&
-                this.getTypeIdentifier().equals(other.getTypeIdentifier());
+        return this.getType().equals(other.getType())
+                && Objects.equals(getHandlerReturnTypeKey(), other.getHandlerReturnTypeKey())
+                && Arrays.equals(this.getHandlerParameters(), other.getHandlerParameters())
+                && Arrays.equals(this.getHandlerAnnotations(), other.getHandlerAnnotations())
+                && Arrays.equals(this.getHandlerClassAnnotations(), other.getHandlerClassAnnotations())
+                ;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        if (StringUtils.isNotBlank(getTypeIdentifier())) {
-            sb.append("(").append(getTypeIdentifier()).append(")");
+        if (null != getHandlerReturnTypeKey()) {
+            sb.append("(").append(getHandlerReturnTypeKey()).append(")");
+        } else {
+            sb.append("void ");
         }
         sb.append(getType().getTypeName());
         sb.append(" <");
-        sb.append(StringUtils.join(parameters));
+        sb.append(StringUtils.join(handlerParameters, ","));
         sb.append(">");
         return sb.toString();
     }

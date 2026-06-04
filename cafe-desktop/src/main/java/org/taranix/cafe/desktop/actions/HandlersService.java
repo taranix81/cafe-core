@@ -7,6 +7,8 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.taranix.cafe.beans.annotations.classes.CafeApplication;
+import org.taranix.cafe.beans.annotations.classes.CafeService;
 import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
 import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
 import org.taranix.cafe.desktop.annotations.CafeMenuItemSelectionHandler;
@@ -22,16 +24,14 @@ import java.util.Map;
  * Initialize in CafeDesktopApplication.class.
  * Cannot be initialized by Factory or Service - class is required during resolving classes
  */
+@CafeService
 public class HandlersService {
 
     private final Map<String, HandlerSignature> menuItemSelectionHandlers;
 
-    private final CafeBeansFactory beansFactory;
-
     private final Map<ShellHandlerType, HandlerSignature> shellHandlers;
 
-    public HandlersService(CafeBeansFactory beansFactory) {
-        this.beansFactory = beansFactory;
+    public HandlersService() {
         menuItemSelectionHandlers = new HashMap<>();
         shellHandlers = new HashMap<>();
     }

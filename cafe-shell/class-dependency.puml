@@ -1,0 +1,5 @@
+@startuml
+[class org.taranix.cafe.shell.services.CafeCommandRuntimeService]-->[class org.taranix.cafe.shell.services.CafeCommandBindingService]
+[class org.taranix.cafe.shell.services.CafeCommandRuntimeService]-->[class org.taranix.cafe.shell.services.CafeCommandRuntimeOrderService]
+@enduml
+

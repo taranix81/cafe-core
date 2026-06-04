@@ -1,0 +1,12 @@
+@startuml
+[(Field) org.taranix.cafe.shell.services.CafeCommandBindingService:cafeShell]-->[(Constructor) org.taranix.cafe.shell.services.CafeCommandBindingService:org.taranix.cafe.shell.services.CafeCommandBindingService]
+[(Field) org.taranix.cafe.shell.services.CafeCommandRuntimeService:cafeShell]-->[(Constructor) org.taranix.cafe.shell.services.CafeCommandRuntimeService:org.taranix.cafe.shell.services.CafeCommandRuntimeService]
+[(Field) org.taranix.cafe.shell.services.CafeCommandRuntimeService:orderService]-->[(Constructor) org.taranix.cafe.shell.services.CafeCommandRuntimeService:org.taranix.cafe.shell.services.CafeCommandRuntimeService]
+[(Field) org.taranix.cafe.shell.services.CafeCommandRuntimeService:orderService]-->[(Constructor) org.taranix.cafe.shell.services.CafeCommandRuntimeOrderService:org.taranix.cafe.shell.services.CafeCommandRuntimeOrderService]
+[(Method) org.taranix.cafe.shell.configuration.CafeShellFactory:getOptions]-->[(Constructor) org.taranix.cafe.shell.configuration.CafeShellFactory:org.taranix.cafe.shell.configuration.CafeShellFactory]
+[(Field) org.taranix.cafe.shell.services.CafeCommandRuntimeService:cafeCommandBindingService]-->[(Constructor) org.taranix.cafe.shell.services.CafeCommandBindingService:org.taranix.cafe.shell.services.CafeCommandBindingService]
+[(Field) org.taranix.cafe.shell.services.CafeCommandRuntimeService:cafeCommandBindingService]-->[(Constructor) org.taranix.cafe.shell.services.CafeCommandRuntimeService:org.taranix.cafe.shell.services.CafeCommandRuntimeService]
+[(Method) org.taranix.cafe.shell.configuration.CafeShellFactory:getHelpFormatter]-->[(Constructor) org.taranix.cafe.shell.configuration.CafeShellFactory:org.taranix.cafe.shell.configuration.CafeShellFactory]
+[(Method) org.taranix.cafe.shell.configuration.CafeShellFactory:getCommandLineParser]-->[(Constructor) org.taranix.cafe.shell.configuration.CafeShellFactory:org.taranix.cafe.shell.configuration.CafeShellFactory]
+@enduml
+

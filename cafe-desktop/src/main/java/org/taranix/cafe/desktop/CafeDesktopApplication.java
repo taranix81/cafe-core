@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.CafeApplication;
 import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.beans.resolvers.metadata.method.CafeMethodResolver;
-import org.taranix.cafe.desktop.actions.HandlersService;
 import org.taranix.cafe.desktop.components.application.ApplicationComponent;
 import org.taranix.cafe.desktop.components.menubar.ApplicationMenuBarComponent;
 import org.taranix.cafe.desktop.resolvers.CafeMenuItemSelectionMethodResolver;
@@ -29,7 +28,7 @@ public class CafeDesktopApplication extends CafeApplication {
 
     @Override
     protected void beforeContextInit() {
-        addBeanToContext(new HandlersService(getBeansFactory()));
+//        addBeanToContext(new HandlersService(getBeansFactory()));
         addBeanToContext(getBeansFactory()); //required bt Components factory
         super.beforeContextInit();
     }

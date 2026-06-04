@@ -1,0 +1,21 @@
+Flow
+ 1) Find handler
+    - strategy:
+       by method annotation type
+       by class annotation type
+       by method arguments types
+ 2) Execute the handler
+
+
+[1]  Matching
+1) Command Shell
+    - method annotation to identity the handler
+    - method arguments will be provided
+    - class annotation's arguments (to match with input command)
+
+2) Events
+    - method annotation to identity the handler
+    - method arguments must match
+    - class annotation : any
+
+[2] Execution

@@ -29,7 +29,8 @@ public class SingletonWireMethodResolver implements CafeMethodResolver {
 
     @Override
     public boolean supports(Class<? extends Annotation> annotation) {
-        return CafeAnnotationUtils.isAnnotationMarkedBy(annotation, CafeWirerType.class);
+       boolean result =  CafeAnnotationUtils.isAnnotationMarkedBy(annotation, CafeWirerType.class);
+        return result;
     }
 
     protected Object executeMethod(Object instance, CafeMethod methodInfo, CafeBeansFactory cafeBeansFactory) {

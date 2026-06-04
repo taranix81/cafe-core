@@ -13,7 +13,7 @@ abstract class AbstractDependencyRegistry<TValue> extends HashMapRepository<TVal
 
     public Collection<TValue> cycleSet() {
 
-        for (TValue startingPoint : getAllKeys()) {
+        for (TValue startingPoint : getKeys()) {
             Set<TValue> path = traverse(startingPoint, startingPoint);
             if (!path.isEmpty()) {
                 return path;

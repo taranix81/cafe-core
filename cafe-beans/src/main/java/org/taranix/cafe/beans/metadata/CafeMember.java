@@ -220,11 +220,11 @@ public abstract class CafeMember {
                 .collect(Collectors.toSet());
     }
 
-    public Set<Annotation> getAnnotationsMarkedBy(Class<? extends Annotation> markerType) {
+    public Annotation[] getAnnotationsMarkedBy(Class<? extends Annotation> markerType) {
         // Use getAnnotatedElement() for unified access
         return Arrays.stream(getAnnotatedElement().getAnnotations())
                 .filter(annotation -> CafeAnnotationUtils.isAnnotationMarkedBy(annotation, markerType))
-                .collect(Collectors.toSet());
+                .toArray(Annotation[]::new);
     }
 
 

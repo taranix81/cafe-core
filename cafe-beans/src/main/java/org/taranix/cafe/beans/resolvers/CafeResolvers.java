@@ -22,12 +22,14 @@ import org.taranix.cafe.beans.resolvers.types.CafeBeanTypeResolver;
 import org.taranix.cafe.beans.resolvers.types.ClassBeanTypeResolver;
 import org.taranix.cafe.beans.resolvers.types.CollectionBeanTypeResolver;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 public class CafeResolvers {
 
     public static final String NO_RESOLVER_FOUND = "No resolver found for %s";
@@ -51,6 +53,7 @@ public class CafeResolvers {
             new SingletonWireMethodResolver(),
             new SingletonHandlerMethodResolver())
     );
+
     private final Set<CafeBeanTypeResolver> beanTypekeyResolvers = new HashSet<>(List.of(
             new ClassBeanTypeResolver(),
             new ArrayBeanTypeResolver(),
@@ -61,18 +64,16 @@ public class CafeResolvers {
         if (matched.size() > 1) {
             throw new CafeBeansFactoryException(TOO_MANY_RESOLVERS.formatted(methodDescriptor.getMember()));
         }
-
         return matched.stream()
                 .findFirst()
                 .orElseThrow(() -> new CafeBeansFactoryException(NO_RESOLVER_FOUND.formatted(methodDescriptor.getMember())));
     }
 
     private Set<CafeMethodResolver> findMethodResolvers(CafeMethod methodDescriptor) {
+        log.debug("Finding method resolver for method :{}", methodDescriptor.getMember());
         return methodResolvers.stream()
-                .map(CafeMethodResolver.class::cast)
                 .filter(resolver -> resolver.isApplicable(methodDescriptor))
-                .filter(resolver -> methodDescriptor.getAnnotations()
-                        .stream()
+                .filter(resolver -> methodDescriptor.getAnnotations().stream()
                         .anyMatch(annotation -> resolver.supports(annotation.annotationType())))
                 .collect(Collectors.toSet());
     }

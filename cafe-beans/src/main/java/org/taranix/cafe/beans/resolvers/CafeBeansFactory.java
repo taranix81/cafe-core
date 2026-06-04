@@ -81,7 +81,7 @@ public final class CafeBeansFactory {
     }
 
     public boolean hasBeenExecuted(Executable executable) {
-        return repository.getAllKeys().stream()
+        return repository.getKeys().stream()
                 .anyMatch(typeKey -> repository.getMany(typeKey).stream()
                         .anyMatch(beanRepositoryEntry -> executable.equals(beanRepositoryEntry.getSource())));
     }
