@@ -1,7 +1,6 @@
 package org.taranix.cafe.beans.resolvers.metadata.method;
 
 import org.taranix.cafe.beans.annotations.base.CafeHandlerType;
-import org.taranix.cafe.beans.annotations.methods.CafeHandler;
 import org.taranix.cafe.beans.events.CafeHandlerSignature;
 import org.taranix.cafe.beans.metadata.CafeMethod;
 import org.taranix.cafe.beans.repositories.typekeys.HandlerTypeKey;
@@ -11,10 +10,17 @@ import java.lang.annotation.Annotation;
 import java.util.Optional;
 
 public class SingletonHandlerMethodResolver implements CafeMethodResolver {
+
+    private final Class<? extends Annotation> annotationType;
+
+    public SingletonHandlerMethodResolver(Class<? extends Annotation> annotationType) {
+        this.annotationType = annotationType;
+    }
+
     @Override
     public Object resolve(Object instance, CafeMethod methodInfo, CafeBeansFactory cafeBeansFactory) {
         HandlerTypeKey handlerTypeKey = HandlerTypeKey.builder()
-                .handlerClassAnnotations(methodInfo.getClass().getAnnotations())
+                .handlerClassAnnotations(methodInfo.getMemberDeclaringClass().getAnnotations())
                 .handlerAnnotations(methodInfo.getAnnotationsMarkedBy(CafeHandlerType.class))
                 .handlerReturnTypeKey(methodInfo.getMethodReturnTypeKey())
                 .handlerParameters(methodInfo.getMethodParameterTypeKeys())
@@ -38,6 +44,6 @@ public class SingletonHandlerMethodResolver implements CafeMethodResolver {
 
     @Override
     public boolean supports(Class<? extends Annotation> annotation) {
-        return annotation.equals(CafeHandler.class);
+        return annotation.equals(annotationType);
     }
 }

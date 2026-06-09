@@ -1,4 +1,4 @@
-package org.taranix.cafe.beans.annotations.base;
+package org.taranix.cafe.beans.annotations.classes;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.ANNOTATION_TYPE)
-public @interface CafePropertyType {
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+@CafeService
+public @interface CafeSingleton {
 }

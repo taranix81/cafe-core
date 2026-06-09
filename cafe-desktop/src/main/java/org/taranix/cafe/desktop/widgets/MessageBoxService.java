@@ -4,12 +4,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 
 import java.nio.file.Path;
 import java.util.Optional;
 
-@CafeService
+@CafeSingleton
 public class MessageBoxService {
 
 

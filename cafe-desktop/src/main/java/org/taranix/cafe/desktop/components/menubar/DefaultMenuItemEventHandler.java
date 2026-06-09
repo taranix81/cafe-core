@@ -2,12 +2,12 @@ package org.taranix.cafe.desktop.components.menubar;
 
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Display;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.desktop.annotations.CafeMenuItemSelectionHandler;
 import org.taranix.cafe.desktop.components.application.ApplicationComponent;
 import org.taranix.cafe.desktop.widgets.MessageBoxService;
 
-@CafeService
+@CafeSingleton
 class DefaultMenuItemEventHandler {
 
     private final ApplicationComponent applicationComponent;

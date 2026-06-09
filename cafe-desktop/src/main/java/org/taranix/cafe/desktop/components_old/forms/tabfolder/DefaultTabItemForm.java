@@ -5,7 +5,7 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Widget;
 
-//@CafeService
+//@CafeSingleton
 class DefaultTabItemForm implements TabItemForm {
     @Override
     public CTabItem create(Widget parent) {

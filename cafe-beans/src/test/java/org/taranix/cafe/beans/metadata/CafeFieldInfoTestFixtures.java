@@ -1,7 +1,7 @@
 package org.taranix.cafe.beans.metadata;
 
 import org.taranix.cafe.beans.annotations.fields.CafeInject;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.annotations.modifiers.CafeName;
 
 import java.util.List;
@@ -38,11 +38,11 @@ final class CafeFieldInfoTestFixtures {
 
     }
 
-    @CafeService
+    @CafeSingleton
     static class IntegerClass extends GenericClass<Integer> {
     }
 
-    @CafeService
+    @CafeSingleton
     static class CollectionOfIntegersClass extends GenericClass<List<Integer>> {
     }
 }

@@ -3,6 +3,7 @@ package org.taranix.cafe.beans.services;
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.annotations.classes.CafeService;
 import org.taranix.cafe.beans.converters.CafeConverter;
+import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.metadata.CafeClass;
 import org.taranix.cafe.beans.metadata.CafeMember;
 import org.taranix.cafe.beans.metadata.CafeMetadataRegistry;
@@ -84,7 +85,7 @@ public class CafeOrderedBeansService {
 
     private int offsetDepth(CafeClass cafeClass) {
         //Standard components without offset
-        if (cafeClass.getRootClassAnnotation(CafeService.class) != null) {
+        if (CafeAnnotationUtils.hasAnnotationMarker(cafeClass.getRootClass(), CafeService.class)) {
             return 0;
         }
 

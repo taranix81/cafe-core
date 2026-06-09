@@ -4,7 +4,7 @@ import org.taranix.cafe.beans.converters.CafeConverter;
 
 import java.util.Arrays;
 
-//@CafeService
+//@CafeSingleton
 class StringToTableModelConverter implements CafeConverter<String, TableModel> {
     @Override
     public TableModel convert(String s) {

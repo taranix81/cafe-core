@@ -4,10 +4,9 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.beans.annotations.methods.CafeProvider;
-import org.taranix.cafe.beans.annotations.modifiers.CafeOptional;
 import org.taranix.cafe.beans.exceptions.BeanTypeKeyException;
 import org.taranix.cafe.beans.metadata.CafeConstructor;
 import org.taranix.cafe.beans.metadata.CafeField;
@@ -118,7 +117,7 @@ class CafeBeansResolvableServiceTests {
     }
 
     @Test
-    @DisplayName("(Positive) Should pass when a required dependency is marked as @CafeOptional.")
+    @DisplayName("(Positive) Should pass when a dependency is declared as Optional<T>.")
     void shouldPassWhenDependencyIsOptional() {
         // given
         CafeMetadataRegistry cafeMetadataRegistry = CafeMetadataRegistry.builder()
@@ -278,14 +277,14 @@ class CafeBeansResolvableServiceTests {
 
     }
 
-    @CafeService
+    @CafeSingleton
     static class ValueConsumerField {
         @CafeInject
         Integer value;
     }
 
     // Provider String
-    @CafeService
+    @CafeSingleton
     static class StringValueProvider implements ValueProvider<String> {
         @Override
         @CafeProvider
@@ -295,20 +294,20 @@ class CafeBeansResolvableServiceTests {
     }
 
 
-    @CafeService
+    @CafeSingleton
     static class BooleanValueConsumer {
         @CafeInject
         Boolean value;
     }
 
-    @CafeService
+    @CafeSingleton
     static class ValueConsumerConstructor {
         ValueConsumerConstructor(String value) {
         }
     }
 
     // Provider Integer
-    @CafeService
+    @CafeSingleton
     static class IntegerValueProvider implements ValueProvider<Integer> {
         @Override
         @CafeProvider
@@ -317,7 +316,7 @@ class CafeBeansResolvableServiceTests {
         }
     }
 
-    @CafeService
+    @CafeSingleton
     static class StringListProvider {
         @CafeProvider
         public List<String> getStringList() {
@@ -325,7 +324,7 @@ class CafeBeansResolvableServiceTests {
         }
     }
 
-    @CafeService
+    @CafeSingleton
     static class IntegerListProvider {
         @CafeProvider
         public List<Integer> getIntegerList() {
@@ -333,13 +332,13 @@ class CafeBeansResolvableServiceTests {
         }
     }
 
-    @CafeService
+    @CafeSingleton
     static class StringListConsumer {
         @CafeInject
         List<String> requiredList; // Requires List<String>
     }
 
-    @CafeService
+    @CafeSingleton
     static class RawListConsumer {
         @CafeInject
         @SuppressWarnings("rawtypes")
@@ -348,7 +347,7 @@ class CafeBeansResolvableServiceTests {
 
     // --- Test Classes ---
 
-    @CafeService
+    @CafeSingleton
     static class SubjectClassProvider {
         @CafeProvider
         private SubjectClass producer() {
@@ -357,27 +356,26 @@ class CafeBeansResolvableServiceTests {
 
     }
 
-    @CafeService
+    @CafeSingleton
     static class SubjectClassInjectable {
         @CafeInject
         private SubjectClass testClass2;
     }
 
-    @CafeService
+    @CafeSingleton
     static class ServiceClassInjectable {
         @CafeInject
         ServiceClass serviceClass; // Requires ServiceClass (missing provider)
     }
 
-    @CafeService
+    @CafeSingleton
     static class ServiceClass {
     }
 
-    @CafeService
+    @CafeSingleton
     static class OptionalServiceInjectable {
         @CafeInject
-        @CafeOptional
-        ServiceClass serviceClass; // Requires ServiceClass, but is optional
+        Optional<ServiceClass> serviceClass; // Requires ServiceClass, but is optional
     }
 
     static class SubjectClassProviderWCADate {
@@ -393,14 +391,14 @@ class CafeBeansResolvableServiceTests {
 
     }
 
-    @CafeService
+    @CafeSingleton
     static class ConstructorInjectableMissingDependency {
         // Constructor requires Date (missing provider)
         ConstructorInjectableMissingDependency(Date missingDate) {
         }
     }
 
-    @CafeService
+    @CafeSingleton
     static class MethodInjectableMissingDependency {
         // Method requires Date (missing provider)
         @CafeProvider

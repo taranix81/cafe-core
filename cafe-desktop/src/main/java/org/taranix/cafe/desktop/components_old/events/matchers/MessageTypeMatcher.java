@@ -5,7 +5,7 @@ import org.taranix.cafe.desktop.components_old.events.messages.Message;
 
 import java.lang.reflect.Method;
 
-//@CafeService
+//@CafeSingleton
 class MessageTypeMatcher implements MessageHandlerMatcher {
     @Override
     public boolean isMatch(Method method, Message message) {

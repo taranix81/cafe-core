@@ -5,7 +5,7 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Widget;
 
-//@CafeService
+//@CafeSingleton
 class DefaultTabFolderForm implements TabFolderForm {
 
 

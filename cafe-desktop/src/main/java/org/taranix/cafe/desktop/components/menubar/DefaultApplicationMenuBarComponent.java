@@ -5,11 +5,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Menu;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.desktop.actions.HandlersService;
 import org.taranix.cafe.desktop.components.menubar.model.PropertiesMenuModel;
 
-@CafeService
+@CafeSingleton
 @AllArgsConstructor
 class DefaultApplicationMenuBarComponent implements ApplicationMenuBarComponent {
 

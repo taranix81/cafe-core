@@ -13,8 +13,8 @@ See also: [../events/EventInfrastructure.md](../events/EventInfrastructure.md) �
 
 ```java
 public class CafeApplicationContext {
-    private final CafeBeansFactory           beansFactory;        // DI core
-    private final CafeHandlerExecutorService dispatcherService;   // event dispatch
+    private final CafeBeansFactory   beansFactory;          // DI core
+    private final HandlerMethodInvoker handlerMethodInvoker; // event dispatch
     // private constructor — only created via BeansContextBuilder.build()
 }
 ```
@@ -32,7 +32,7 @@ There is no public constructor. The only entry point is `BeansContextBuilder.bui
 | `getInstances(Class<T>)` | `beansFactory.getBeanOrNull(BeanTypeKey)` | Returns all registered instances of a type |
 | `getInstances(Class<T>, String)` | same | Named variant |
 | `getProperty(String)` | `beansFactory.getProperty(name)` | Reads a value from `application.properties` |
-| `executeHandler(Class<Annotation>, Object...)` | `dispatcherService.dispatch(...)` | Dispatches an event to the first matching `@CafeHandler` method |
+| `executeHandler(Class<Annotation>, Object...)` | `handlerMethodInvoker.dispatch(...)` | Dispatches an event to the first matching `@CafeHandler` method |
 | `initialize()` | `beansFactory.resolveAllBeans()` | Triggers full DI resolution — called once by `CafeApplication` |
 | `refresh(Object)` | `resolvers.findFieldResolver(...).resolve(...)` | Re-injects DI fields into an existing singleton object |
 
@@ -67,10 +67,10 @@ after the container is fully initialised.
 6. new CafeBeansFactory(repository, validationService, metadataRegistry, cafeResolvers)
         → beansFactory
 
-7. new CafeHandlerExecutorService(repository)
-        → dispatcherService
+7. new HandlerMethodInvoker(repository)
+        → handlerMethodInvoker
 
-8. new CafeApplicationContext(beansFactory, dispatcherService, classLoader)
+8. new CafeApplicationContext(beansFactory, handlerMethodInvoker, classLoader)
    └── CafePropertiesService.load(repository, classLoader)   ← loads application.properties
 ```
 
@@ -131,27 +131,23 @@ protected void addBeanToContext(Object object) {
 Call from `beforeContextInit()` so the object is available when `resolveAllBeans()` runs
 and injects it into other beans.
 
-### `EventHub` bootstrap (proposed — see [ProposedChanges.md](../proposal-changes/ProposedChanges.md#6))
+### `EventHub` and `HandlerMethodInvoker` bootstrap
+
+`CafeApplication.beforeContextInit()` seeds both objects as beans before DI resolves:
 
 ```java
 @Override
 protected void beforeContextInit() {
-    addBeanToContext(new EventHub());
+    addBeanToContext(cafeApplicationContext.getHandlerMethodInvoker());
+    EventHub eventHub = new EventHub();
+    eventHub.register(CafeHandler.class,
+            new DefaultEventDispatcher<>(CafeHandler.class, getHandlerMethodInvoker()));
+    addBeanToContext(eventHub);
 }
 ```
 
-This makes `EventHub` injectable as a singleton into any bean that declares `@CafeInject EventHub`.
-
----
-
-## `dispatcherService` exposure gap
-
-`CafeApplicationContext.getDispatcherService()` returns `CafeHandlerExecutorService`.
-`CafeApplication` does not expose it directly — only `getBeansFactory()` is public.
-
-Proposed fix ([ProposedChanges.md #4](../proposal-changes/ProposedChanges.md#4)):
-register the invoker as a bean via `addBeanToContext(dispatcherService)` in `beforeContextInit()`
-so `DefaultEventDispatcher<A>` can have it injected rather than looked up manually.
+Both `HandlerMethodInvoker` and `EventHub` are injectable as singletons into any bean that
+declares `@CafeInject`.  The `CafeHandler` dispatcher is pre-registered on the hub at startup.
 
 ---
 
@@ -160,15 +156,9 @@ so `DefaultEventDispatcher<A>` can have it injected rather than looked up manual
 | Topic | Decision |
 |---|---|
 | Construction | Private constructor — `BeansContextBuilder.build()` is the only entry point |
-| Shared repository | All components (`beansFactory`, `dispatcherService`) share one `BeansRepository` |
+| Shared repository | All components (`beansFactory`, `handlerMethodInvoker`) share one `BeansRepository` |
 | Lifecycle hook | `beforeContextInit()` — seed manual beans before `resolveAllBeans()` |
 | `refresh()` | Used by `postContextInit()` to wire the `CafeApplication` subclass itself |
 | `addBeanToContext()` | Bypasses resolvers — direct repository insert; must be called in `beforeContextInit()` |
-
-## What is open
-
-| Topic | Status |
-|---|---|
-| `HandlerMethodInvoker` exposure | `getDispatcherService()` exists but not registered as bean — see [ProposedChanges.md #4](../proposal-changes/ProposedChanges.md#4) |
-| `EventHub` bootstrap | Design documented — not yet implemented; see [ProposedChanges.md #6](../proposal-changes/ProposedChanges.md#6) |
-| `CafeApplication.getDispatcherService()` | Not exposed — access is via `CafeApplicationContext.getDispatcherService()` only |
+| `HandlerMethodInvoker` exposure | Registered as a bean in `beforeContextInit()` — injectable by type |
+| `EventHub` bootstrap | Registered as a bean in `beforeContextInit()` with a pre-registered `CafeHandler` dispatcher |

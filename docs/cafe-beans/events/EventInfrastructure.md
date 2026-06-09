@@ -5,79 +5,104 @@ See also: [cafe-desktop/events/UIFrameworkEvents.md](../../cafe-desktop/events/U
 
 ---
 
-## Current state
-
-### Components
+## Components
 
 | Class | Role |
 |---|---|
-| `CafeHandlerExecutorService` | Dispatches to `@CafeHandler` methods via `Repository` lookup |
-| `CafeHandlerFindService` | Queries the handler repository by predicate — **broken** (see below) |
+| `HandlerMethodInvoker` | Dispatches to `@CafeHandler` methods via `Repository` lookup |
+| `CafeHandlerFindService` | Queries the handler repository by predicate |
 | `CafeHandlerSignature` | Value object: holds a handler `CafeMethod` + optional instance |
 | `CafeHandlerSelector` | `@CafeService` — matches a `HandlerTypeKey` against annotation type + parameter types |
 | `HandlerTypekeySelector` | Interface implemented by `CafeHandlerSelector` |
-| `SingletonHandlerMethodResolver` | Registers `@CafeHandler` methods of singleton beans into the `Repository` at startup |
+| `SingletonHandlerMethodResolver` | Registers handler methods of singleton beans into the `Repository` at startup — parameterised by annotation type |
+| `EventDispatcher<A>` | Interface: `register`, `unregister`, `send`, `sendTo` |
+| `DefaultEventDispatcher<A>` | Default implementation — delegates to `HandlerMethodInvoker` |
+| `EventHub` | Registry of `EventDispatcher` instances keyed by annotation type |
 
-### `CafeHandlerExecutorService`
+---
+
+## `HandlerMethodInvoker`
 
 Dispatches events by looking up matching `HandlerTypeKey` entries from the `Repository`.
 
 ```java
-public class CafeHandlerExecutorService {
-    // single dispatch — first match only
-    public Object dispatch(Class<? extends Annotation> methodAnnotationType, Object... parameters);
+public class HandlerMethodInvoker {
+    // single dispatch — first match only, returns result
+    public Object dispatch(Class<? extends Annotation> annotationType, Object... parameters);
 
-    // private — invokes a single matched handler; supports optional targetInstance
-    private Object invokeHandler(HandlerTypeKey key, Object targetInstance, Object... parameters);
+    // fan-out — all matching handlers
+    public void dispatchAll(Class<? extends Annotation> annotationType, Object... args);
+
+    // targeted — handlers whose declaring instance matches target (identity check)
+    public void dispatchTo(Class<? extends Annotation> annotationType, Object target, Object... args);
 }
 ```
 
-`dispatch()` returns after the **first match** — fan-out to all handlers is not implemented.
-`invokeHandler()` already accepts a `targetInstance` parameter but `dispatch()` always passes `null` —
-targeted dispatch is structurally present but not wired.
+Registered as a bean via `CafeApplication.beforeContextInit()` so it is injectable into any bean.
+`CafeApplicationContext` exposes it as `getHandlerMethodInvoker()`.
 
-`CafeApplicationContext` exposes this as `getDispatcherService()`.
+---
 
-### `CafeHandlerFindService` — known bug
+## `SingletonHandlerMethodResolver`
 
-`find()` correctly filters `HandlerTypeKey` entries by predicate but **ignores the result**:
-
-```java
-public Set find(...) {
-    Collection<HandlerTypeKey> matchedKeys = repository.getKeys(HandlerTypeKey.class)
-        .filter(...)
-        .collect(Collectors.toSet());
-
-    return Set.of();   // ← BUG: matchedKeys computed but never returned or used
-}
-```
-
-No handler resolution works through `CafeHandlerFindService` until this is fixed.
-
-### `CafeHandlerSelector`
-
-`@CafeService` — auto-registered singleton. Matches a `HandlerTypeKey` against a call:
-
-```java
-boolean isMatch(HandlerTypeKey key, Class<? extends Annotation> methodAnnotation, Object... parameters) {
-    // 1. any handler annotation matches methodAnnotation
-    // 2. parameter types are compatible (count + type-compatible check)
-}
-```
-
-Registered in the `Repository` as a `HandlerTypekeySelector` bean.
-`CafeHandlerExecutorService` looks it up at dispatch time via `getSelectors()`.
-
-### `SingletonHandlerMethodResolver`
-
-Runs during singleton bean resolution. For each `@CafeHandler` method on a singleton:
+Runs during singleton bean resolution. For each handler method on a singleton:
 1. Builds a `HandlerTypeKey` (annotation type + parameter types + return type)
 2. Builds a `CafeHandlerSignature` (method + instance)
 3. Persists both into `CafeBeansFactory`
 
-Currently hard-coded to `CafeHandler.class` — one resolver instance, one annotation type.
+Parameterised by `Class<? extends Annotation> annotationType` — one resolver instance per
+annotation type. `CafeResolvers` registers it with `CafeHandler.class`; downstream modules
+(e.g. `cafe-desktop`) can register their own resolver for their own annotation without changing
+`cafe-beans`.
 
-### `HandlerTypeKey`
+---
+
+## `EventDispatcher<A>` / `DefaultEventDispatcher<A>`
+
+```java
+public interface EventDispatcher<A extends Annotation> {
+    void register(Object listener);
+    void unregister(Object listener);
+    void send(Object... args);
+    void sendTo(Object target, Object... args);
+}
+```
+
+`DefaultEventDispatcher<A>` implements `EventDispatcher<A>`:
+- `send`   → `invoker.dispatchAll(annotationType, args)`
+- `sendTo` → `invoker.dispatchTo(annotationType, target, args)`
+- `register` / `unregister` maintain a `ConcurrentHashMap`-backed listener set
+
+---
+
+## `EventHub`
+
+Registry keyed by annotation type. Registered as a singleton bean in `beforeContextInit()`.
+
+```java
+public class EventHub {
+    public <A extends Annotation> void register(Class<A> annotationType, EventDispatcher<A> dispatcher);
+    public <A extends Annotation> EventDispatcher<A> dispatcher(Class<A> annotationType);
+    public <A extends Annotation> void send(Class<A> annotationType, Object... args);
+    public <A extends Annotation> void sendTo(Class<A> annotationType, Object target, Object... args);
+}
+```
+
+At bootstrap, `CafeApplication.beforeContextInit()` registers a `DefaultEventDispatcher<CafeHandler>`
+for `CafeHandler.class`:
+
+```java
+EventHub eventHub = new EventHub();
+eventHub.register(CafeHandler.class,
+        new DefaultEventDispatcher<>(CafeHandler.class, getHandlerMethodInvoker()));
+addBeanToContext(eventHub);
+```
+
+`send` / `sendTo` are no-ops when no dispatcher is registered for the given annotation type.
+
+---
+
+## `HandlerTypeKey`
 
 Repository key for handler entries:
 
@@ -93,84 +118,7 @@ class HandlerTypeKey extends AbstractTypeKey {
 
 ---
 
-## Proposed additions
-
-These are the additions needed to support `EventDispatcher<A>` and `EventHub` from the desktop design.
-See [proposal-changes/ProposedChanges.md](../proposal-changes/ProposedChanges.md) for the full change list.
-
-### `dispatchAll()` and `dispatchTo()` on `CafeHandlerExecutorService`
-
-```java
-// fan-out — all matching handlers, not just first
-void dispatchAll(Class<? extends Annotation> annotationType, Object... args);
-
-// targeted — handlers on target instance only (identity check)
-void dispatchTo(Class<? extends Annotation> annotationType, Object target, Object... args);
-```
-
-`dispatchTo` wires through the existing `invokeHandler(key, targetInstance, params)` signature
-which already handles target instance filtering.
-
-### Rename `CafeHandlerExecutorService` → `HandlerMethodInvoker`
-
-Reflects the actual role — reflection-based method invocation, not a "service".
-
-### `EventDispatcher<A extends Annotation>` interface
-
-```java
-public interface EventDispatcher<A extends Annotation> {
-    void register(Object listener);
-    void unregister(Object listener);
-    void send(Object... args);
-    void sendTo(Object target, Object... args);
-}
-```
-
-### `DefaultEventDispatcher<A>` implementation
-
-```java
-public class DefaultEventDispatcher<A extends Annotation> implements EventDispatcher<A> {
-    public DefaultEventDispatcher(Class<A> annotationType, HandlerMethodInvoker invoker) { ... }
-    // send  → invoker.dispatchAll(annotationType, args)
-    // sendTo → invoker.dispatchTo(annotationType, target, args)
-}
-```
-
-### `EventHub` — global facade
-
-```java
-public class EventHub {
-    public <A extends Annotation> void send(Class<A> annotationType, Object... args);
-    public <A extends Annotation> void sendTo(Class<A> annotationType, Object target, Object... args);
-    public <A extends Annotation> EventDispatcher<A> dispatcher(Class<A> annotationType);
-    public <A extends Annotation> void register(Class<A> annotationType, EventDispatcher<A> dispatcher);
-}
-```
-
-Registered at bootstrap as a singleton bean via `addBeanToContext(eventHub)`.
-
-### `SingletonHandlerMethodResolver` — multi-annotation support
-
-Currently hard-coded to `CafeHandler.class`. Needs to become generic — one resolver instance
-per annotation type — so `cafe-desktop`'s `@CafeEventHandler` can register its own resolver
-without changing `cafe-beans`.
-
-```java
-// parameterised resolver
-public class SingletonHandlerMethodResolver implements CafeMethodResolver {
-    private final Class<? extends Annotation> annotationType;
-    public SingletonHandlerMethodResolver(Class<? extends Annotation> annotationType) { ... }
-
-    @Override
-    public boolean supports(Class<? extends Annotation> annotation) {
-        return annotation.equals(annotationType);
-    }
-}
-```
-
----
-
-## Routing dimensions (unchanged)
+## Routing dimensions
 
 | Dimension | Resolved by |
 |---|---|

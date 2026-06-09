@@ -9,6 +9,7 @@ import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,7 +45,12 @@ public class CollectionBeanTypeResolver implements CafeBeanTypeResolver {
 
     @Override
     public Object resolveOrNull(BeanTypeKey typeKey, CafeBeansFactory beansFactory) {
-        return resolve(typeKey, beansFactory);
+        try {
+            return resolve(typeKey, beansFactory);
+        } catch (CollectionTypeResolverException e) {
+            log.debug("Collection resolution failed for {}, returning empty collection", typeKey, e);
+            return Collections.emptyList();
+        }
     }
 
     @Override

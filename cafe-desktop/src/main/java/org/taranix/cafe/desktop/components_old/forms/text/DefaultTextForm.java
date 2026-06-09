@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 
-//@CafeService
+//@CafeSingleton
 class DefaultTextForm implements TextForm {
     @Override
     public Text create(Widget parent) {

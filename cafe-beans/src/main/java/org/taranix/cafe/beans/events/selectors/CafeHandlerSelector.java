@@ -2,7 +2,7 @@ package org.taranix.cafe.beans.events.selectors;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.reflection.CafeTypesUtils;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
 import org.taranix.cafe.beans.repositories.typekeys.HandlerTypeKey;
@@ -10,7 +10,7 @@ import org.taranix.cafe.beans.repositories.typekeys.HandlerTypeKey;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 
-@CafeService
+@CafeSingleton
 public class CafeHandlerSelector implements HandlerTypekeySelector {
 
     public CafeHandlerSelector() {

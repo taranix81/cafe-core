@@ -1,7 +1,7 @@
 package org.taranix.cafe.shell.services;
 
 import lombok.extern.slf4j.Slf4j;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.metadata.CafeClass;
 import org.taranix.cafe.beans.metadata.CafeClassFactory;
 import org.taranix.cafe.beans.metadata.CafeMetadataRegistry;
@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@CafeService
+@CafeSingleton
 @Slf4j
 
 public class CafeCommandRuntimeOrderService {

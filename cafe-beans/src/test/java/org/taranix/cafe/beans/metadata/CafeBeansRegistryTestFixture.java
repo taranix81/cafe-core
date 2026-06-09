@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.NotImplementedException;
 import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.beans.annotations.methods.CafeProvider;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 
 import java.util.List;
 import java.util.Set;
@@ -22,7 +22,7 @@ class CafeBeansRegistryTestFixture {
         }
     }
 
-    @CafeService
+    @CafeSingleton
     static class IntegerProviderAndStringInjectable extends GenericUProviderAndTInjectable<String, Integer> {
     }
 
@@ -62,11 +62,11 @@ class CafeBeansRegistryTestFixture {
         ServiceClass[] serviceClass;
     }
 
-    @CafeService
+    @CafeSingleton
     static class ServiceClass {
     }
 
-    @CafeService
+    @CafeSingleton
     static class ServiceClassInjectable {
 
         @CafeInject

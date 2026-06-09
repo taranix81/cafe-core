@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-//@CafeService
+//@CafeSingleton
 @Slf4j
 public class EventBus {
 

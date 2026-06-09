@@ -2,7 +2,7 @@ package org.taranix.cafe.shell.services;
 
 import org.apache.commons.cli.Option;
 import org.taranix.cafe.beans.annotations.fields.CafeInject;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.shell.CafeShell;
 import org.taranix.cafe.shell.commands.CafeCommandOptionBinding;
 import org.taranix.cafe.shell.exceptions.CafeCommandBindingServiceException;
@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@CafeService
+@CafeSingleton
 public class CafeCommandBindingService {
 
     @CafeInject

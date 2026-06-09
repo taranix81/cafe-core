@@ -3,7 +3,7 @@ package org.taranix.cafe.beans.resolvers;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.beans.annotations.methods.CafeProvider;
 import org.taranix.cafe.beans.metadata.CafeMember;
@@ -106,7 +106,7 @@ class CafeOrderedBeansServiceTests {
 
     }
 
-    @CafeService
+    @CafeSingleton
     static class ServiceClassWCA {
 
         ServiceClassWCA(String someString) {
@@ -128,11 +128,11 @@ class CafeOrderedBeansServiceTests {
         ServiceClassWCA service;
     }
 
-    @CafeService
+    @CafeSingleton
     static class ServiceClass {
     }
 
-    @CafeService
+    @CafeSingleton
     static class ServiceClassInjectable {
 
         @CafeInject

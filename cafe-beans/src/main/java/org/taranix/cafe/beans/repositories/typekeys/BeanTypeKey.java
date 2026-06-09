@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 public class BeanTypeKey extends AbstractTypeKey {
@@ -126,6 +127,11 @@ public class BeanTypeKey extends AbstractTypeKey {
         return isCollection()
                 && getRawType() instanceof Class<?>
                 && Set.class.isAssignableFrom((Class<?>) getRawType());
+    }
+
+    public boolean isOptional() {
+        return isParametrizedType()
+                && Optional.class.equals(getRawType());
     }
 
     @Override

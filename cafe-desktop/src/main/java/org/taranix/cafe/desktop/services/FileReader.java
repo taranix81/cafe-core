@@ -3,7 +3,7 @@ package org.taranix.cafe.desktop.services;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.shell.exceptions.CafeCommandRuntimeException;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 
-@CafeService
+@CafeSingleton
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FileReader {
 

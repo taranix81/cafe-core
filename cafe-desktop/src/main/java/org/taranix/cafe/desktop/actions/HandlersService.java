@@ -8,7 +8,7 @@ import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.taranix.cafe.beans.annotations.classes.CafeApplication;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
 import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
 import org.taranix.cafe.desktop.annotations.CafeMenuItemSelectionHandler;
@@ -20,11 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-/**
- * Initialize in CafeDesktopApplication.class.
- * Cannot be initialized by Factory or Service - class is required during resolving classes
- */
-@CafeService
+@CafeSingleton
 public class HandlersService {
 
     private final Map<String, HandlerSignature> menuItemSelectionHandlers;

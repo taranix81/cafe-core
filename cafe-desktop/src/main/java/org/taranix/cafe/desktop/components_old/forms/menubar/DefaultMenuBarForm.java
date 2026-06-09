@@ -12,7 +12,7 @@ import org.taranix.cafe.desktop.components.menubar.model.PropertiesMenuModel;
 import org.taranix.cafe.desktop.components_old.forms.WidgetConfig;
 
 
-//@CafeService
+//@CafeSingleton
 class DefaultMenuBarForm implements MenuBarForm {
 
     public static final String SEPARATOR_ID = "separatorId";

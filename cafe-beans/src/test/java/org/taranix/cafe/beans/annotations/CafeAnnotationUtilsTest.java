@@ -4,13 +4,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.taranix.cafe.beans.annotations.base.CafeWirerType;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.base.CafeWiringType;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.annotations.classes.Scope;
 import org.taranix.cafe.beans.annotations.methods.CafeProvider;
 import org.taranix.cafe.beans.annotations.modifiers.CafeModifier;
 import org.taranix.cafe.beans.annotations.modifiers.CafeName;
 import org.taranix.cafe.beans.annotations.modifiers.CafePrimary;
+import org.taranix.cafe.beans.annotations.modifiers.CafePrototype;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 
 import java.lang.annotation.Annotation;
@@ -40,7 +41,7 @@ class CafeAnnotationUtilsTest {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @CafeWirerType
+    @CafeWiringType
     @interface CustomTypeMarker {
     }
 
@@ -57,11 +58,11 @@ class CafeAnnotationUtilsTest {
 
     // --- Test Classes for Reflection ---
 
-    @CafeService(scope = Scope.Prototype)
+    @CafePrototype
     static class PrototypeService {
     }
 
-    @CafeService
+    @CafeSingleton
     static class SingletonService {
     }
 
@@ -125,26 +126,25 @@ class CafeAnnotationUtilsTest {
     class PresenceAndRetrievalTests {
         @Test
         void isAnnotationPresent_ShouldReturnTrueForPresentAnnotation() {
-            assertTrue(CafeAnnotationUtils.isAnnotationPresent(SingletonService.class, CafeService.class));
+            assertTrue(CafeAnnotationUtils.isAnnotationPresent(SingletonService.class, CafeSingleton.class));
         }
 
         @Test
         void isAnnotationPresent_ShouldReturnFalseForMissingAnnotation() {
-            assertFalse(CafeAnnotationUtils.isAnnotationPresent(DefaultService.class, CafeService.class));
+            assertFalse(CafeAnnotationUtils.isAnnotationPresent(DefaultService.class, CafeSingleton.class));
         }
 
         @Test
         void getAnnotations_ShouldRetrieveAllClassAnnotations() {
             Set<Annotation> annotations = CafeAnnotationUtils.getAnnotations(SingletonService.class);
-            assertTrue(annotations.stream().anyMatch(a -> a instanceof CafeService));
+            assertTrue(annotations.stream().anyMatch(a -> a instanceof CafeSingleton));
             assertFalse(annotations.isEmpty());
         }
 
         @Test
         void getAnnotationByType_ShouldRetrieveSpecificAnnotation() {
-            CafeService annotation = CafeAnnotationUtils.getAnnotationByType(SingletonService.class, CafeService.class);
+            CafeSingleton annotation = CafeAnnotationUtils.getAnnotationByType(SingletonService.class, CafeSingleton.class);
             assertNotNull(annotation);
-            assertEquals(Scope.Singleton, annotation.scope());
         }
     }
 
@@ -259,13 +259,13 @@ class CafeAnnotationUtilsTest {
             // Check if CafeName is extended by CafeType (should be false)
             Field field = MemberBean.class.getDeclaredField("fieldWithCafeName");
             Annotation cafeName = field.getAnnotation(CafeName.class);
-            assertFalse(CafeAnnotationUtils.isAnnotationMarkedBy(cafeName, CafeWirerType.class));
+            assertFalse(CafeAnnotationUtils.isAnnotationMarkedBy(cafeName, CafeWiringType.class));
         }
 
         @Test
         void hasMarker_ShouldReturnTrueForFieldMarker() throws NoSuchFieldException {
             Field field = MemberBean.class.getDeclaredField("fieldWithTypeMarker");
-            assertTrue(CafeAnnotationUtils.hasAnnotationMarker(field, CafeWirerType.class));
+            assertTrue(CafeAnnotationUtils.hasAnnotationMarker(field, CafeWiringType.class));
         }
 
         @Test
@@ -277,7 +277,19 @@ class CafeAnnotationUtilsTest {
         @Test
         void hasMarker_ShouldReturnFalseWhenMarkerIsMissing() throws NoSuchMethodException {
             Method method = MemberBean.class.getDeclaredMethod("unannotatedMethod");
-            assertFalse(CafeAnnotationUtils.hasAnnotationMarker(method, CafeWirerType.class));
+            assertFalse(CafeAnnotationUtils.hasAnnotationMarker(method, CafeWiringType.class));
+        }
+
+        @Test
+        void isAnnotationMarkedBy_ShouldReturnTrueWhenAnnotationIsTheMarkerItself() {
+            // CafePrototype is the marker class — self-check must hold
+            Annotation prototypeAnnotation = PrototypeService.class.getAnnotation(CafePrototype.class);
+            assertTrue(CafeAnnotationUtils.isAnnotationMarkedBy(prototypeAnnotation, CafePrototype.class));
+        }
+
+        @Test
+        void isAnnotationMarkedBy_ClassVariant_ShouldReturnTrueForSelf() {
+            assertTrue(CafeAnnotationUtils.isAnnotationMarkedBy(CafePrototype.class, CafePrototype.class));
         }
 
     }

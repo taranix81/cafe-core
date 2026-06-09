@@ -2,11 +2,11 @@ package org.taranix.cafe.shell.commands;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 
 import java.util.Map;
 
-@CafeService
+@CafeSingleton
 @ToString
 public class CafeCommandArguments {
 

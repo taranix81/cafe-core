@@ -5,9 +5,9 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.taranix.cafe.beans.annotations.methods.CafeProvider;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 
-@CafeService
+@CafeSingleton
 public class CafeShellFactory {
 
     @CafeProvider

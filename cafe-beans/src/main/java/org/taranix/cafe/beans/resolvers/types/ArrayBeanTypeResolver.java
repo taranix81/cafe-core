@@ -13,7 +13,11 @@ import java.util.Collection;
 public class ArrayBeanTypeResolver implements CafeBeanTypeResolver {
     @Override
     public Object resolve(BeanTypeKey typeKey, CafeBeansFactory beansFactory) {
-        return resolveOrNull(typeKey, beansFactory);
+        Object result = resolveOrNull(typeKey, beansFactory);
+        if (result == null) {
+            throw new ArrayTypeResolverException("No providers found for array type %s".formatted(typeKey));
+        }
+        return result;
     }
 
     @Override

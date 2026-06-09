@@ -4,9 +4,8 @@ import lombok.Getter;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.*;
 import org.taranix.cafe.beans.annotations.fields.CafeInject;
-import org.taranix.cafe.beans.annotations.modifiers.CafeOptional;
 import org.taranix.cafe.beans.annotations.fields.CafeProperty;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.desktop.actions.HandlersService;
 import org.taranix.cafe.desktop.components.Component;
 import org.taranix.cafe.desktop.components.containers.ContainerComponent;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-@CafeService
+@CafeSingleton
 final class DefaultApplicationComponent implements ApplicationComponent {
 
     private final HandlersService handlersService;
@@ -27,8 +26,7 @@ final class DefaultApplicationComponent implements ApplicationComponent {
     @CafeProperty(name = "cafe.application.name")
     private String applicationTitle;
     @CafeInject
-    @CafeOptional
-    private ShellLayout shellLayout;
+    private Optional<ShellLayout> shellLayout;
 
     DefaultApplicationComponent(HandlersService handlersService) {
         this.handlersService = handlersService;
@@ -92,7 +90,7 @@ final class DefaultApplicationComponent implements ApplicationComponent {
         if (shell == null) {
             shell = new Shell(Display.getCurrent());
             shell.setText(applicationTitle);
-            shell.setLayout(Optional.ofNullable(shellLayout)
+            shell.setLayout(shellLayout
                     .map(ShellLayout::getLayout)
                     .orElse(new FillLayout())
             );

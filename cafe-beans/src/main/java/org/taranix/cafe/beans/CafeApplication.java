@@ -1,7 +1,11 @@
 package org.taranix.cafe.beans;
 
 import lombok.extern.slf4j.Slf4j;
+import org.taranix.cafe.beans.annotations.methods.CafeHandler;
 import org.taranix.cafe.beans.converters.CafeConverter;
+import org.taranix.cafe.beans.events.DefaultEventDispatcher;
+import org.taranix.cafe.beans.events.EventHub;
+import org.taranix.cafe.beans.events.HandlerMethodInvoker;
 import org.taranix.cafe.beans.exceptions.CafeApplicationException;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.repositories.beans.BeanRepositoryEntry;
@@ -37,7 +41,15 @@ public abstract class CafeApplication {
     }
 
     protected void beforeContextInit() {
-        //do nothing
+        addBeanToContext(cafeApplicationContext.getHandlerMethodInvoker());
+        EventHub eventHub = new EventHub();
+        eventHub.register(CafeHandler.class,
+                new DefaultEventDispatcher<>(CafeHandler.class, getHandlerMethodInvoker()));
+        addBeanToContext(eventHub);
+    }
+
+    protected HandlerMethodInvoker getHandlerMethodInvoker() {
+        return cafeApplicationContext.getHandlerMethodInvoker();
     }
 
     public void addBeanToContext(Object object) {

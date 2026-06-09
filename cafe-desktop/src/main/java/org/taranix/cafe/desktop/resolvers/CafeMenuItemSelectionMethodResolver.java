@@ -44,7 +44,7 @@ public class CafeMenuItemSelectionMethodResolver implements CafeMethodResolver {
             log.warn("Method {} will be not triggered : more than 1 parameter", methodInfo.getMethod());
         }
 
-        if (methodInfo.getMethod().getParameterCount() == 1 && methodInfo.getMethod().getParameterTypes()[0].equals(SelectionEvent.class)) {
+        if (methodInfo.getMethod().getParameterCount() == 1 && !methodInfo.getMethod().getParameterTypes()[0].equals(SelectionEvent.class)) {
             log.warn("Method {} will be not triggered : wrong parameter type {}. Only SelectionEvent is supported", methodInfo.getMethod(), methodInfo.getMethod().getParameterTypes()[0]);
         }
 

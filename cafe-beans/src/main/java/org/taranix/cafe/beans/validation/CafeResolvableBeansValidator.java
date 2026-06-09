@@ -2,7 +2,6 @@ package org.taranix.cafe.beans.validation;
 
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.annotations.base.CafeHandlerType;
-import org.taranix.cafe.beans.annotations.modifiers.CafeOptional;
 import org.taranix.cafe.beans.metadata.CafeMember;
 import org.taranix.cafe.beans.metadata.CafeMetadataRegistry;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
@@ -16,7 +15,7 @@ public class CafeResolvableBeansValidator implements CafeValidator {
             "The following members have unresolvable dependencies in the Cafe context.";
 
     /**
-     * Validates whether all dependencies (except those marked as CafeOptional or CafeTaskable)
+     * Validates whether all dependencies (except Optional<T> fields and CafeTaskable members)
      * have providers in the registry.
      * * @param registry The registry of Cafe bean definitions.
      *
@@ -76,20 +75,18 @@ public class CafeResolvableBeansValidator implements CafeValidator {
      */
     private BeanTypeKey findNonResolvableTypeForMember(CafeMetadataRegistry registry, CafeMember cafeMember) {
         // Skipping optional members or members annotated with @CafeTaskable
-        if (cafeMember.getAnnotationModifiers().contains(CafeOptional.class) ||
-                cafeMember.getAnnotationLifecycleMarkers().contains(CafeHandlerType.class)) {
+        if (cafeMember.getAnnotationLifecycleMarkers().contains(CafeHandlerType.class)) {
             return null;
         }
 
         if (cafeMember.hasDependencies()) {
-            // Get all type keys that can be provided by existing beans
             Set<BeanTypeKey> providedTypeKeys = registry.getMemberDependencyRegistry().providersTypeKeys(cafeMember);
 
             for (BeanTypeKey dependency : cafeMember.getRequiredTypeKeys()) {
-                // Check if a match exists among available providers for the current dependency
+                if (dependency.isOptional()) continue;
                 if (!BeanTypeKey.isMatchByTypeOrGenericType(dependency, providedTypeKeys)) {
                     log.debug("Not resolvable : {}.{} (dependency={})", cafeMember.getMemberDeclaringClass().getSimpleName(), cafeMember.getMember().getName(), dependency);
-                    return dependency; // Found an unresolvable dependency
+                    return dependency;
                 }
             }
         }

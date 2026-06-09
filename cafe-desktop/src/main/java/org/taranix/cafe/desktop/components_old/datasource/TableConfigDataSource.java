@@ -6,7 +6,7 @@ import org.taranix.cafe.beans.converters.CafeConverter;
 import org.taranix.cafe.desktop.components_old.AbstractComponent;
 import org.taranix.cafe.desktop.components_old.model.table.TableModel;
 
-//@CafeService(scope = Scope.Prototype)
+//@CafeSingleton(scope = Scope.Prototype)
 public class TableConfigDataSource extends AbstractComponent implements DataSource<TableModel> {
 
     private final CafeConverter<String, TableModel> stringToTableConfigCafeConverter;

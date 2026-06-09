@@ -3,7 +3,7 @@ package org.taranix.cafe.beans.events;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.annotations.methods.CafeHandler;
 import org.taranix.cafe.beans.annotations.modifiers.CafeName;
 
@@ -22,7 +22,7 @@ public class CafeDispatcherServiceTestFixture {
         String getGreetings();
     }
 
-    @CafeService
+    @CafeSingleton
     static class GenericParametrizedSingletonHandlerService implements GenericHandler<Integer> {
         @CafeHandler
         @Override
@@ -37,7 +37,7 @@ public class CafeDispatcherServiceTestFixture {
         }
     }
 
-    @CafeService
+    @CafeSingleton
     static class SingletonHandlerService {
 
         @CafeHandler
@@ -52,7 +52,7 @@ public class CafeDispatcherServiceTestFixture {
         }
     }
 
-    @CafeService
+    @CafeSingleton
     static class SingletonSingleParametrizedHandlerService {
         @CafeHandler
         public String generate(String prefix) {
@@ -67,7 +67,7 @@ public class CafeDispatcherServiceTestFixture {
 
     }
 
-    @CafeService
+    @CafeSingleton
     static class SingletonMultiParametrizedHandlerService {
         @CafeHandler
         public String generate(String prefix, Date date) {
@@ -91,7 +91,7 @@ public class CafeDispatcherServiceTestFixture {
         }
     }
 
-    @CafeService
+    @CafeSingleton
     static class SingletonSingleInheritedParametrizedHandlerService {
         @CafeHandler
         public String generate(GreetingsService greetingsService) {
@@ -106,7 +106,7 @@ public class CafeDispatcherServiceTestFixture {
 
     }
 
-    @CafeService
+    @CafeSingleton
     static class SingletonSingleGenericParametrizedHandlerService {
         @CafeHandler
         public String generate(List<String> list) {

@@ -1,7 +1,7 @@
 package org.taranix.cafe.beans.resolvers.data;
 
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 
-@CafeService
+@CafeSingleton
 public class AbstractServiceDependency {
 }

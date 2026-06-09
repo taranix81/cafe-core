@@ -1,11 +1,11 @@
 package org.taranix.cafe.beans.resolvers.data;
 
 import lombok.Getter;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 
 import java.util.Date;
 
-@CafeService
+@CafeSingleton
 
 public class ServiceClassWCA extends ServiceClass {
     @Getter

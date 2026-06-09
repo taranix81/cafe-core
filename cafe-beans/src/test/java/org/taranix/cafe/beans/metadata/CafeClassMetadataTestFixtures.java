@@ -2,9 +2,9 @@ package org.taranix.cafe.beans.metadata;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.taranix.cafe.beans.annotations.fields.CafeInject;
-import org.taranix.cafe.beans.annotations.modifiers.CafeOptional;
+import java.util.Optional;
 import org.taranix.cafe.beans.annotations.methods.CafeProvider;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.annotations.modifiers.CafeName;
 import org.taranix.cafe.beans.annotations.modifiers.CafePrimary;
 
@@ -39,14 +39,12 @@ final class CafeClassMetadataTestFixtures {
         }
     }
 
-    // Klasa testująca adnotację @CafeOptional
     static class OptionalInjectionService {
         @CafeInject
-        private String requiredDependency; // Zwykła, wymagana zależność
+        private String requiredDependency;
 
         @CafeInject
-        @CafeOptional
-        private Integer optionalDependency; // Opcjonalna zależność
+        private Optional<Integer> optionalDependency;
     }
 
     // Klasa testująca zagnieżdżone typy generyczne (np. List<String>)
@@ -170,7 +168,7 @@ final class CafeClassMetadataTestFixtures {
     }
 
     // Dziedzicząca klasa generyczna z konkretnymi typami
-    @CafeService
+    @CafeSingleton
     static class IntegerProviderAndStringInjectable extends GenericUProviderAndTInjectable<String, Integer> {
     }
 
@@ -204,7 +202,7 @@ final class CafeClassMetadataTestFixtures {
     }
 
     // Klasa bazowa z dziedziczonymi adnotacjami
-    @CafeService
+    @CafeSingleton
     static class SuperWithDeprecated {
         @CafeInject
         public String deprecatedField;
@@ -219,7 +217,7 @@ final class CafeClassMetadataTestFixtures {
     static class Sub extends SuperWithDeprecated {
     }
 
-    @CafeService
+    @CafeSingleton
     static class PerformanceTestBean {
         @CafeInject
         String field1;

@@ -5,10 +5,10 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Widget;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.desktop.components.Component;
 
-@CafeService
+@CafeSingleton
 public class CTabFolderComponent implements Component {
 
 

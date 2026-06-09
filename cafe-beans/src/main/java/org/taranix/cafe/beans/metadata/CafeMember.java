@@ -1,7 +1,8 @@
 package org.taranix.cafe.beans.metadata;
 
 import lombok.Getter;
-import org.taranix.cafe.beans.annotations.base.CafeWirerType;
+import org.taranix.cafe.beans.annotations.base.CafeHandlerType;
+import org.taranix.cafe.beans.annotations.base.CafeWiringType;
 import org.taranix.cafe.beans.annotations.modifiers.CafeModifier;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
@@ -57,8 +58,8 @@ public abstract class CafeMember {
      * This is useful for identifying primary/qualifier types for bean resolution.
      */
     public final Set<Class<? extends Annotation>> getAnnotationLifecycleMarkers() {
-        Set<Class<? extends Annotation>> result = new HashSet<>(getAnnotationTypesMarkedBy(CafeWirerType.class));
-        result.addAll(getAnnotationTypesMarkedBy(CafeWirerType.class));
+        Set<Class<? extends Annotation>> result = new HashSet<>(getAnnotationTypesMarkedBy(CafeWiringType.class));
+        result.addAll(getAnnotationTypesMarkedBy(CafeHandlerType.class));
         return result;
     }
 

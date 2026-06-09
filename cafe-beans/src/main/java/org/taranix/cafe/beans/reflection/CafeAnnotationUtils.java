@@ -3,9 +3,9 @@ package org.taranix.cafe.beans.reflection;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
 import org.taranix.cafe.beans.annotations.classes.Scope;
 import org.taranix.cafe.beans.annotations.modifiers.CafeName;
+import org.taranix.cafe.beans.annotations.modifiers.CafePrototype;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -52,12 +52,12 @@ public class CafeAnnotationUtils {
     // --- Scope Resolution ---
 
     /**
-     * Determines the scope of a class, defaulting to Singleton if no @CafeService is present.
+     * Determines the scope of a class: Prototype if annotated with @CafePrototype (or meta-annotated), Singleton otherwise.
      */
     public static Scope getScope(Class<?> clazz) {
-        return Optional.ofNullable(clazz.getAnnotation(CafeService.class))
-                .map(CafeService::scope)
-                .orElse(Scope.Singleton);
+        boolean isPrototype = Arrays.stream(clazz.getAnnotations())
+                .anyMatch(a -> isAnnotationMarkedBy(a, CafePrototype.class));
+        return isPrototype ? Scope.Prototype : Scope.Singleton;
     }
 
     /**
@@ -69,21 +69,11 @@ public class CafeAnnotationUtils {
 
     /**
      * Determines the scope based on the Member type.
-     * Logic is simplified to handle only methods (@CafeProvider) and constructors/classes (@CafeService).
-     *
-     * @param member The reflective member (Method, Constructor, Field).
-     * @return The determined Scope, defaults to Singleton.
      */
     public static Scope getScope(Member member) {
         if (member instanceof Constructor<?>) {
-            // Check declaring class annotation for constructors
-            return Optional.ofNullable(member.getDeclaringClass().getAnnotation(CafeService.class))
-                    .map(CafeService::scope)
-                    .orElse(Scope.Singleton);
+            return getScope(member.getDeclaringClass());
         }
-
-        // Fields and non-factory methods default to Singleton (if injected, they follow the class scope,
-        // but here we only check annotations directly on the member or its class).
         return Scope.Singleton;
     }
 
@@ -170,19 +160,31 @@ public class CafeAnnotationUtils {
      * @return true if the annotation is extended by the marker.
      */
     public static boolean isAnnotationMarkedBy(Annotation annotation, Class<? extends Annotation> otherAnnotationClass) {
-        return isAnnotationMarkedBy(annotation.annotationType(), otherAnnotationClass);
+        return isAnnotationMarkedBy(annotation.annotationType(), otherAnnotationClass, new HashSet<>());
     }
 
     public static boolean isAnnotationMarkedBy(Class<? extends Annotation> annotationType, Class<? extends Annotation> otherAnnotationClass) {
-        // 1. Check if the annotation type is directly marked by the otherAnnotationClass
+        return isAnnotationMarkedBy(annotationType, otherAnnotationClass, new HashSet<>());
+    }
+
+    private static boolean isAnnotationMarkedBy(Class<? extends Annotation> annotationType,
+                                                 Class<? extends Annotation> otherAnnotationClass,
+                                                 Set<Class<?>> visited) {
+        if (!visited.add(annotationType)) {
+            return false;
+        }
+        if (annotationType.equals(otherAnnotationClass)) {
+            return true;
+        }
         if (annotationType.isAnnotationPresent(otherAnnotationClass)) {
             return true;
         }
-
-        // 2. Check all annotations *on* this annotation for the marker.
         return Arrays.stream(annotationType.getAnnotations())
-                .filter(a -> !a.annotationType().getPackageName().contains("java.lang"))
-                .anyMatch(a -> isAnnotationMarkedBy(a, otherAnnotationClass));
+                .filter(a -> {
+                    String pkg = a.annotationType().getPackageName();
+                    return !pkg.startsWith("java.") && !pkg.startsWith("javax.");
+                })
+                .anyMatch(a -> isAnnotationMarkedBy(a.annotationType(), otherAnnotationClass, visited));
     }
 
     /**

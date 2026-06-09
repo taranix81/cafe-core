@@ -1,7 +1,7 @@
 package org.taranix.cafe.beans.metadata;
 
 import lombok.Getter;
-import org.taranix.cafe.beans.annotations.base.CafeWirerType;
+import org.taranix.cafe.beans.annotations.base.CafeWiringType;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
@@ -44,7 +44,7 @@ public class CafeMethod extends CafeMember {
     @Override
     public Set<BeanTypeKey> getProvidedTypeKeys() {
         // A method can only provide one bean (its return value)
-        if (!CafeAnnotationUtils.hasAnnotationMarker(getMethod(), CafeWirerType.class)) {
+        if (!CafeAnnotationUtils.hasAnnotationMarker(getMethod(), CafeWiringType.class)) {
             return Set.of();
         }
         return Set.of(getMethodReturnTypeKey());
@@ -59,7 +59,7 @@ public class CafeMethod extends CafeMember {
      */
     @Override
     public List<BeanTypeKey> getRequiredTypeKeys() {
-        if (!CafeAnnotationUtils.hasAnnotationMarker(getMethod(), CafeWirerType.class)) {
+        if (!CafeAnnotationUtils.hasAnnotationMarker(getMethod(), CafeWiringType.class)) {
             return List.of();
         }
 

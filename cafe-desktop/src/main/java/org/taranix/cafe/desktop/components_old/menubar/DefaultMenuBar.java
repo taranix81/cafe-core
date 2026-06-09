@@ -14,7 +14,7 @@ import org.taranix.cafe.desktop.widgets.MessageBoxService;
 
 
 //@CafeViewComponent
-//@CafeService
+//@CafeSingleton
 @Slf4j
 class DefaultMenuBar extends MenuBar {
     @Getter(AccessLevel.PROTECTED)

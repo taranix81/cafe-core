@@ -5,7 +5,7 @@ import org.taranix.cafe.desktop.components_old.events.annotations.CafeEventHandl
 
 import java.lang.reflect.Method;
 
-//@CafeService
+//@CafeSingleton
 class EventTypeMatcher implements EventHandlerMatcher {
     @Override
     public boolean isMatch(Method method, Event event) {

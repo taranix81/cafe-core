@@ -1,8 +1,8 @@
 package org.taranix.cafe.beans.converters;
 
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 
-@CafeService
+@CafeSingleton
 class StringToLongConverter implements CafeConverter<String, Long> {
     @Override
     public Long convert(String s) {

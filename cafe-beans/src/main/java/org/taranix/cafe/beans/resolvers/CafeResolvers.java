@@ -1,5 +1,6 @@
 package org.taranix.cafe.beans.resolvers;
 
+import org.taranix.cafe.beans.annotations.methods.CafeHandler;
 import org.taranix.cafe.beans.exceptions.CafeBeansFactoryException;
 import org.taranix.cafe.beans.metadata.*;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
@@ -21,6 +22,7 @@ import org.taranix.cafe.beans.resolvers.types.ArrayBeanTypeResolver;
 import org.taranix.cafe.beans.resolvers.types.CafeBeanTypeResolver;
 import org.taranix.cafe.beans.resolvers.types.ClassBeanTypeResolver;
 import org.taranix.cafe.beans.resolvers.types.CollectionBeanTypeResolver;
+import org.taranix.cafe.beans.resolvers.types.OptionalBeanTypeResolver;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,13 +53,14 @@ public class CafeResolvers {
     private final Set<CafeMethodResolver> methodResolvers = new HashSet<>(List.of(
             new PrototypeWireMethodResolver(),
             new SingletonWireMethodResolver(),
-            new SingletonHandlerMethodResolver())
+            new SingletonHandlerMethodResolver(CafeHandler.class))
     );
 
     private final Set<CafeBeanTypeResolver> beanTypekeyResolvers = new HashSet<>(List.of(
             new ClassBeanTypeResolver(),
             new ArrayBeanTypeResolver(),
-            new CollectionBeanTypeResolver()));
+            new CollectionBeanTypeResolver(),
+            new OptionalBeanTypeResolver()));
 
     public CafeMethodResolver findMethodResolver(CafeMethod methodDescriptor) {
         Set<CafeMethodResolver> matched = findMethodResolvers(methodDescriptor);

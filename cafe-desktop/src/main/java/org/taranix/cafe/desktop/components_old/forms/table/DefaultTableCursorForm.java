@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 
 import static org.eclipse.swt.events.FocusListener.focusLostAdapter;
 
-//@CafeService
+//@CafeSingleton
 class DefaultTableCursorForm implements TableCursorForm {
     @Override
     public TableCursor create(Widget parent) {

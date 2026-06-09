@@ -9,7 +9,7 @@ import org.taranix.cafe.desktop.components_old.events.annotations.CafeEventHandl
 import org.taranix.cafe.desktop.components_old.forms.text.TextForm;
 import org.taranix.cafe.desktop.widgets.MessageBoxService;
 
-//@CafeService(scope = Scope.Prototype)
+//@CafeSingleton(scope = Scope.Prototype)
 class TextEditor extends AbstractEditor<String> {
 
     private final TextForm textForm;

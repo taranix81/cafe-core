@@ -4,8 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.taranix.cafe.beans.annotations.base.CafeHandlerType;
-import org.taranix.cafe.beans.annotations.base.CafePropertyType;
-import org.taranix.cafe.beans.annotations.base.CafeWirerType;
+import org.taranix.cafe.beans.annotations.base.CafeWiringType;
 import org.taranix.cafe.beans.exceptions.CafeClassMetadataException;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
@@ -133,7 +132,7 @@ public class CafeClass {
             return Collections.emptySet();
         }
         Set<Field> allFields = Arrays.stream(introspectedClass.getDeclaredFields())
-                .filter(field -> CafeAnnotationUtils.hasAnnotationMarker(field, CafeWirerType.class, CafePropertyType.class, CafeHandlerType.class))
+                .filter(field -> CafeAnnotationUtils.hasAnnotationMarker(field, CafeWiringType.class, CafeHandlerType.class))
                 .collect(Collectors.toSet());
         allFields.addAll(extractAnnotatedFields(introspectedClass.getSuperclass()));
         return allFields;
@@ -159,7 +158,7 @@ public class CafeClass {
                 if (method.isBridge() || method.isSynthetic()) {
                     continue;
                 }
-                if (!CafeAnnotationUtils.hasAnnotationMarker(method, CafeWirerType.class, CafeHandlerType.class)) {
+                if (!CafeAnnotationUtils.hasAnnotationMarker(method, CafeWiringType.class, CafeHandlerType.class)) {
                     continue;
                 }
                 String methodSignature = generateMethodSignature(method);

@@ -1,6 +1,6 @@
 package org.taranix.cafe.beans.annotations.methods;
 
-import org.taranix.cafe.beans.annotations.base.CafeWirerType;
+import org.taranix.cafe.beans.annotations.base.CafeWiringType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@CafeWirerType
+@CafeWiringType
 public @interface CafePostInit {
 }

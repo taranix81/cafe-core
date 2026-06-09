@@ -3,11 +3,11 @@ package org.taranix.cafe.desktop.components.menubar.model;
 import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.annotations.methods.CafePostInit;
 import org.taranix.cafe.beans.annotations.fields.CafeProperty;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 
 import java.util.*;
 
-@CafeService
+@CafeSingleton
 @Slf4j
 public class PropertiesMenuModel {
 

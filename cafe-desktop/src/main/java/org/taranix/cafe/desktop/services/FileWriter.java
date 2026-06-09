@@ -1,7 +1,7 @@
 package org.taranix.cafe.desktop.services;
 
 import lombok.NonNull;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.shell.exceptions.CafeCommandRuntimeException;
 
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 
-@CafeService
+@CafeSingleton
 public class FileWriter {
 
     public void write(@NonNull Path path, @NonNull String content) {

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.taranix.cafe.beans.annotations.methods.CafeProvider;
 import org.taranix.cafe.beans.annotations.modifiers.CafeName;
-import org.taranix.cafe.beans.annotations.modifiers.CafeOptional;
 import org.taranix.cafe.beans.annotations.modifiers.CafePrimary;
 import org.taranix.cafe.beans.exceptions.CafeClassMetadataException;
 import org.taranix.cafe.beans.metadata.CafeClassMetadataTestFixtures.StaticProvider;
@@ -166,7 +165,7 @@ class CafeClassTest {
     }
 
     @Test
-    @DisplayName("Positive: Should correctly identify Optional dependencies via CafeOptional")
+    @DisplayName("Positive: Should correctly identify Optional<T> injection fields")
     void shouldIdentifyOptionalGetRequiredTypes() {
         // given
         CafeClass info = CafeClassFactory.create(CafeClassMetadataTestFixtures.OptionalInjectionService.class);
@@ -181,8 +180,8 @@ class CafeClassTest {
                 .findFirst().orElseThrow();
 
         // then
-        assertFalse(requiredField.getAnnotationModifiers().contains(CafeOptional.class), "Required field should not be optional");
-        assertTrue(optionalField.getAnnotationModifiers().contains(CafeOptional.class), "Optional field should be marked as optional");
+        assertFalse(requiredField.getFieldTypeKey().isOptional(), "Required field should not be Optional<T>");
+        assertTrue(optionalField.getFieldTypeKey().isOptional(), "Optional field should have Optional<T> type");
     }
 
     @Test

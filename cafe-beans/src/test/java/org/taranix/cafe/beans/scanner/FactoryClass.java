@@ -1,9 +1,9 @@
 package org.taranix.cafe.beans.scanner;
 
 import org.taranix.cafe.beans.annotations.methods.CafeProvider;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 
-@CafeService
+@CafeSingleton
 public class FactoryClass {
 
     @CafeProvider

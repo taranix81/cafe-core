@@ -1,10 +1,10 @@
 package org.taranix.cafe.beans.converters;
 
 import lombok.extern.slf4j.Slf4j;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 
 @Slf4j
-@CafeService
+@CafeSingleton
 public class StringToIntegerConverter implements CafeConverter<String, Integer> {
     @Override
     public Integer convert(String s) {

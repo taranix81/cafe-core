@@ -5,7 +5,7 @@ import org.taranix.cafe.desktop.components_old.forms.table.TableForm;
 import org.taranix.cafe.desktop.components_old.model.table.TableModel;
 
 @Slf4j
-//@CafeService(scope = Scope.Prototype)
+//@CafeSingleton(scope = Scope.Prototype)
 class TableModelViewer extends TableViewer<TableModel> {
 
 

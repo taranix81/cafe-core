@@ -2,7 +2,7 @@ package org.taranix.cafe.shell.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.Option;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
@@ -15,7 +15,7 @@ import org.taranix.cafe.shell.resolvers.CafeCommandClassResolver;
 
 import java.util.*;
 
-@CafeService
+@CafeSingleton
 @Slf4j
 public class CafeCommandRuntimeService {
 

@@ -1,10 +1,9 @@
 package org.taranix.cafe.beans.resolvers.data.prototype;
 
 import lombok.Getter;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
-import org.taranix.cafe.beans.annotations.classes.Scope;
+import org.taranix.cafe.beans.annotations.modifiers.CafePrototype;
 
-@CafeService(scope = Scope.Prototype)
+@CafePrototype
 @Getter
 public class PrototypeServiceClassWCA extends PrototypeServiceData {
 

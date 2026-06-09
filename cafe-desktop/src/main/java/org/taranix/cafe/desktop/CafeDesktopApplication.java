@@ -6,6 +6,7 @@ import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.beans.resolvers.metadata.method.CafeMethodResolver;
 import org.taranix.cafe.desktop.components.application.ApplicationComponent;
 import org.taranix.cafe.desktop.components.menubar.ApplicationMenuBarComponent;
+import org.taranix.cafe.desktop.resolvers.ActionHandlerMethodResolver;
 import org.taranix.cafe.desktop.resolvers.CafeMenuItemSelectionMethodResolver;
 import org.taranix.cafe.desktop.resolvers.CafeShellEventMethodResolver;
 
@@ -35,7 +36,7 @@ public class CafeDesktopApplication extends CafeApplication {
 
     @Override
     protected Set<CafeMethodResolver> getCustomMethodResolvers() {
-        return Set.of(new CafeMenuItemSelectionMethodResolver(), new CafeShellEventMethodResolver());
+        return Set.of(new CafeMenuItemSelectionMethodResolver(), new CafeShellEventMethodResolver(), new ActionHandlerMethodResolver());
     }
 
     @Override

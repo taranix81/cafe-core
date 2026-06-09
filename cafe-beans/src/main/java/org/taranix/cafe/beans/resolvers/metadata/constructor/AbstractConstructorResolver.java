@@ -12,17 +12,11 @@ public abstract class AbstractConstructorResolver implements CafeConstructorReso
 
     @Override
     public Object resolve(CafeConstructor constructorDescriptor, CafeBeansFactory cafeBeansFactory) {
-        log.debug("Resolving constructor : {} ", constructorDescriptor.getConstructor());
         Constructor<?> classConstructor = constructorDescriptor.getConstructor();
         Object[] arguments = constructorDescriptor.getRequiredTypeKeys().stream()
                 .map(cafeBeansFactory::getBean)
                 .toArray();
-
-        if (constructorDescriptor.hasDependencies()) {
-            log.debug("Resolved constructor's arguments: {}", arguments);
-        }
-        return constructorDescriptor.hasDependencies()
-                ? CafeReflectionUtils.instantiate(classConstructor, arguments)
-                : CafeReflectionUtils.instantiate(classConstructor);
+        log.debug("Resolving constructor: {} with {} argument(s)", classConstructor, arguments.length);
+        return CafeReflectionUtils.instantiate(classConstructor, arguments);
     }
 }

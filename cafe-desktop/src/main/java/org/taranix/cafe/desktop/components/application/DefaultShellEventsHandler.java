@@ -3,12 +3,12 @@ package org.taranix.cafe.desktop.components.application;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.widgets.Shell;
 import org.taranix.cafe.beans.annotations.fields.CafeProperty;
-import org.taranix.cafe.beans.annotations.classes.CafeService;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.desktop.annotations.CafeShellHandler;
 import org.taranix.cafe.desktop.annotations.ShellHandlerType;
 import org.taranix.cafe.desktop.widgets.MessageBoxService;
 
-@CafeService
+@CafeSingleton
 class DefaultShellEventsHandler {
 
 

@@ -1,7 +1,7 @@
 package org.taranix.cafe.beans.resolvers.metadata.method;
 
 import lombok.extern.slf4j.Slf4j;
-import org.taranix.cafe.beans.annotations.base.CafeWirerType;
+import org.taranix.cafe.beans.annotations.base.CafeWiringType;
 import org.taranix.cafe.beans.metadata.CafeMethod;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
@@ -29,7 +29,7 @@ public class SingletonWireMethodResolver implements CafeMethodResolver {
 
     @Override
     public boolean supports(Class<? extends Annotation> annotation) {
-       boolean result =  CafeAnnotationUtils.isAnnotationMarkedBy(annotation, CafeWirerType.class);
+       boolean result =  CafeAnnotationUtils.isAnnotationMarkedBy(annotation, CafeWiringType.class);
         return result;
     }
 

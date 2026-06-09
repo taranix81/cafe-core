@@ -4,7 +4,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
-//@CafeService
+//@CafeSingleton
 public class DefaultTableConfig implements TableConfig {
     @Override
     public boolean isHeaderVisible() {

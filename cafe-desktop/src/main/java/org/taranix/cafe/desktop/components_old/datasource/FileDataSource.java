@@ -10,7 +10,7 @@ import org.taranix.cafe.desktop.widgets.MessageBoxService;
 
 import java.nio.file.Path;
 
-//@CafeService(scope = Scope.Prototype)
+//@CafeSingleton(scope = Scope.Prototype)
 public class FileDataSource extends AbstractComponent implements DataSource<String> {
 
     private final FileReader reader;

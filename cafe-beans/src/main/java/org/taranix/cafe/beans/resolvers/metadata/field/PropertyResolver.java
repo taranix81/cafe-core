@@ -3,7 +3,6 @@ package org.taranix.cafe.beans.resolvers.metadata.field;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.taranix.cafe.beans.annotations.base.CafePropertyType;
 import org.taranix.cafe.beans.annotations.fields.CafeProperty;
 import org.taranix.cafe.beans.converters.CafeConverter;
 import org.taranix.cafe.beans.metadata.CafeField;
@@ -35,7 +34,7 @@ public class PropertyResolver implements CafeFieldResolver {
 
     @Override
     public boolean supports(Class<? extends Annotation> annotation) {
-        return CafeAnnotationUtils.isAnnotationMarkedBy(annotation, CafePropertyType.class);
+        return CafeAnnotationUtils.isAnnotationMarkedBy(annotation, CafeProperty.class);
     }
 
     private Object convert(Type fieldType, Object propertyValue, CafeBeansFactory resolverProcessor) {
