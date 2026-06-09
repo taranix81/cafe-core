@@ -28,7 +28,6 @@ public class CafeDesktopApplication extends CafeApplication {
 
     @Override
     protected void beforeContextInit() {
-//        addBeanToContext(new HandlersService(getBeansFactory()));
         addBeanToContext(getBeansFactory()); //required bt Components factory
         super.beforeContextInit();
     }

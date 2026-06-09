@@ -72,14 +72,14 @@ public class CafeApplicationContext {
     }
 
     public <T> Collection<T> getInstances(Class<T> clz, String identifier) {
-        Object instance = beansFactory.getBean((BeanTypeKey.from(Set.class, identifier, clz)));
-        if (instance instanceof Set) {
-            return ((Set<?>) instance).stream()
+        Object instance = beansFactory.getBeanOrNull(BeanTypeKey.from(Set.class, identifier, clz));
+        if (instance instanceof Set<?> set) {
+            return set.stream()
                     .filter(clz::isInstance)
                     .map(clz::cast)
                     .collect(Collectors.toSet());
         }
-        throw new CafeApplicationContextException("No instance of %s found".formatted(clz));
+        return Set.of();
     }
 
     /**
