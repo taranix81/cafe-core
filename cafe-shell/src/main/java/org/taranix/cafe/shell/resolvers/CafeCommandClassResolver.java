@@ -8,7 +8,9 @@ import org.taranix.cafe.beans.metadata.CafeMethod;
 import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
 import org.taranix.cafe.beans.resolvers.metadata.AbstractClassResolver;
 import org.taranix.cafe.shell.annotations.CafeCommand;
+import org.taranix.cafe.shell.annotations.CafeCommandRun;
 import org.taranix.cafe.shell.commands.CafeCommandOptionBinding;
+import org.taranix.cafe.shell.exceptions.CafeCommandClassResolverException;
 
 import java.lang.annotation.Annotation;
 
@@ -28,10 +30,9 @@ public class CafeCommandClassResolver extends AbstractClassResolver {
             return option;
         }
         return null;
-
     }
 
-    private static boolean isOptedCommand(CafeCommand cafeCommandAnnotation) {
+    public static boolean isOptedCommand(CafeCommand cafeCommandAnnotation) {
         return StringUtils.isNotBlank(cafeCommandAnnotation.command())
                 && StringUtils.isNotBlank(cafeCommandAnnotation.description());
     }
@@ -40,34 +41,31 @@ public class CafeCommandClassResolver extends AbstractClassResolver {
     public Object resolve(CafeClass classInfo, CafeBeansFactory beansFactory) {
         CafeCommand cafeCommandAnnotation = classInfo.getRootClassAnnotation(CafeCommand.class);
         Object commandInstance = super.resolve(classInfo, beansFactory);
+
         Option option = buildOption(cafeCommandAnnotation);
         if (option != null) {
             beansFactory.addToRepository(option);
         }
-        //CafeMethodInfo methodExecutor = getExecutorMethodInfo(classInfo);
-        //CafeCommandOptionBinding commandOptionBinding = buildCommandBinding(commandInstance, methodExecutor, option);
-        //beansFactory.addToRepository(commandOptionBinding);
+
+        CafeMethod executorMethod = classInfo.getMethods().stream()
+                .filter(m -> m.hasAnnotation(CafeCommandRun.class))
+                .findFirst()
+                .orElseThrow(() -> new CafeCommandClassResolverException(
+                        "No @CafeCommandRun method found in: " + classInfo.getRootClass().getName()));
+
+        beansFactory.addToRepository(CafeCommandOptionBinding.builder()
+                .optionBinding(option)
+                .commandInstance(commandInstance)
+                .executor(executorMethod)
+                .build());
+
         return commandInstance;
     }
 
     @Override
     protected void resolveMethod(CafeBeansFactory cafeBeansFactory, Object instance, CafeMethod descriptor) {
-        //We skip resolving method at this stage. Method will be resolved on demand.
+        // Methods are resolved on demand by CafeCommandRuntimeService.run(), not during context init.
     }
-
-    private CafeCommandOptionBinding buildCommandBinding(Object commandExecutable, CafeMethod executor, Option option) {
-        return CafeCommandOptionBinding.builder()
-                .optionBinding(option)
-                .commandInstance(commandExecutable)
-                .executor(executor)
-                .build();
-    }
-
-//    private CafeMethodInfo getExecutorMethodInfo(CafeClassDescriptor cafeClassDescriptor) {
-//        return cafeClassDescriptor.findAllMethodsAnnotatedBy(CafeCommandRun.class).stream()
-//                .findFirst()
-//                .orElseThrow(() -> new CafeCommandClassResolverException("No method annotated by @CafeCommandRun for command %s".formatted(cafeClassDescriptor.getTypeClass().getName())));
-//    }
 
     @Override
     public boolean isApplicable(CafeClass cafeClass) {

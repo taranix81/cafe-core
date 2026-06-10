@@ -1,6 +1,9 @@
 package org.taranix.cafe.beans.validation;
 
 import org.taranix.cafe.beans.metadata.CafeMetadataRegistry;
+import org.taranix.cafe.beans.repositories.Repository;
+import org.taranix.cafe.beans.repositories.beans.BeanRepositoryEntry;
+import org.taranix.cafe.beans.repositories.typekeys.TypeKey;
 
 import java.util.Optional;
 import java.util.Set;
@@ -14,9 +17,9 @@ public class CafeValidationService {
         this.validatorSet = validatorSet;
     }
 
-    public Set<ValidationResult> validate(CafeMetadataRegistry registry) {
+    public Set<ValidationResult> validate(CafeMetadataRegistry registry, Repository<TypeKey, BeanRepositoryEntry> repository) {
         return validatorSet.stream()
-                .map(cafeValidator -> cafeValidator.validate(registry))
+                .map(cafeValidator -> cafeValidator.validate(registry, repository))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());

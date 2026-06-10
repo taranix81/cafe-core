@@ -5,7 +5,10 @@ import org.taranix.cafe.beans.metadata.CafeMember;
 import org.taranix.cafe.beans.metadata.CafeMetadataRegistry;
 import org.taranix.cafe.beans.metadata.CafeMethod;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
+import org.taranix.cafe.beans.repositories.Repository;
+import org.taranix.cafe.beans.repositories.beans.BeanRepositoryEntry;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
+import org.taranix.cafe.beans.repositories.typekeys.TypeKey;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -15,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class CafeHandlerMethodsParameterValidator implements CafeValidator {
     @Override
-    public Optional<ValidationResult> validate(CafeMetadataRegistry registry) {
+    public Optional<ValidationResult> validate(CafeMetadataRegistry registry, Repository<TypeKey, BeanRepositoryEntry> repository) {
         Set<Object> allInvolvedObjects = new HashSet<>();
 
         Set<CafeMethod> handlers = registry.allMembers().stream()

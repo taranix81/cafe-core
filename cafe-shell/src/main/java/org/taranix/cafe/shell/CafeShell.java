@@ -86,7 +86,7 @@ public class CafeShell extends CafeApplication {
 
         CafeCommandRuntime defaultCommand = runtimeService.map(leftArgs);
         if (defaultCommand != null) {
-            executionCommands.add(runtimeService.map(leftArgs));
+            executionCommands.add(defaultCommand);
         }
 
         try {

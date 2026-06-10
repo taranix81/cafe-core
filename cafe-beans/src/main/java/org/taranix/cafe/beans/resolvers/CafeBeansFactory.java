@@ -59,7 +59,7 @@ public final class CafeBeansFactory {
     }
 
     private void validate() {
-        Set<ValidationResult> results = cafeValidationService.validate(cafeMetadataRegistry);
+        Set<ValidationResult> results = cafeValidationService.validate(cafeMetadataRegistry, repository);
         String fullMessage = CafeValidationResultFormatter.format(results);
         if (StringUtils.isNoneBlank(fullMessage)) {
             throw new CafeBeansContextException(fullMessage);

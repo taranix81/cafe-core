@@ -3,6 +3,9 @@ package org.taranix.cafe.beans.validation;
 import org.taranix.cafe.beans.metadata.CafeClass;
 import org.taranix.cafe.beans.metadata.CafeMember;
 import org.taranix.cafe.beans.metadata.CafeMetadataRegistry;
+import org.taranix.cafe.beans.repositories.Repository;
+import org.taranix.cafe.beans.repositories.beans.BeanRepositoryEntry;
+import org.taranix.cafe.beans.repositories.typekeys.TypeKey;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -15,7 +18,7 @@ public class CafeCycleDetectionValidator implements CafeValidator {
     private static final String CYCLE_ERROR_MESSAGE = "Circular dependencies detected in the Cafe context.";
 
     @Override
-    public Optional<ValidationResult> validate(CafeMetadataRegistry registry) {
+    public Optional<ValidationResult> validate(CafeMetadataRegistry registry, Repository<TypeKey, BeanRepositoryEntry> repository) {
         // 1. Detect cycles among members (fields/methods)
         Collection<CafeMember> memberCycles = getMemberCycleSet(registry);
 

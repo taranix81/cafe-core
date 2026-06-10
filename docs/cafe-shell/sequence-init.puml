@@ -1,0 +1,43 @@
+@startuml cafe-shell-init-sequence
+
+skinparam sequenceArrowThickness 1.5
+
+title CafeShell — DI context initialisation sequence
+
+participant "new CafeShell(config)" as Shell
+participant "CafeApplicationContext" as Ctx
+participant "CafeCommandClassResolver" as ClassResolver
+participant "CafeCommandMethodResolver" as MethodResolver
+participant "CafeBeansFactory" as Factory
+
+Shell -> Shell : beforeContextInit()\n  addBeanToContext(this)
+Shell -> Ctx : initialize()
+activate Ctx
+
+Ctx -> Factory : resolve all scanned classes
+activate Factory
+
+loop for each @CafeCommand class
+    Factory -> ClassResolver : resolve(classInfo, factory)
+    activate ClassResolver
+
+    ClassResolver -> ClassResolver : super.resolve()\n  → instantiate + inject fields
+    ClassResolver -> ClassResolver : buildOption(@CafeCommand annotation)\n  → creates Apache CLI Option (or null for default commands)
+    ClassResolver -> Factory : addToRepository(Option)
+    ClassResolver -> ClassResolver : classInfo.getMethods()\n  .filter(@CafeCommandRun)\n  .findFirst() → CafeMethod
+    ClassResolver -> Factory : addToRepository(CafeCommandOptionBinding\n  { instance, CafeMethod, Option })
+    ClassResolver --> Factory : commandInstance
+    deactivate ClassResolver
+end
+
+note over Factory: @CafeCommandRun methods are\nNOT invoked here — resolveMethod()\nis a no-op in CafeCommandClassResolver
+
+Factory --> Ctx : all beans resolved
+deactivate Factory
+deactivate Ctx
+
+Shell -> Shell : postContextInit()\n  createApacheOptions()\n  → getInstances(Option.class)\n  → options.addOption(each)
+
+note over Shell: Context ready.\nOptions aggregate populated.\nAll CafeCommandOptionBindings\nstored in repository.
+
+@enduml

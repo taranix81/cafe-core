@@ -4,7 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.taranix.cafe.beans.annotations.base.CafeHandlerType;
 import org.taranix.cafe.beans.metadata.CafeMember;
 import org.taranix.cafe.beans.metadata.CafeMetadataRegistry;
+import org.taranix.cafe.beans.repositories.Repository;
+import org.taranix.cafe.beans.repositories.beans.BeanRepositoryEntry;
 import org.taranix.cafe.beans.repositories.typekeys.BeanTypeKey;
+import org.taranix.cafe.beans.repositories.typekeys.TypeKey;
 
 import java.util.*;
 
@@ -23,8 +26,8 @@ public class CafeResolvableBeansValidator implements CafeValidator {
      * or Optional.empty() otherwise.
      */
     @Override
-    public Optional<ValidationResult> validate(CafeMetadataRegistry registry) {
-        Map<CafeMember, BeanTypeKey> unresolvableMembers = findNonResolvableMembers(registry);
+    public Optional<ValidationResult> validate(CafeMetadataRegistry registry, Repository<TypeKey, BeanRepositoryEntry> repository) {
+        Map<CafeMember, BeanTypeKey> unresolvableMembers = findNonResolvableMembers(registry, repository);
         if (unresolvableMembers.isEmpty()) {
             // Validation successful – no unresolvable members
             return Optional.empty();
@@ -52,11 +55,11 @@ public class CafeResolvableBeansValidator implements CafeValidator {
      *
      * @return A Set of members with unresolvable dependencies.
      */
-    private Map<CafeMember, BeanTypeKey> findNonResolvableMembers(CafeMetadataRegistry registry) {
+    private Map<CafeMember, BeanTypeKey> findNonResolvableMembers(CafeMetadataRegistry registry, Repository<TypeKey, BeanRepositoryEntry> repository) {
         Map<CafeMember, BeanTypeKey> result = new HashMap<>();
 
         for (CafeMember member : registry.allMembers()) {
-            BeanTypeKey nonResolvableDependencyType = findNonResolvableTypeForMember(registry, member);
+            BeanTypeKey nonResolvableDependencyType = findNonResolvableTypeForMember(registry, repository, member);
             if (nonResolvableDependencyType != null) {
                 result.put(member, nonResolvableDependencyType);
             }
@@ -73,8 +76,7 @@ public class CafeResolvableBeansValidator implements CafeValidator {
      * @param cafeMember The member (field/constructor parameter) to check.
      * @return The BeanTypeKey of the unresolvable dependency, or null if resolvable.
      */
-    private BeanTypeKey findNonResolvableTypeForMember(CafeMetadataRegistry registry, CafeMember cafeMember) {
-        // Skipping optional members or members annotated with @CafeTaskable
+    private BeanTypeKey findNonResolvableTypeForMember(CafeMetadataRegistry registry, Repository<TypeKey, BeanRepositoryEntry> repository, CafeMember cafeMember) {
         if (cafeMember.getAnnotationLifecycleMarkers().contains(CafeHandlerType.class)) {
             return null;
         }
@@ -84,12 +86,12 @@ public class CafeResolvableBeansValidator implements CafeValidator {
 
             for (BeanTypeKey dependency : cafeMember.getRequiredTypeKeys()) {
                 if (dependency.isOptional()) continue;
-                if (!BeanTypeKey.isMatchByTypeOrGenericType(dependency, providedTypeKeys)) {
+                if (!BeanTypeKey.isMatchByTypeOrGenericType(dependency, providedTypeKeys) && !repository.contains(dependency)) {
                     log.debug("Not resolvable : {}.{} (dependency={})", cafeMember.getMemberDeclaringClass().getSimpleName(), cafeMember.getMember().getName(), dependency);
                     return dependency;
                 }
             }
         }
-        return null; // All dependencies are resolvable
+        return null;
     }
 }

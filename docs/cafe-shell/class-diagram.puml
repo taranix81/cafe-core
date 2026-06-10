@@ -1,0 +1,163 @@
+@startuml cafe-shell-classes
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+hide empty members
+
+package "cafe-beans" {
+    abstract class CafeApplication
+    abstract class AbstractClassResolver
+    abstract class PrototypeWireMethodResolver
+}
+
+package "org.taranix.cafe.shell" {
+
+    class CafeShell extends CafeApplication {
+        +{static} SUCCESS : int = 0
+        +{static} ERROR : int = 1
+        -{static} WRONG_ARGUMENT_ERROR : int = 2
+        #execute(args: String[]) : int
+        #postContextInit()
+        #beforeContextInit()
+        #getCustomClassResolvers() : Set<CafeClassResolver>
+        #getCustomMethodResolvers() : Set<CafeMethodResolver>
+        -createApacheOptions()
+    }
+
+    package "commands" {
+        class CafeCommandArguments <<@CafeSingleton>> {
+            -cliValues : String[]
+            -variables : Map<String,Object>
+            +setValues(values: String[])
+            +reset()
+        }
+
+        class CafeCommandOptionBinding <<@Builder>> {
+            -commandInstance : Object
+            -executor : CafeMethod
+            -optionBinding : Option
+            +asCommandRuntime(args: String[]) : CafeCommandRuntime
+        }
+
+        class CafeCommandRuntime <<@Builder>> {
+            -commandInstance : Object
+            -executor : CafeMethod
+            -arguments : String[]
+            +commandTypeKey() : BeanTypeKey
+        }
+
+        class PrintHelpCommand <<@CafeCommand>> {
+            -applicationName : String
+            -formatter : HelpFormatter
+            -options : Options
+            +execute(args: CafeCommandArguments)
+        }
+    }
+
+    package "resolvers" {
+        class CafeCommandClassResolver extends AbstractClassResolver {
+            +{static} buildOption(ann: CafeCommand) : Option
+            +{static} isOptedCommand(ann: CafeCommand) : boolean
+            +resolve(classInfo: CafeClass, factory: CafeBeansFactory) : Object
+            +supports(annotation: Class) : boolean
+        }
+
+        class CafeCommandMethodResolver extends PrototypeWireMethodResolver {
+            +resolve(instance: Object, method: CafeMethod, factory: CafeBeansFactory) : Object
+            +supports(annotation: Class) : boolean
+        }
+    }
+
+    package "services" {
+        class CafeCommandBindingService <<@CafeSingleton>> {
+            -cafeShell : CafeShell
+            +getCommandBindings() : Collection<CafeCommandOptionBinding>
+            +noOptedCommandBinding() : CafeCommandOptionBinding
+            +noOptedCommandBinding(option: Option) : Optional<CafeCommandOptionBinding>
+        }
+
+        class CafeCommandRuntimeOrderService <<@CafeSingleton>> {
+            +order(runtimes: Collection<CafeCommandRuntime>) : List<CafeCommandRuntime>
+        }
+
+        class CafeCommandRuntimeService <<@CafeSingleton>> {
+            -cafeShell : CafeShell
+            -cafeCommandBindingService : CafeCommandBindingService
+            -orderService : CafeCommandRuntimeOrderService
+            +map(args: String[]) : CafeCommandRuntime
+            +map(options: List<Option>) : List<CafeCommandRuntime>
+            +run(runtime: CafeCommandRuntime)
+            +run(runtimes: List<CafeCommandRuntime>)
+            +run(commandClass: Class, args: String...)
+            +order(runtimes: Collection<CafeCommandRuntime>) : List<CafeCommandRuntime>
+        }
+    }
+
+    package "configuration" {
+        class CafeShellFactory <<@CafeSingleton>> {
+            +commandLineParser() : CommandLineParser
+            +options() : Options
+            +helpFormatter() : HelpFormatter
+        }
+    }
+
+    package "constants" {
+        class CafeConsole <<utility>> {
+            +{static} ansiColouredText(text, fg, bg) : String
+        }
+
+        enum CafeConsoleTextColour {
+            BLACK, RED, GREEN, YELLOW
+            BLUE, PURPLE, CYAN, WHITE, NONE
+        }
+
+        enum CafeConsoleBackgroundColour {
+            BLACK, RED, GREEN, YELLOW
+            BLUE, PURPLE, CYAN, WHITE, NONE
+        }
+    }
+
+    package "annotations" {
+        annotation CafeCommand {
+            command : String
+            longCommand : String
+            description : String
+            noOfArgs : int
+            argumentName : String
+            required : boolean
+            valueSeparator : char
+            hasOptionalArgument : boolean
+            dependsOn : Class[]
+        }
+
+        annotation CafeCommandRun
+        annotation CafeCommandExecutionCondition {
+            strategy : CafeExecutionStrategy
+        }
+
+        enum CafeExecutionStrategy {
+            ALWAYS_RUN
+            NON_OPTED_COMMAND_EXISTS
+        }
+    }
+}
+
+' Relationships
+CafeShell *-- CafeCommandRuntimeService : injects
+CafeShell ..> CafeCommandClassResolver : registers
+CafeShell ..> CafeCommandMethodResolver : registers
+
+CafeCommandRuntimeService *-- CafeCommandBindingService : injects
+CafeCommandRuntimeService *-- CafeCommandRuntimeOrderService : injects
+CafeCommandRuntimeService ..> CafeCommandRuntime : produces
+
+CafeCommandBindingService ..> CafeCommandOptionBinding : returns
+CafeCommandOptionBinding ..> CafeCommandRuntime : creates
+
+CafeCommandClassResolver ..> CafeCommandOptionBinding : creates
+CafeCommandMethodResolver ..> CafeCommandRuntime : executes
+
+CafeConsole +-- CafeConsoleTextColour
+CafeConsole +-- CafeConsoleBackgroundColour
+
+@enduml

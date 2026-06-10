@@ -12,6 +12,7 @@ import org.taranix.cafe.beans.metadata.CafeConstructor;
 import org.taranix.cafe.beans.metadata.CafeField;
 import org.taranix.cafe.beans.metadata.CafeMetadataRegistry;
 import org.taranix.cafe.beans.metadata.CafeMethod;
+import org.taranix.cafe.beans.repositories.beans.BeansRepository;
 
 import java.util.Date;
 import java.util.List;
@@ -28,7 +29,7 @@ class CafeBeansResolvableServiceTests {
                 .build();
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
         // when
-        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry, new BeansRepository());
 
         // then
         Assertions.assertTrue(result.isEmpty(), "Expected successful validation.");
@@ -45,7 +46,7 @@ class CafeBeansResolvableServiceTests {
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry, new BeansRepository());
 
         // then
         Assertions.assertTrue(result.isEmpty(), "Expected successful validation when dependencies are met.");
@@ -61,7 +62,7 @@ class CafeBeansResolvableServiceTests {
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry, new BeansRepository());
 
         // Extracting the unresolvable member from the result
         CafeField nonResolvableField = result
@@ -91,7 +92,7 @@ class CafeBeansResolvableServiceTests {
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry, new BeansRepository());
 
         // then
         Assertions.assertTrue(result.isPresent(), "Expected validation failure due to missing Date and String providers.");
@@ -126,7 +127,7 @@ class CafeBeansResolvableServiceTests {
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry, new BeansRepository());
 
         // then
         Assertions.assertTrue(result.isEmpty(), "Expected successful validation as dependency is optional.");
@@ -142,7 +143,7 @@ class CafeBeansResolvableServiceTests {
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry, new BeansRepository());
 
         // then
         Assertions.assertTrue(result.isPresent(), "Expected validation failure due to missing Date provider for constructor.");
@@ -161,7 +162,7 @@ class CafeBeansResolvableServiceTests {
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry, new BeansRepository());
 
         // then
         Assertions.assertTrue(result.isPresent(), "Expected validation failure due to missing Date provider for method.");
@@ -181,7 +182,7 @@ class CafeBeansResolvableServiceTests {
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(registry);
+        Optional<ValidationResult> result = validator.validate(registry, new BeansRepository());
 
         // then
         Assertions.assertTrue(result.isEmpty(), "Expected successful validation due to exact generic match.");
@@ -198,7 +199,7 @@ class CafeBeansResolvableServiceTests {
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(registry);
+        Optional<ValidationResult> result = validator.validate(registry, new BeansRepository());
 
         // then
         Assertions.assertTrue(result.isPresent(), "Expected validation failure due to List<Integer> not resolving List<String>.");
@@ -227,7 +228,7 @@ class CafeBeansResolvableServiceTests {
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(registry);
+        Optional<ValidationResult> result = validator.validate(registry, new BeansRepository());
 
         // then
         Assertions.assertTrue(result.isEmpty(), "Expected successful resolution of generic type String in constructor.");
@@ -244,7 +245,7 @@ class CafeBeansResolvableServiceTests {
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(registry);
+        Optional<ValidationResult> result = validator.validate(registry, new BeansRepository());
 
         // then
         Assertions.assertTrue(result.isEmpty(), "Expected successful resolution of generic type Integer in field.");
@@ -261,7 +262,7 @@ class CafeBeansResolvableServiceTests {
         CafeResolvableBeansValidator validator = new CafeResolvableBeansValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(registry);
+        Optional<ValidationResult> result = validator.validate(registry, new BeansRepository());
 
         // then
         Assertions.assertTrue(result.isPresent(), "Expected validation failure: String cannot resolve required Boolean.");

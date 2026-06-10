@@ -19,6 +19,7 @@ public final class PrintHelpCommand {
 
     @CafeCommandRun
     public void execute(CafeCommandArguments cafeCommandArguments) {
-        formatter.printHelp(applicationName, options, true);
+        String name = applicationName != null ? applicationName : "Application";
+        formatter.printHelp(name, options, true);
     }
 }

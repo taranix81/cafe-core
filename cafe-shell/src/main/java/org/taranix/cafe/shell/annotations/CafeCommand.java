@@ -1,5 +1,7 @@
 package org.taranix.cafe.shell.annotations;
 
+import org.taranix.cafe.beans.annotations.base.CafeWiringType;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -10,6 +12,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@CafeWiringType
 public @interface CafeCommand {
     Class<?>[] dependsOn() default {};
 

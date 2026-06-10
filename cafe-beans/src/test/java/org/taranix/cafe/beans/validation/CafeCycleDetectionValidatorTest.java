@@ -8,6 +8,7 @@ import org.taranix.cafe.beans.annotations.methods.CafeProvider;
 import org.taranix.cafe.beans.metadata.CafeClass;
 import org.taranix.cafe.beans.metadata.CafeMember;
 import org.taranix.cafe.beans.metadata.CafeMetadataRegistry;
+import org.taranix.cafe.beans.repositories.beans.BeansRepository;
 
 import java.util.Date;
 import java.util.Optional;
@@ -27,7 +28,7 @@ class CafeCycleDetectionValidatorTest {
         CafeCycleDetectionValidator validator = new CafeCycleDetectionValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry, new BeansRepository());
 
         // then
         Assertions.assertTrue(result.isPresent(), "Expected a validation result due to cycle.");
@@ -50,7 +51,7 @@ class CafeCycleDetectionValidatorTest {
         CafeCycleDetectionValidator validator = new CafeCycleDetectionValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry, new BeansRepository());
         Set<Object> objectsWithCycle = result.map(ValidationResult::objects).orElse(Set.of());
 
         // Filter members and classes from the result set
@@ -76,7 +77,7 @@ class CafeCycleDetectionValidatorTest {
         CafeCycleDetectionValidator validator = new CafeCycleDetectionValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry, new BeansRepository());
 
         // then
         Assertions.assertFalse(result.isPresent(), "Expected no validation result (no cycle found).");
@@ -93,7 +94,7 @@ class CafeCycleDetectionValidatorTest {
         CafeCycleDetectionValidator validator = new CafeCycleDetectionValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry, new BeansRepository());
         Set<CafeMember> membersInCycle = result.map(ValidationResult::objects).orElse(Set.of()).stream()
                 .filter(CafeMember.class::isInstance)
                 .map(CafeMember.class::cast)
@@ -118,7 +119,7 @@ class CafeCycleDetectionValidatorTest {
         CafeCycleDetectionValidator validator = new CafeCycleDetectionValidator();
 
         // when
-        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry);
+        Optional<ValidationResult> result = validator.validate(cafeMetadataRegistry, new BeansRepository());
 
         // then
         Assertions.assertFalse(result.isPresent(), "Expected no validation result for linear dependencies.");

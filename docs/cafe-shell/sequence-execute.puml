@@ -1,0 +1,89 @@
+@startuml cafe-shell-execution-sequence
+
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceGroupBorderColor #888888
+
+title CafeShell — execute(args) sequence
+
+actor User
+participant "CafeShell" as Shell
+participant "CommandLineParser\n(Apache CLI)" as Parser
+participant "CafeCommandRuntimeService" as RuntimeSvc
+participant "CafeCommandBindingService" as BindingSvc
+participant "CafeCommandRuntimeOrderService" as OrderSvc
+participant "CafeCommandMethodResolver" as Resolver
+participant "@CafeCommand class" as Cmd
+
+User -> Shell : run(args)
+activate Shell
+
+Shell -> Parser : parse(options, args)
+activate Parser
+
+alt ParseException
+    Parser --> Shell : throws ParseException
+    Shell -> RuntimeSvc : run(PrintHelpCommand.class)
+    Shell --> User : return WRONG_ARGUMENT_ERROR (2)
+else success
+    Parser --> Shell : CommandLine\n(matchedOptions[], leftArgs[])
+end
+deactivate Parser
+
+group Map matched options → runtimes
+    Shell -> RuntimeSvc : map(List<Option>)
+    activate RuntimeSvc
+    RuntimeSvc -> BindingSvc : noOptedCommandBinding(option) [for each option]
+    activate BindingSvc
+    BindingSvc --> RuntimeSvc : Optional<CafeCommandOptionBinding>
+    deactivate BindingSvc
+    RuntimeSvc --> Shell : List<CafeCommandRuntime>
+    deactivate RuntimeSvc
+end
+
+group Order by dependency graph
+    Shell -> RuntimeSvc : order(runtimes)
+    activate RuntimeSvc
+    RuntimeSvc -> OrderSvc : order(runtimes)
+    activate OrderSvc
+    note right: topological sort via\nCafeOrderedBeansService
+    OrderSvc --> RuntimeSvc : List<CafeCommandRuntime> (ordered)
+    deactivate OrderSvc
+    RuntimeSvc --> Shell : ordered runtimes
+    deactivate RuntimeSvc
+end
+
+group Map leftover args → default command (optional)
+    Shell -> RuntimeSvc : map(leftArgs)
+    activate RuntimeSvc
+    RuntimeSvc -> BindingSvc : noOptedCommandBinding()
+    activate BindingSvc
+    BindingSvc --> RuntimeSvc : CafeCommandOptionBinding (or null)
+    deactivate BindingSvc
+    RuntimeSvc --> Shell : CafeCommandRuntime (or null)
+    deactivate RuntimeSvc
+end
+
+alt no commands matched
+    Shell -> RuntimeSvc : run(PrintHelpCommand.class)
+else commands present
+    loop for each CafeCommandRuntime
+        Shell -> RuntimeSvc : run(runtime)
+        activate RuntimeSvc
+        RuntimeSvc -> RuntimeSvc : commandArguments.setValues(runtime.arguments)
+        RuntimeSvc -> Resolver : resolve(instance, method, factory)
+        activate Resolver
+        Resolver -> Cmd : invoke @CafeCommandRun method
+        activate Cmd
+        Cmd --> Resolver : result (or void)
+        deactivate Cmd
+        Resolver -> RuntimeSvc : persist(method, result)
+        Resolver --> RuntimeSvc : result
+        deactivate Resolver
+        deactivate RuntimeSvc
+    end
+end
+
+Shell --> User : return SUCCESS (0)
+deactivate Shell
+
+@enduml
