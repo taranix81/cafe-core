@@ -3,7 +3,7 @@ package org.taranix.cafe.beans.exceptions;
 import lombok.Getter;
 import org.taranix.cafe.beans.repositories.typekeys.TypeKey;
 
-public class CafeBeanResolverException extends RuntimeException {
+public class CafeBeanResolverException extends CafeException {
 
     @Getter
     private final TypeKey typeKey;

@@ -8,7 +8,7 @@ import org.taranix.cafe.shell.annotations.CafeCommand;
 import org.taranix.cafe.shell.annotations.CafeCommandRun;
 
 @CafeCommand(command = "h", longCommand = "help", description = "Printing help")
-public final class PrintHelpCommand {
+public final class CafePrintHelpCommand {
 
     @CafeProperty(name = "cafe.shell.name")
     private String applicationName;

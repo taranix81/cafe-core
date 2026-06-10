@@ -8,10 +8,11 @@ import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 public class StringToIntegerConverter implements CafeConverter<String, Integer> {
     @Override
     public Integer convert(String s) {
+        if (s == null) return null;
         try {
-            return Integer.parseInt(s);
+            return Integer.parseInt(s.trim());
         } catch (NumberFormatException e) {
-            log.warn("Cannot convert {} to Integer", s);
+            log.warn("Cannot convert '{}' to Integer", s);
         }
         return null;
     }

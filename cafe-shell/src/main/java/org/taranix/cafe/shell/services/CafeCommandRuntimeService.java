@@ -80,7 +80,9 @@ public class CafeCommandRuntimeService {
                 .resolve(commandRuntime.getCommandInstance(), commandRuntime.getExecutor(), beansFactory);
 
         if (Objects.nonNull(produced)) {
-            log.debug("Output -> {} ", produced);
+            log.trace("Output -> {} ", produced);
+            commandArguments.getVariables().put(produced.getClass().getSimpleName(), produced);
+            beansFactory.addToRepository(produced);
         }
 
     }

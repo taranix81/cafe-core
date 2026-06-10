@@ -10,6 +10,11 @@ import org.taranix.cafe.beans.resolvers.CafeBeansFactory;
 
 import java.util.Objects;
 
+/**
+ * Base implementation of {@link CafeClassResolver} that orchestrates constructor, field, and method
+ * resolution for a managed class. Subclasses control eligibility via {@code isApplicable()} and may
+ * override the three {@code resolve*} hooks to customise instantiation or injection behaviour.
+ */
 @Slf4j
 public abstract class AbstractClassResolver implements CafeClassResolver {
 

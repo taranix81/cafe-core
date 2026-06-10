@@ -7,11 +7,12 @@ import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.beans.resolvers.metadata.CafeClassResolver;
 import org.taranix.cafe.beans.resolvers.metadata.method.CafeMethodResolver;
 import org.taranix.cafe.shell.commands.CafeCommandRuntime;
-import org.taranix.cafe.shell.commands.PrintHelpCommand;
+import org.taranix.cafe.shell.commands.CafePrintHelpCommand;
 import org.taranix.cafe.shell.exceptions.CafeCommandRuntimeServiceException;
 import org.taranix.cafe.shell.resolvers.CafeCommandClassResolver;
 import org.taranix.cafe.shell.resolvers.CafeCommandMethodResolver;
 import org.taranix.cafe.shell.services.CafeCommandRuntimeService;
+import org.taranix.cafe.shell.services.CafeConsoleService;
 
 import java.util.*;
 
@@ -24,6 +25,9 @@ public class CafeShell extends CafeApplication {
     private static final int WRONG_ARGUMENT_ERROR = 2;
     @CafeInject
     private CafeCommandRuntimeService runtimeService;
+
+    @CafeInject
+    private CafeConsoleService consoleService;
 
     @CafeInject
     private CommandLineParser commandLineParser;
@@ -74,7 +78,7 @@ public class CafeShell extends CafeApplication {
             } catch (ParseException e) {
                 System.out.println(e.getMessage());
                 try {
-                    runtimeService.run(PrintHelpCommand.class);
+                    runtimeService.run(CafePrintHelpCommand.class);
                 } catch (CafeCommandRuntimeServiceException ex) {
                     System.out.println(e.getMessage());
                     log.debug(e.getMessage(), ex);
@@ -86,17 +90,17 @@ public class CafeShell extends CafeApplication {
 
         CafeCommandRuntime defaultCommand = runtimeService.map(leftArgs);
         if (defaultCommand != null) {
-            executionCommands.add(defaultCommand);
+            executionCommands.add(0, defaultCommand);
         }
 
         try {
             log.debug("Matched commands : {}", executionCommands);
             if (executionCommands.isEmpty()) {
-                runtimeService.run(PrintHelpCommand.class);
+                runtimeService.run(CafePrintHelpCommand.class);
             } else {
                 runtimeService.run(executionCommands);
             }
-
+            consoleService.flush();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return ERROR;

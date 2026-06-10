@@ -18,6 +18,6 @@ public class GreetCommand {
     @CafeCommandRun
     public void execute(CafeCommandArguments args) {
         invoked = true;
-        receivedArgs = args.getCliValues();
+        receivedArgs = args.getValues().orElse(new String[0]);
     }
 }

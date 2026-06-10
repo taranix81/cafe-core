@@ -1,0 +1,6 @@
+cafe:
+  shell:
+    name: web-client
+
+app:
+  name: cafe-shell-examples

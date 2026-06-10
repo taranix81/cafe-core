@@ -7,7 +7,10 @@ import org.taranix.cafe.beans.converters.CafeConverter;
 import org.taranix.cafe.beans.repositories.beans.BeansRepository;
 import org.taranix.cafe.beans.resolvers.CafePropertiesService;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Path;
+import java.util.Enumeration;
 import java.util.Properties;
 
 class CafePropertiesServiceTests {
@@ -35,6 +38,55 @@ class CafePropertiesServiceTests {
 
         //then
         Assertions.assertNotNull(currentPath);
+    }
+
+    @Test
+    void shouldLoadWithNoClasspathFilesWithoutException() {
+        ClassLoader emptyLoader = new ClassLoader(null) {
+            @Override
+            public InputStream getResourceAsStream(String name) { return null; }
+            @Override
+            public URL getResource(String name) { return null; }
+            @Override
+            public Enumeration<URL> getResources(String name) { return java.util.Collections.emptyEnumeration(); }
+        };
+        CafePropertiesService context = CafePropertiesService.load(new BeansRepository(), emptyLoader);
+        Assertions.assertNotNull(context.getProperties());
+    }
+
+    @Test
+    void shouldResolveNestedYamlKeyThreeLevelsDeep() {
+        CafePropertiesService context = CafePropertiesService.load(new BeansRepository());
+        Properties properties = context.getProperties();
+        Assertions.assertEquals("value", properties.getProperty("edge.a.b.c"));
+    }
+
+    @Test
+    void shouldLoadNumericYamlValueAsNonNull() {
+        CafePropertiesService context = CafePropertiesService.load(new BeansRepository());
+        Properties properties = context.getProperties();
+        Object port = properties.get("edge.port");
+        Assertions.assertNotNull(port);
+        Assertions.assertEquals(8080, port);
+    }
+
+    @Test
+    void shouldLoadBooleanYamlValueAsNonNull() {
+        CafePropertiesService context = CafePropertiesService.load(new BeansRepository());
+        Properties properties = context.getProperties();
+        Object debug = properties.get("edge.debug");
+        Assertions.assertNotNull(debug);
+        Assertions.assertEquals(true, debug);
+    }
+
+    @Test
+    void shouldMergePropertiesFileAndYmlWhenBothPresent() {
+        CafePropertiesService context = CafePropertiesService.load(new BeansRepository());
+        Properties properties = context.getProperties();
+        // from application.properties
+        Assertions.assertNotNull(properties.getProperty("test.property"));
+        // from application.yml
+        Assertions.assertNotNull(properties.get("family.dad"));
     }
 
     @Test

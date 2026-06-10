@@ -8,6 +8,11 @@ import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 public class StringToBooleanConverter implements CafeConverter<String, Boolean> {
     @Override
     public Boolean convert(String s) {
-        return Boolean.parseBoolean(s);
+        if (s == null) return null;
+        Boolean value = Boolean.parseBoolean(s.trim());
+        if (!value && !s.trim().equalsIgnoreCase("false")) {
+            log.warn("Cannot convert '{}' to Boolean — defaulting to false", s);
+        }
+        return value;
     }
 }

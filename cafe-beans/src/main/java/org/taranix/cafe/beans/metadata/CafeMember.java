@@ -25,9 +25,6 @@ public abstract class CafeMember {
     @Getter
     private final CafeClass cafeClass;
 
-    /**
-     * Constructs a CafeMemberInfo with the given class metadata parent.
-     */
     protected CafeMember(CafeClass cafeClass) {
         this.cafeClass = cafeClass;
     }
@@ -90,16 +87,10 @@ public abstract class CafeMember {
 
     // --- Utility Methods ---
 
-    /**
-     * Returns the root class from the parent metadata.
-     */
     public CafeClass getParent() {
         return cafeClass;
     }
 
-    /**
-     * Returns the type key for the owning class.
-     */
     public BeanTypeKey getParentTypeKey() {
         return getParent().getRootClassTypeKey();
     }
@@ -108,9 +99,6 @@ public abstract class CafeMember {
         return getParent().getRootClass();
     }
 
-    /**
-     * Returns the declaring class of the member.
-     */
     public Class<?> getMemberDeclaringClass() {
         return getMember().getDeclaringClass();
     }
@@ -120,37 +108,22 @@ public abstract class CafeMember {
      */
     public abstract Member getMember();
 
-    /**
-     * Checks if this member and another have the same declaring class.
-     */
     public boolean isBelongToTheSameClass(CafeMember other) {
         return other != null && getMemberDeclaringClass().equals(other.getMemberDeclaringClass());
     }
 
-    /**
-     * Returns true if the member is static.
-     */
     public boolean isStatic() {
         return Modifier.isStatic(getMember().getModifiers());
     }
 
-    /**
-     * Returns true if the member is a constructor.
-     */
     public boolean isConstructor() {
         return getMember() instanceof Constructor<?>;
     }
 
-    /**
-     * Returns true if the member is a field.
-     */
     public boolean isField() {
         return getMember() instanceof Field;
     }
 
-    /**
-     * Returns true if the member is a method.
-     */
     public boolean isMethod() {
         return getMember() instanceof Method;
     }
@@ -210,11 +183,8 @@ public abstract class CafeMember {
      *
      * @param markerType The type of the marker annotation (e.g., CafeModifier.class, CafeType.class).
      * @return A set of annotation classes that carry the marker.
-     * <p>
-     * Should be move to Annotation Utils
      */
     public Set<Class<? extends Annotation>> getAnnotationTypesMarkedBy(Class<? extends Annotation> markerType) {
-        // Use getAnnotatedElement() for unified access
         return Arrays.stream(getAnnotatedElement().getAnnotations())
                 .filter(annotation -> CafeAnnotationUtils.isAnnotationMarkedBy(annotation, markerType))
                 .map(Annotation::annotationType)
@@ -222,7 +192,6 @@ public abstract class CafeMember {
     }
 
     public Annotation[] getAnnotationsMarkedBy(Class<? extends Annotation> markerType) {
-        // Use getAnnotatedElement() for unified access
         return Arrays.stream(getAnnotatedElement().getAnnotations())
                 .filter(annotation -> CafeAnnotationUtils.isAnnotationMarkedBy(annotation, markerType))
                 .toArray(Annotation[]::new);
@@ -233,7 +202,6 @@ public abstract class CafeMember {
 
     @Override
     public int hashCode() {
-        // Hash code based solely on the underlying Member object for quick comparison
         return Objects.hash(getMember());
     }
 
@@ -241,7 +209,6 @@ public abstract class CafeMember {
     public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CafeMember other)) return false;
-        // Equality based solely on the underlying Member object
         return Objects.equals(getMember(), other.getMember());
     }
 

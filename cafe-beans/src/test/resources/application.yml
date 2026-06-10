@@ -9,3 +9,10 @@ family:
       name: x
     - cat:
       name: y
+
+edge:
+  a:
+    b:
+      c: value
+  port: 8080
+  debug: true
