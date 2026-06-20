@@ -22,24 +22,24 @@ class EventHubTest {
     }
 
     @Test
-    @DisplayName("Should register a dispatcher and retrieve it by annotation type")
+    @DisplayName("addDispatcher() registers a dispatcher retrievable by annotation type")
     void shouldRegisterAndRetrieveDispatcher() {
         EventDispatcher<CafeHandler> dispatcher = noopDispatcher();
-        hub.register(CafeHandler.class, dispatcher);
+        hub.addDispatcher(CafeHandler.class, dispatcher);
         assertSame(dispatcher, hub.dispatcher(CafeHandler.class));
     }
 
     @Test
-    @DisplayName("Should return null for unregistered annotation type")
+    @DisplayName("dispatcher() returns null for unregistered annotation type")
     void shouldReturnNullForUnregisteredType() {
         assertNull(hub.dispatcher(CafeHandler.class));
     }
 
     @Test
-    @DisplayName("Should route send() to the registered dispatcher")
+    @DisplayName("send() routes to the registered dispatcher")
     void shouldRouteSendToRegisteredDispatcher() {
         List<Object[]> captured = new ArrayList<>();
-        hub.register(CafeHandler.class, capturingDispatcher(captured));
+        hub.addDispatcher(CafeHandler.class, capturingDispatcher(captured));
 
         hub.send(CafeHandler.class, "arg1", "arg2");
 
@@ -48,14 +48,13 @@ class EventHubTest {
     }
 
     @Test
-    @DisplayName("Should route sendTo() to the registered dispatcher")
+    @DisplayName("sendTo() routes to the registered dispatcher with the target")
     void shouldRouteSendToToRegisteredDispatcher() {
         List<Object[]> captured = new ArrayList<>();
         Object target = new Object();
 
-        hub.register(CafeHandler.class, new EventDispatcher<CafeHandler>() {
-            public void register(Object l) {}
-            public void unregister(Object l) {}
+        hub.addDispatcher(CafeHandler.class, new EventDispatcher<>() {
+            public void addIfRelevant(Object l) {}
             public void send(Object... args) {}
             public void sendTo(Object t, Object... args) {
                 assertSame(target, t);
@@ -70,36 +69,59 @@ class EventHubTest {
     }
 
     @Test
-    @DisplayName("Should not throw when send() called for unregistered annotation type")
+    @DisplayName("send() does not throw for unregistered annotation type")
     void shouldNotThrowOnUnregisteredSend() {
         assertDoesNotThrow(() -> hub.send(CafeHandler.class, "arg1"));
     }
 
     @Test
-    @DisplayName("Should not throw when sendTo() called for unregistered annotation type")
+    @DisplayName("sendTo() does not throw for unregistered annotation type")
     void shouldNotThrowOnUnregisteredSendTo() {
         assertDoesNotThrow(() -> hub.sendTo(CafeHandler.class, new Object(), "arg1"));
     }
 
     @Test
-    @DisplayName("Should support registering multiple annotation types independently")
+    @DisplayName("addDispatcher() supports multiple annotation types independently")
     void shouldSupportMultipleDispatchers() {
         EventDispatcher<CafeHandler> d1 = noopDispatcher();
         EventDispatcher<Override> d2 = noopDispatcher();
 
-        hub.register(CafeHandler.class, d1);
-        hub.register(Override.class, d2);
+        hub.addDispatcher(CafeHandler.class, d1);
+        hub.addDispatcher(Override.class, d2);
 
         assertSame(d1, hub.dispatcher(CafeHandler.class));
         assertSame(d2, hub.dispatcher(Override.class));
+    }
+
+    @Test
+    @DisplayName("register(listener) fans out addIfRelevant() to all dispatchers")
+    void shouldFanOutRegisterToAllDispatchers() {
+        List<Object> receivedByD1 = new ArrayList<>();
+        List<Object> receivedByD2 = new ArrayList<>();
+
+        hub.addDispatcher(CafeHandler.class, new EventDispatcher<>() {
+            public void addIfRelevant(Object l) { receivedByD1.add(l); }
+            public void send(Object... args) {}
+            public void sendTo(Object t, Object... args) {}
+        });
+        hub.addDispatcher(Override.class, new EventDispatcher<>() {
+            public void addIfRelevant(Object l) { receivedByD2.add(l); }
+            public void send(Object... args) {}
+            public void sendTo(Object t, Object... args) {}
+        });
+
+        Object listener = new Object();
+        hub.register(listener);
+
+        assertEquals(List.of(listener), receivedByD1);
+        assertEquals(List.of(listener), receivedByD2);
     }
 
     // --- Helpers ---
 
     private <A extends Annotation> EventDispatcher<A> noopDispatcher() {
         return new EventDispatcher<>() {
-            public void register(Object l) {}
-            public void unregister(Object l) {}
+            public void addIfRelevant(Object l) {}
             public void send(Object... args) {}
             public void sendTo(Object target, Object... args) {}
         };
@@ -107,8 +129,7 @@ class EventHubTest {
 
     private EventDispatcher<CafeHandler> capturingDispatcher(List<Object[]> captured) {
         return new EventDispatcher<>() {
-            public void register(Object l) {}
-            public void unregister(Object l) {}
+            public void addIfRelevant(Object l) {}
             public void send(Object... args) { captured.add(args); }
             public void sendTo(Object target, Object... args) {}
         };

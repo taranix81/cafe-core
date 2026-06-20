@@ -15,6 +15,8 @@ public class PropertiesMenuModel {
     public static final String ID = "id";
     public static final String NAME = "name";
     public static final String MENU = "menu";
+    public static final String SEPARATOR = "separator";
+    public static final String ACTION = "action";
 
     @CafeProperty(name = "cafe.application.shell.menu")
     private LinkedHashMap menuMap;
@@ -56,6 +58,8 @@ public class PropertiesMenuModel {
                     .id(asString(menuItem.get(ID)))
                     .name(asString(menuItem.get(NAME)))
                     .menu(buildMenu((Map<String, Object>) menuItem.get(MENU)))
+                    .action(asString(menuItem.get(ACTION)))
+                    .separator(Boolean.TRUE.equals(menuItem.get(SEPARATOR)))
                     .build()
             );
         }

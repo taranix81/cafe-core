@@ -1,0 +1,130 @@
+@startuml
+
+title Cafe Desktop Architecture
+
+package "Cafe beans module" {
+    annotation CafeInject{}
+    annotation CafeSingleton{}
+
+    class EventBus {
+        -Map<String, List<WeakReference<Object>>> listeners
+        +register(Object listener): void
+        +unregister(Object listener): void
+        +post(Event event): void
+    }
+}
+
+note left of EventBus
+    The EventBus is a implementation of the publish-subscribe pattern.
+    It allows components to communicate with each other without having direct references to each other.
+    Automically unregisters listeners when they are garbage collected to prevent memory leaks.
+end note
+
+
+package Core {
+
+    '' Annotitions 
+    
+    annotation CafeModel{}
+
+    annotation CafeComponent {
+        Class modelType default null
+        Class<? extends View> viewType 
+    }
+
+    interface View {
+        + createWidget(Component component): Widget
+    }
+
+    interface Component {
+        + dispose() : void
+    }
+
+    interface Container {
+        +addComponent(ComponentProxy component): void
+        +removeComponent(ComponentProxy component): void
+        +activateComponent(ComponentProxy component): void
+    }
+    Component <|-- Container
+
+    
+    note right of CafeComponent
+        - modelType: Specifies the type of the model that the component uses. 
+        This allows for automatic model injection and management by the framework.
+        - viewType: Specifies the type of the view that the component uses. 
+        This allows for automatic view injection and management by the framework.
+
+        Question how component will communitate with view?
+        Should we have a base class for component that will have a reference to the view?
+        Facts:
+        - View is producing the widget, so we need a reference to widget
+        - widget can be injected but will required to implicitly inject it
+        Options are:
+            - widget register , 
+            - event driven communication?
+    end note
+}
+
+
+package "Built-in Models" {
+    class MenuModel {
+        -menuItems: List<MenuItem>
+        + getMenuItems(): List<MenuItem>
+    }
+
+    class MenuItemModel{
+        -id: String
+        -label: String
+        + getId(): String
+        + getLabel(): String
+
+    }
+    MenuItemModel *-- MenuModel : <<use>>
+}
+
+package "Built-in Components" {
+    class ApplicationComponent  {
+        - Shell shell
+        @CafeInject
+        -  ApplicationComponentConfguration configuration
+    }
+    ApplicationComponent ..> CafeComponent : <<use>>
+    Container <|-- ApplicationComponent
+
+    '' Menu Component ''
+    class MenuComponent {
+        - MenuModelConfiguration menuModelConfiguration
+    }
+    Component <|-- MenuComponent
+    MenuComponent ..> CafeComponent : <<use>>
+    MenuComponent *-- MenuModel : <<use>>
+
+    package "Extensions" {
+        interface MenuModelConfiguration {
+            + configure(MenuModel menuModel): void
+        }
+        interface ApplicationContainerConfiguration {
+            + configure(Container container): void
+        }
+
+        interface ApplicationShellConfiguration {
+            + configure(Shell shell): void
+        }
+        MenuComponent *-- MenuModelConfiguration : <<use>>
+        ApplicationComponent *-- ApplicationContainerConfiguration
+        ApplicationComponent *-- ApplicationShellConfiguration
+
+   
+    class PropertyShellConfiguration {
+    }
+    ApplicationShellConfiguration <|-- PropertyShellConfiguration
+    PropertyShellConfiguration ..> CafeSingleton : <<use>>
+
+    class PropertyMenuConfiguration {
+    }
+    MenuModelConfiguration <|-- PropertyMenuConfiguration
+    PropertyMenuConfiguration ..> CafeSingleton : <<use>>
+}
+}
+
+@enduml

@@ -3,15 +3,21 @@ package org.taranix.cafe.shell.examples.web;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
+import org.taranix.cafe.beans.annotations.fields.CafeInject;
+import org.taranix.cafe.shell.services.CafeDiskService;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 @CafeSingleton
 public class URLService {
+
+    @CafeInject
+    private CafeDiskService diskService;
 
     public Document resolveDocument(String input) throws IOException {
         if (isUrl(input)) {
@@ -30,6 +36,15 @@ public class URLService {
 
     public boolean isUrlShortcut(String input) {
         return input.toLowerCase().endsWith(".url");
+    }
+
+    public void createShortcut(String url, Path filePath) {
+        String content = "[InternetShortcut]\nURL=" + url;
+        diskService.write(filePath, content);
+    }
+
+    public void createShortcut(String url, String filePath) {
+        createShortcut(url, Path.of(filePath));
     }
 
     private String extractUrlFromShortcut(File file) throws IOException {

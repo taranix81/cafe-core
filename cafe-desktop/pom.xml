@@ -32,6 +32,11 @@
             <artifactId>cafe-shell</artifactId>
             <version>0.0.5-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.14.17</version>
+        </dependency>
 
     </dependencies>
     <profiles>

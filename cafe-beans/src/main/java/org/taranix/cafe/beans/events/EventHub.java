@@ -8,8 +8,12 @@ public class EventHub {
 
     private final Map<Class<? extends Annotation>, EventDispatcher<?>> dispatchers = new HashMap<>();
 
-    public <A extends Annotation> void register(Class<A> annotationType, EventDispatcher<A> dispatcher) {
+    public <A extends Annotation> void addDispatcher(Class<A> annotationType, EventDispatcher<A> dispatcher) {
         dispatchers.put(annotationType, dispatcher);
+    }
+
+    public void register(Object listener) {
+        dispatchers.values().forEach(d -> d.addIfRelevant(listener));
     }
 
     @SuppressWarnings("unchecked")

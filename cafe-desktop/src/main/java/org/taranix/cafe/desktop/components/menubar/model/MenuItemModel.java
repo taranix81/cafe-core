@@ -10,5 +10,7 @@ public class MenuItemModel {
     private final String name;
     private MenuModel menu;
     private String action;
+    @Builder.Default
+    private final boolean separator = false;
 
 }

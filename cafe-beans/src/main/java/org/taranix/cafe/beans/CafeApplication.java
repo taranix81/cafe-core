@@ -43,7 +43,7 @@ public abstract class CafeApplication {
     protected void beforeContextInit() {
         addBeanToContext(cafeApplicationContext.getHandlerMethodInvoker());
         EventHub eventHub = new EventHub();
-        eventHub.register(CafeHandler.class,
+        eventHub.addDispatcher(CafeHandler.class,
                 new DefaultEventDispatcher<>(CafeHandler.class, getHandlerMethodInvoker()));
         addBeanToContext(eventHub);
     }

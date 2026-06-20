@@ -1,7 +1,8 @@
 package org.taranix.cafe.beans.events;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.taranix.cafe.beans.events.selectors.HandlerTypekeySelector;
 import org.taranix.cafe.beans.reflection.CafeReflectionUtils;
 import org.taranix.cafe.beans.reflection.CafeTypesUtils;
@@ -16,8 +17,9 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-@Slf4j
 public class HandlerMethodInvoker {
+
+    private static final Logger log = LoggerFactory.getLogger(HandlerMethodInvoker.class);
 
     @Getter
     private final Repository<TypeKey, BeanRepositoryEntry> repository;
@@ -80,7 +82,12 @@ public class HandlerMethodInvoker {
                 continue;
             }
 
-            return CafeReflectionUtils.getMethodValue(handlerMethod, finalInstance, parameters);
+            try {
+                return CafeReflectionUtils.getMethodValue(handlerMethod, finalInstance, parameters);
+            } catch (Exception ex) {
+                log.error("Handler method {}.{} threw during dispatch",
+                        finalInstance.getClass().getSimpleName(), handlerMethod.getName(), ex);
+            }
         }
         return null;
     }
