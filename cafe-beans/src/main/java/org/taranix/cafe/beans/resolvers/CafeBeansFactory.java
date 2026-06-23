@@ -55,6 +55,8 @@ public final class CafeBeansFactory {
     public void resolveAllBeans() {
         validate();
         orderedBeansService.orderedClasses()
+                .stream()
+                .filter(cafeClass -> !cafeClass.isPrototype())
                 .forEach(this::resolveClass);
     }
 
@@ -109,8 +111,8 @@ public final class CafeBeansFactory {
                         .value(resolved)
                         .primary(member.getAnnotationModifiers().contains(CafePrimary.class))
                         .build()));
-    }
 
+    }
 
     public Object getProperty(String key) {
         return repository.getOne(PropertyTypeKey.from(key)).getValue();

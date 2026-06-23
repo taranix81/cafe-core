@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.taranix.cafe.beans.CafeApplicationContext;
+import org.taranix.cafe.beans.annotations.classes.CafePrototype;
 import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
-import org.taranix.cafe.beans.annotations.modifiers.CafePrototype;
 import org.taranix.cafe.beans.metadata.CafeConstructor;
 import org.taranix.cafe.beans.metadata.CafeMetadataRegistry;
 import org.taranix.cafe.beans.resolvers.metadata.constructor.PrototypeConstructorResolver;
@@ -88,8 +88,10 @@ class ConstructorResolverTest {
     // --- Fixture classes ---
 
     @CafeSingleton
-    static class SingletonClass {}
+    static class SingletonClass {
+    }
 
     @CafePrototype
-    static class PrototypeClass {}
+    static class PrototypeClass {
+    }
 }

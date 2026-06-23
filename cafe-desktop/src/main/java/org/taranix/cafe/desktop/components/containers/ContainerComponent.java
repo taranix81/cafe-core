@@ -1,27 +1,14 @@
 package org.taranix.cafe.desktop.components.containers;
 
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Widget;
+import org.taranix.cafe.desktop.components.Component;
 
-import java.util.UUID;
+public interface ContainerComponent extends Component {
 
-public interface ContainerComponent {
 
-    void addComponent(Class<?> componentType);
+    //void addComponent(Component component);
 
-    void addComponent(Class<?> componentType, String sourceId);
+    //void removeComponent(Component component);
 
-    void removeComponent(UUID componentId);
+    Component getActiveComponent();
 
-    boolean isOpen(String sourceId);
-
-    void activate(String sourceId);
-
-    Widget create(Control parent);
-
-    void show();
-
-    void hide();
-
-    void dispose();
 }

@@ -3,7 +3,6 @@ package org.taranix.cafe.beans;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.taranix.cafe.beans.events.HandlerMethodInvoker;
 import org.taranix.cafe.beans.exceptions.CafeApplicationContextException;
 import org.taranix.cafe.beans.metadata.CafeClass;
 import org.taranix.cafe.beans.metadata.CafeClassFactory;
@@ -24,7 +23,6 @@ import org.taranix.cafe.beans.validation.CafeHandlerMethodsParameterValidator;
 import org.taranix.cafe.beans.validation.CafeResolvableBeansValidator;
 import org.taranix.cafe.beans.validation.CafeValidationService;
 
-import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,16 +37,11 @@ public class CafeApplicationContext {
     @Getter
     private final CafeBeansFactory beansFactory;
 
-    @Getter
-    private final HandlerMethodInvoker handlerMethodInvoker;
-
     private CafeApplicationContext(
             CafeBeansFactory cafeBeansFactory,
-            HandlerMethodInvoker handlerMethodInvoker,
             final ClassLoader classLoader
     ) {
         this.beansFactory = cafeBeansFactory;
-        this.handlerMethodInvoker = handlerMethodInvoker;
         CafePropertiesService.load(beansFactory.getRepository(), classLoader);
     }
 
@@ -61,11 +54,6 @@ public class CafeApplicationContext {
         log.debug("Resolving all beans");
         beansFactory.resolveAllBeans();
     }
-
-    public Object executeHandler(Class<? extends Annotation> methodAnnotation, Object... parameters) {
-        return handlerMethodInvoker.dispatch(methodAnnotation, parameters);
-    }
-
 
     public <T> Collection<T> getInstances(Class<T> clz) {
         return getInstances(clz, StringUtils.EMPTY);
@@ -216,9 +204,8 @@ public class CafeApplicationContext {
             cafeResolvers.add(typeResolvers.toArray(CafeBeanTypeResolver[]::new));
 
             CafeBeansFactory beansFactory1 = new CafeBeansFactory(repository, cafeValidationService, metadataRegistry, cafeResolvers);
-            HandlerMethodInvoker handlerMethodInvoker = new HandlerMethodInvoker(repository);
 
-            return new CafeApplicationContext(beansFactory1, handlerMethodInvoker, classLoader);
+            return new CafeApplicationContext(beansFactory1, classLoader);
         }
 
 

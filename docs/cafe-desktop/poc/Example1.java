@@ -1,5 +1,3 @@
-
-
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -9,7 +7,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Widget;
 import org.taranix.cafe.beans.annotations.classes.CafeService;
 import org.taranix.cafe.beans.annotations.fields.CafeInject;
-import org.taranix.cafe.desktop.components.menubar.MenuBuilder;
+import org.taranix.cafe.desktop.components.menu.MenuBuilder;
 import org.eclipse.swt.widgets.Composite;
 
 
@@ -44,6 +42,20 @@ public class Example1 {
         void dispose(Component component);
     }
 
+    interface MenuModelConfiguration {
+
+        MenuModel configure(MenuModel menuModel);
+    }
+
+    interface MenuModelProvider {
+
+        MenuModel provide();
+    }
+
+    interface TableColumnsModelProvider {
+        TableColumnsModel provide();
+    }
+
     //Menu
     class MenuModel {
 
@@ -67,16 +79,6 @@ public class Example1 {
         String getLabel() {
             return label;
         }
-    }
-
-    interface MenuModelConfiguration {
-
-        MenuModel configure(MenuModel menuModel);
-    }
-
-    interface MenuModelProvider {
-
-        MenuModel provide();
     }
 
     //Menu 1
@@ -133,31 +135,27 @@ public class Example1 {
         }
     }
 
-    // Table 
+    // Table
     class TableColumnsModel {
 
         private List<String> columns;
-     
+
         List<String> getColumns() {
             return columns;
         }
     }
 
-    interface TableColumnsModelProvider {
-        TableColumnsModel provide() ;
-    }
-
     @CafeComponent
     class TableComponentExample1 implements Component, View {
-        
+
         @CafeInject
         private TableColumnsModelProvider provider;
 
         public Widget createWidget(Composite composite) {
             // Create and return a table widget
-            Table t = new Table( composite, SWT.NONE);
+            Table t = new Table(composite, SWT.NONE);
             buildColumns(t);
-            return t;    
+            return t;
         }
 
         void buildColumns(Table table) {
@@ -172,7 +170,6 @@ public class Example1 {
             throw new UnsupportedOperationException("Not supported yet.");
         }
     }
-
 
 
     // Services

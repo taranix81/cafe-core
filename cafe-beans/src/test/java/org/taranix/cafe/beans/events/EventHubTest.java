@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.taranix.cafe.beans.annotations.methods.CafeHandler;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,117 +20,184 @@ class EventHubTest {
         hub = new EventHub();
     }
 
-    @Test
-    @DisplayName("addDispatcher() registers a dispatcher retrievable by annotation type")
-    void shouldRegisterAndRetrieveDispatcher() {
-        EventDispatcher<CafeHandler> dispatcher = noopDispatcher();
-        hub.addDispatcher(CafeHandler.class, dispatcher);
-        assertSame(dispatcher, hub.dispatcher(CafeHandler.class));
-    }
+    // --- register / unregister ---
 
     @Test
-    @DisplayName("dispatcher() returns null for unregistered annotation type")
-    void shouldReturnNullForUnregisteredType() {
-        assertNull(hub.dispatcher(CafeHandler.class));
-    }
-
-    @Test
-    @DisplayName("send() routes to the registered dispatcher")
-    void shouldRouteSendToRegisteredDispatcher() {
-        List<Object[]> captured = new ArrayList<>();
-        hub.addDispatcher(CafeHandler.class, capturingDispatcher(captured));
-
-        hub.send(CafeHandler.class, "arg1", "arg2");
-
-        assertEquals(1, captured.size());
-        assertArrayEquals(new Object[]{"arg1", "arg2"}, captured.get(0));
-    }
-
-    @Test
-    @DisplayName("sendTo() routes to the registered dispatcher with the target")
-    void shouldRouteSendToToRegisteredDispatcher() {
-        List<Object[]> captured = new ArrayList<>();
-        Object target = new Object();
-
-        hub.addDispatcher(CafeHandler.class, new EventDispatcher<>() {
-            public void addIfRelevant(Object l) {}
-            public void send(Object... args) {}
-            public void sendTo(Object t, Object... args) {
-                assertSame(target, t);
-                captured.add(args);
-            }
-        });
-
-        hub.sendTo(CafeHandler.class, target, "payload");
-
-        assertEquals(1, captured.size());
-        assertArrayEquals(new Object[]{"payload"}, captured.get(0));
-    }
-
-    @Test
-    @DisplayName("send() does not throw for unregistered annotation type")
-    void shouldNotThrowOnUnregisteredSend() {
-        assertDoesNotThrow(() -> hub.send(CafeHandler.class, "arg1"));
-    }
-
-    @Test
-    @DisplayName("sendTo() does not throw for unregistered annotation type")
-    void shouldNotThrowOnUnregisteredSendTo() {
-        assertDoesNotThrow(() -> hub.sendTo(CafeHandler.class, new Object(), "arg1"));
-    }
-
-    @Test
-    @DisplayName("addDispatcher() supports multiple annotation types independently")
-    void shouldSupportMultipleDispatchers() {
-        EventDispatcher<CafeHandler> d1 = noopDispatcher();
-        EventDispatcher<Override> d2 = noopDispatcher();
-
-        hub.addDispatcher(CafeHandler.class, d1);
-        hub.addDispatcher(Override.class, d2);
-
-        assertSame(d1, hub.dispatcher(CafeHandler.class));
-        assertSame(d2, hub.dispatcher(Override.class));
-    }
-
-    @Test
-    @DisplayName("register(listener) fans out addIfRelevant() to all dispatchers")
-    void shouldFanOutRegisterToAllDispatchers() {
-        List<Object> receivedByD1 = new ArrayList<>();
-        List<Object> receivedByD2 = new ArrayList<>();
-
-        hub.addDispatcher(CafeHandler.class, new EventDispatcher<>() {
-            public void addIfRelevant(Object l) { receivedByD1.add(l); }
-            public void send(Object... args) {}
-            public void sendTo(Object t, Object... args) {}
-        });
-        hub.addDispatcher(Override.class, new EventDispatcher<>() {
-            public void addIfRelevant(Object l) { receivedByD2.add(l); }
-            public void send(Object... args) {}
-            public void sendTo(Object t, Object... args) {}
-        });
-
-        Object listener = new Object();
+    @DisplayName("registered listener receives matching event")
+    void shouldDispatchToRegisteredListener() {
+        List<TestEvent> received = new ArrayList<>();
+        Object listener = new Object() {
+            @CafeHandler
+            public void on(TestEvent e) { received.add(e); }
+        };
         hub.register(listener);
-
-        assertEquals(List.of(listener), receivedByD1);
-        assertEquals(List.of(listener), receivedByD2);
+        TestEvent event = new TestEvent();
+        hub.send(event);
+        assertEquals(List.of(event), received);
     }
 
-    // --- Helpers ---
-
-    private <A extends Annotation> EventDispatcher<A> noopDispatcher() {
-        return new EventDispatcher<>() {
-            public void addIfRelevant(Object l) {}
-            public void send(Object... args) {}
-            public void sendTo(Object target, Object... args) {}
+    @Test
+    @DisplayName("unregistered listener no longer receives events")
+    void shouldNotDispatchAfterUnregister() {
+        List<TestEvent> received = new ArrayList<>();
+        Object listener = new Object() {
+            @CafeHandler
+            public void on(TestEvent e) { received.add(e); }
         };
+        hub.register(listener);
+        hub.unregister(listener);
+        hub.send(new TestEvent());
+        assertTrue(received.isEmpty());
     }
 
-    private EventDispatcher<CafeHandler> capturingDispatcher(List<Object[]> captured) {
-        return new EventDispatcher<>() {
-            public void addIfRelevant(Object l) {}
-            public void send(Object... args) { captured.add(args); }
-            public void sendTo(Object target, Object... args) {}
+    @Test
+    @DisplayName("listener with no @CafeHandler methods is ignored silently")
+    void shouldIgnoreListenerWithNoHandlers() {
+        assertDoesNotThrow(() -> {
+            hub.register(new Object());
+            hub.send(new TestEvent());
+        });
+    }
+
+    // --- Matching: exact event type ---
+
+    @Test
+    @DisplayName("handler for parent type is NOT matched when subtype is sent (exact type match)")
+    void shouldNotMatchSubtype() {
+        List<CafeEvent> received = new ArrayList<>();
+        Object listener = new Object() {
+            @CafeHandler
+            public void on(CafeEvent e) { received.add(e); }
         };
+        hub.register(listener);
+        hub.send(new TestEvent()); // TestEvent extends CafeEvent — must NOT match CafeEvent handler
+        assertTrue(received.isEmpty());
+    }
+
+    @Test
+    @DisplayName("handler for exact event type is matched")
+    void shouldMatchExactType() {
+        List<TestEvent> received = new ArrayList<>();
+        Object listener = new Object() {
+            @CafeHandler
+            public void on(TestEvent e) { received.add(e); }
+        };
+        hub.register(listener);
+        hub.send(new TestEvent());
+        assertEquals(1, received.size());
+    }
+
+    // --- Matching: id equality ---
+
+    @Test
+    @DisplayName("bare @CafeHandler with empty id matches event with empty id")
+    void shouldMatchEmptyIds() {
+        List<TestEvent> received = new ArrayList<>();
+        Object listener = new Object() {
+            @CafeHandler
+            public void on(TestEvent e) { received.add(e); }
+        };
+        hub.register(listener);
+        hub.send(new TestEvent(""));
+        assertEquals(1, received.size());
+    }
+
+    @Test
+    @DisplayName("@CafeHandler with id matches event with the same id")
+    void shouldMatchSameId() {
+        List<NamedEvent> received = new ArrayList<>();
+        Object listener = new Object() {
+            @CafeHandler(id = "ORDER")
+            public void on(NamedEvent e) { received.add(e); }
+        };
+        hub.register(listener);
+        hub.send(new NamedEvent("ORDER"));
+        assertEquals(1, received.size());
+    }
+
+    @Test
+    @DisplayName("@CafeHandler with id does NOT match event with different id")
+    void shouldNotMatchDifferentId() {
+        List<NamedEvent> received = new ArrayList<>();
+        Object listener = new Object() {
+            @CafeHandler(id = "ORDER")
+            public void on(NamedEvent e) { received.add(e); }
+        };
+        hub.register(listener);
+        hub.send(new NamedEvent("PAYMENT"));
+        assertTrue(received.isEmpty());
+    }
+
+    // --- send with targetType ---
+
+    @Test
+    @DisplayName("send(event, targetType) only dispatches to listeners of that type")
+    void shouldDispatchOnlyToTargetType() {
+        List<String> log = new ArrayList<>();
+
+        TypeA a = new TypeA(log);
+        TypeB b = new TypeB(log);
+        hub.register(a);
+        hub.register(b);
+
+        hub.send(new TestEvent(), TypeA.class);
+
+        assertEquals(List.of("A"), log);
+    }
+
+    // --- fan-out ---
+
+    @Test
+    @DisplayName("send() delivers to all matching registered listeners")
+    void shouldFanOutToAllListeners() {
+        List<String> log = new ArrayList<>();
+        hub.register(new Object() {
+            @CafeHandler public void on(TestEvent e) { log.add("1"); }
+        });
+        hub.register(new Object() {
+            @CafeHandler public void on(TestEvent e) { log.add("2"); }
+        });
+        hub.send(new TestEvent());
+        assertTrue(log.contains("1"));
+        assertTrue(log.contains("2"));
+    }
+
+    // --- resilience ---
+
+    @Test
+    @DisplayName("handler exception does not prevent other listeners from receiving the event")
+    void shouldContinueAfterHandlerException() {
+        List<String> log = new ArrayList<>();
+        hub.register(new Object() {
+            @CafeHandler public void on(TestEvent e) { throw new RuntimeException("boom"); }
+        });
+        hub.register(new Object() {
+            @CafeHandler public void on(TestEvent e) { log.add("ok"); }
+        });
+        assertDoesNotThrow(() -> hub.send(new TestEvent()));
+        assertEquals(List.of("ok"), log);
+    }
+
+    // --- Fixtures ---
+
+    static class TestEvent extends CafeEvent {
+        TestEvent() { super(""); }
+        TestEvent(String id) { super(id); }
+    }
+
+    static class NamedEvent extends CafeEvent {
+        NamedEvent(String id) { super(id); }
+    }
+
+    static class TypeA {
+        final List<String> log;
+        TypeA(List<String> log) { this.log = log; }
+        @CafeHandler public void on(TestEvent e) { log.add("A"); }
+    }
+
+    static class TypeB {
+        final List<String> log;
+        TypeB(List<String> log) { this.log = log; }
+        @CafeHandler public void on(TestEvent e) { log.add("B"); }
     }
 }

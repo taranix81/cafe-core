@@ -2,13 +2,11 @@ package org.taranix.cafe.desktop.datasource;
 
 import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.annotations.fields.CafeInject;
-import org.taranix.cafe.desktop.annotations.CafeService;
 
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Optional;
 
-@CafeService
 @CafeSingleton
 class DefaultDataSourceFactory implements DataSourceFactory {
 

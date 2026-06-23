@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @CafeHandlerType
 public @interface CafeHandler {
-
+    String id() default "";
 }

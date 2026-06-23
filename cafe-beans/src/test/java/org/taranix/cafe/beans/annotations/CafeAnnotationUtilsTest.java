@@ -5,13 +5,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.taranix.cafe.beans.annotations.base.CafeWiringType;
+import org.taranix.cafe.beans.annotations.classes.CafePrototype;
 import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.annotations.classes.Scope;
 import org.taranix.cafe.beans.annotations.methods.CafeProvider;
 import org.taranix.cafe.beans.annotations.modifiers.CafeModifier;
 import org.taranix.cafe.beans.annotations.modifiers.CafeName;
 import org.taranix.cafe.beans.annotations.modifiers.CafePrimary;
-import org.taranix.cafe.beans.annotations.modifiers.CafePrototype;
 import org.taranix.cafe.beans.reflection.CafeAnnotationUtils;
 
 import java.lang.annotation.Annotation;

@@ -3,9 +3,9 @@ package org.taranix.cafe.beans.reflection;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.taranix.cafe.beans.annotations.classes.CafePrototype;
 import org.taranix.cafe.beans.annotations.classes.Scope;
 import org.taranix.cafe.beans.annotations.modifiers.CafeName;
-import org.taranix.cafe.beans.annotations.modifiers.CafePrototype;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -168,8 +168,8 @@ public class CafeAnnotationUtils {
     }
 
     private static boolean isAnnotationMarkedBy(Class<? extends Annotation> annotationType,
-                                                 Class<? extends Annotation> otherAnnotationClass,
-                                                 Set<Class<?>> visited) {
+                                                Class<? extends Annotation> otherAnnotationClass,
+                                                Set<Class<?>> visited) {
         if (!visited.add(annotationType)) {
             return false;
         }

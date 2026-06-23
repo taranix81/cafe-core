@@ -6,11 +6,17 @@
     "configurations": [
         {
             "type": "java",
+            "name": "NotebookApplication",
+            "request": "launch",
+            "mainClass": "org.taranix.cafe.desktop.examples.notebook.NotebookApplication",
+            "projectName": "cafe-desktop-examples"
+        },
+        {
+            "type": "java",
             "name": "Launch Java Program",
             "request": "launch",
             "mainClass": ""
         },
-        
         {
             "type": "java",
             "name": "Current File",

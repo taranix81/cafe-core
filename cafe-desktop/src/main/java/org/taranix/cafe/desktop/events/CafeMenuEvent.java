@@ -1,12 +1,27 @@
 package org.taranix.cafe.desktop.events;
 
-public record CafeMenuEvent(String menuId, String actionId, Object source) {
+import lombok.Getter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.taranix.cafe.beans.events.CafeEvent;
 
-    public static CafeMenuEvent of(String menuId, String actionId, Object source) {
-        return new CafeMenuEvent(menuId, actionId, source);
+@Getter
+public class CafeMenuEvent extends CafeEvent {
+
+    private final SelectionEvent origin;
+
+    private final String menuId;
+
+    public CafeMenuEvent(String menuId, SelectionEvent origin) {
+        this.origin = origin;
+        this.menuId = menuId;
     }
 
-    public static CafeMenuEvent action(String actionId) {
-        return new CafeMenuEvent(null, actionId, null);
+    public static CafeMenuEvent of(String menuId, SelectionEvent origin) {
+        return new CafeMenuEvent(menuId, origin);
     }
+
+    public String menuId() {
+        return menuId;
+    }
+
 }

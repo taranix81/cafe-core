@@ -1,23 +1,32 @@
 package org.taranix.cafe.desktop.components.application;
 
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
+import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.beans.annotations.fields.CafeProperty;
-import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
-import org.taranix.cafe.desktop.components.containers.CafeComponentRegistry;
-import org.taranix.cafe.desktop.components.containers.ContainerComponent;
-import org.taranix.cafe.desktop.components.containers.OpenComponent;
-import org.taranix.cafe.desktop.menu.MenuRegistry;
+import org.taranix.cafe.beans.annotations.methods.CafeHandler;
+import org.taranix.cafe.beans.events.EventHub;
+import org.taranix.cafe.desktop.components.Component;
+import org.taranix.cafe.desktop.components.ComponentFactory;
+import org.taranix.cafe.desktop.components.application.extensions.ApplicationComponentConfigure;
+import org.taranix.cafe.desktop.components.menu.MenuBarComponent;
+import org.taranix.cafe.desktop.events.CafeMenuEvent;
+import org.taranix.cafe.desktop.widgets.MessageBoxService;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 
+import static org.taranix.cafe.desktop.components.ComponentFactory.COMPONENT;
+
+
+@Slf4j
 @CafeSingleton
 final class DefaultApplicationComponent implements ApplicationComponent {
 
@@ -25,22 +34,51 @@ final class DefaultApplicationComponent implements ApplicationComponent {
     private String applicationTitle;
 
     @CafeInject
-    private Optional<ShellLayout> shellLayout;
+    private EventHub eventHub;
 
     @CafeInject
-    private Optional<ApplicationShellConfiguration> shellConfiguration;
+    private ComponentFactory componentFactory;
 
     @CafeInject
-    private Optional<CafeComponentRegistry> componentRegistry;
+    private Optional<ApplicationComponentConfigure> applicationComponentConfigure;
 
     @CafeInject
-    private Optional<MenuRegistry> menuRegistry;
+    private MessageBoxService messageBoxService;
 
     private Shell shell;
 
+    // ── ApplicationComponent ─────────────────────────────────────────
+
+
+    @CafeHandler
+    void onMenuItem(CafeMenuEvent event) {
+        String menuId = event.menuId();
+        if ("file.exit".equals(menuId)) {
+            event.getOrigin().doit = onClose();
+            return;
+        }
+        routeToActiveComponent(event);
+    }
+
+    private boolean onClose() {
+        boolean result = messageBoxService.showYesNoDialog(shell, "Do you want to exit", "Quit");
+        if (result) {
+            shutDown();
+        }
+        return result;
+    }
+
+    private void routeToActiveComponent(CafeMenuEvent event) {
+        Component activeComponent = getActiveComponent();
+        if (activeComponent != null) {
+            eventHub.send(event, activeComponent);
+        }
+    }
+
     @Override
     public void start() {
-        show();
+        shell = getOrCreateShell();
+        shell.open();
         while (!shell.isDisposed()) {
             if (!shell.getDisplay().readAndDispatch()) {
                 shell.getDisplay().sleep();
@@ -50,80 +88,39 @@ final class DefaultApplicationComponent implements ApplicationComponent {
 
     @Override
     public void shutDown() {
-        if (shell != null && !shell.isDisposed()) {
-            shell.close();
+        if (shell != null) {
+            Arrays.stream(shell.getChildren()).forEach(Widget::dispose);
+            if (!shell.isDisposed()) {
+                shell.dispose();
+            }
         }
     }
 
-    @Override
-    public void show() {
-        getOrCreateShell().open();
-    }
 
     @Override
-    public void hide() {
+    public Component getActiveComponent() {
+        Control activeControl = Arrays.stream(shell.getChildren())
+                .filter(Control::isFocusControl)
+                .findFirst()
+                .orElse(null);
+
+        if (activeControl != null) {
+            Object storedComponent = activeControl.getData(COMPONENT);
+            if (storedComponent instanceof Component component) {
+                return component;
+            }
+        }
+        return null;
     }
+
 
     @Override
     public void dispose() {
-        if (shell != null && !shell.isDisposed()) {
-            shell.dispose();
-        }
+
     }
 
-    @Override
-    public Widget create(Control parent) {
-        throw new UnsupportedOperationException("Use start() to run the application");
-    }
 
-    @Override
-    public void addComponent(Class<?> componentType) {
-        componentRegistry.ifPresent(r -> r.open(componentType, null));
-    }
-
-    @Override
-    public void addComponent(Class<?> componentType, String sourceId) {
-        componentRegistry.ifPresent(r -> r.open(componentType, sourceId));
-    }
-
-    @Override
-    public void removeComponent(UUID componentId) {
-        componentRegistry.ifPresent(r -> r.close(componentId));
-    }
-
-    @Override
-    public boolean isOpen(String sourceId) {
-        return componentRegistry.map(r -> r.isOpen(sourceId)).orElse(false);
-    }
-
-    @Override
-    public void activate(String sourceId) {
-        componentRegistry.ifPresent(r -> r.setActive(sourceId));
-    }
-
-    @Override
-    public void setLogicallyActive(ContainerComponent container) {
-        componentRegistry.ifPresent(r -> r.setActive(
-                componentRegistry.get().getOpen(container.getClass())
-                        .stream().findFirst()
-                        .map(OpenComponent::id)
-                        .orElse(null)));
-    }
-
-    @Override
-    public <T> List<T> getComponents(Class<T> componentType) {
-        return List.of();
-    }
-
-    @Override
-    public <T> Optional<T> getActiveComponent(Class<T> componentType) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Set<ContainerComponent> getContainers() {
-        return Set.of();
-    }
+    // ── Internals ────────────────────────────────────────────────────
 
     private Shell getOrCreateShell() {
         if (shell == null) {
@@ -131,11 +128,21 @@ final class DefaultApplicationComponent implements ApplicationComponent {
             if (applicationTitle != null) {
                 shell.setText(applicationTitle);
             }
-            shell.setLayout(shellLayout
-                    .map(ShellLayout::getLayout)
-                    .orElse(new FillLayout()));
-            menuRegistry.ifPresent(r -> r.buildMenuBar(shell));
-            shellConfiguration.ifPresent(c -> c.configure(shell));
+            shell.setLayout(new FillLayout());
+
+            componentFactory.create(MenuBarComponent.class, shell);
+            applicationComponentConfigure.ifPresent(config ->
+            {
+                config.configure(shell);
+                config.configure(this);
+            });
+
+            shell.addShellListener(new ShellAdapter() {
+                @Override
+                public void shellClosed(ShellEvent e) {
+                    e.doit = onClose();
+                }
+            });
         }
         return shell;
     }

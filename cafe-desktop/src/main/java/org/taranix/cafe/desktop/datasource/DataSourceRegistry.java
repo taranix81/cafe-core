@@ -1,7 +1,12 @@
 package org.taranix.cafe.desktop.datasource;
 
 import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
+import org.taranix.cafe.beans.annotations.fields.CafeInject;
+import org.taranix.cafe.beans.annotations.methods.CafePostInit;
+import org.taranix.cafe.beans.events.EventHub;
 import org.taranix.cafe.desktop.events.DataSourceMovedEvent;
+
+import java.util.Optional;
 
 import java.lang.ref.WeakReference;
 import java.util.Collection;
@@ -16,6 +21,14 @@ public class DataSourceRegistry {
 
     private final Map<String, WeakReference<DataSource<?>>> registry = new ConcurrentHashMap<>();
     private Consumer<DataSourceMovedEvent> movedListener = ignored -> {};
+
+    @CafeInject
+    private Optional<EventHub> eventHub;
+
+    @CafePostInit
+    public void init() {
+        eventHub.ifPresent(hub -> setMovedListener(hub::send));
+    }
 
     public DataSource<?> register(DataSource<?> source) {
         registry.put(source.getId(), new WeakReference<>(source));

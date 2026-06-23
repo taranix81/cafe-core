@@ -1,0 +1,42 @@
+cafe:
+  application:
+    name: "Notebook - Cafe Desktop POC"
+    shell:
+      menu:
+        items:
+          - id: "file"
+            name: "File"
+            menu:
+              items:
+                - id: "file.new"
+                  name: "New\tCtrl+N"
+                - id: "file.open"
+                  name: "Open...\tCtrl+O"
+                - separator: true
+                - id: "file.save"
+                  name: "Save\tCtrl+S"
+                - id: "file.save-as"
+                  name: "Save As..."
+                - id: "file.save-all"
+                  name: "Save akk"
+                - separator: true
+                - id: "file.exit"
+                  name: "Exit"
+          - id: "edit"
+            name: "Edit"
+            menu:
+              items:
+                - id: "edit.undo"
+                  name: "Undo\tCtrl+Z"
+                - id: "edit.redo"
+                  name: "Redo\tCtrl+Y"
+                - separator: true
+                - id: "edit.cut"
+                  name: "Cut\tCtrl+X"
+                - id: "edit.copy"
+                  name: "Copy\tCtrl+C"
+                - id: "edit.paste"
+                  name: "Paste\tCtrl+V"
+                - separator: true
+                - id: "edit.select-all"
+                  name: "Select All\tCtrl+A"

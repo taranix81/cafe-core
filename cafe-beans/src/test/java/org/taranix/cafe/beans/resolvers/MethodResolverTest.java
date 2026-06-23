@@ -42,19 +42,15 @@ class MethodResolverTest {
         Assertions.assertFalse(new SingletonWireMethodResolver().supports(CafeHandler.class));
     }
 
-    // --- SingletonHandlerMethodResolver: handler registered in repository ---
+    // --- SingletonHandlerMethodResolver: bean auto-registered with EventHub ---
 
     @Test
-    @DisplayName("SingletonHandlerMethodResolver: @CafeHandler method registers in repository")
-    void handlerMethodRegisteredInRepository() {
+    @DisplayName("SingletonHandlerMethodResolver: @CafeHandler bean is resolved and context initialises")
+    void handlerBeanResolvedSuccessfully() {
         CafeApplicationContext ctx = CafeApplicationContext.builder()
                 .withClass(HandlerClass.class)
                 .build();
         ctx.initialize();
-        // If the handler resolved successfully, the context initialises without error.
-        // Fire the handler to confirm it is reachable.
-        ctx.executeHandler(CafeHandler.class);
-        // No exception thrown = handler was registered and invoked
         Assertions.assertNotNull(ctx.getInstance(HandlerClass.class));
     }
 

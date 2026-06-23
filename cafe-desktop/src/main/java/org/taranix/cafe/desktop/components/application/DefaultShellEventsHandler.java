@@ -3,12 +3,9 @@ package org.taranix.cafe.desktop.components.application;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.widgets.Shell;
 import org.taranix.cafe.beans.annotations.fields.CafeProperty;
-import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
-import org.taranix.cafe.desktop.annotations.CafeShellHandler;
-import org.taranix.cafe.desktop.annotations.ShellHandlerType;
 import org.taranix.cafe.desktop.widgets.MessageBoxService;
 
-@CafeSingleton
+//@CafeSingleton
 class DefaultShellEventsHandler {
 
 
@@ -22,7 +19,6 @@ class DefaultShellEventsHandler {
     }
 
 
-    @CafeShellHandler(type = ShellHandlerType.Closed)
     void shellClosed(ShellEvent shellEvent) {
         if (Boolean.TRUE.equals(promptOnQuit)) {
             boolean continueClosing = messageBoxService.showYesNoDialog((Shell) shellEvent.widget, "Do you want to close application", "Application close");
