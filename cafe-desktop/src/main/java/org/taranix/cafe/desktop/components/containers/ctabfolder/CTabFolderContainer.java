@@ -88,6 +88,7 @@ public class CTabFolderContainer implements ContainerComponent, Form {
     @CafeHandler
     void onMenuEvent(CafeMenuEvent event) {
         String menuID = event.menuId();
+        log.debug("Received menu event : {}", menuID);
 
         if ("file.new".equals(menuID)) {
             folderFileOperations.ifPresentOrElse(
@@ -104,50 +105,28 @@ public class CTabFolderContainer implements ContainerComponent, Form {
             return;
         }
 
-
-        if ("file.save".equals(menuID)) {
-            folderFileOperations.ifPresentOrElse(e -> e.save(this),
-                    () -> messageBoxService.showWarningDialog(tabFolder.getShell(), "No configuration for menu id : " + menuID, "Missing configuration")
-            );
-            return;
-        }
-
-        if ("file.save-as".equals(menuID)) {
-            folderFileOperations.ifPresentOrElse(e -> e.saveAs(this),
-                    () -> messageBoxService.showWarningDialog(tabFolder.getShell(), "No configuration for menu id : " + menuID, "Missing configuration")
-            );
-            return;
-        }
-
-        if ("file.save-all".equals(menuID)) {
-            // getComponents
-            folderFileOperations.ifPresentOrElse(e -> e.saveAs(this),
-                    () -> messageBoxService.showWarningDialog(tabFolder.getShell(), "No configuration for menu id : " + menuID, "Missing configuration")
-            );
-            return;
-        }
-
         //others
         routeToActiveTab(event);
     }
 
     private void routeToActiveTab(CafeMenuEvent event) {
-        CTabItem item = tabFolder.getSelection();
-        if (item != null) {
-            Object c = tabFolder.getSelection().getData(COMPONENT);
-            if (c instanceof Component component) {
-                eventHub.send(event, component);
-            }
-        }
+        Optional.ofNullable(getActiveComponent())
+                .ifPresent(component -> eventHub.send(event, component));
     }
 
 
     @Override
     public Component getActiveComponent() {
-        if (tabFolder == null || tabFolder.isDisposed()) return null;
+        if (tabFolder == null || tabFolder.isDisposed()) {
+            return null;
+        }
         CTabItem selected = tabFolder.getSelection();
-        if (selected == null) return null;
-        Object data = selected.getData(COMPONENT);
+        if (selected == null) {
+            log.debug("No active component found");
+            return null;
+        }
+        Object data = selected.getControl().getData(COMPONENT);
+        log.debug("Active component : {}", data);
         return data instanceof Component c ? c : null;
     }
 

@@ -1,5 +1,6 @@
 package org.taranix.cafe.desktop.components.menu;
 
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 import org.taranix.cafe.beans.annotations.fields.CafeInject;
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 import static org.taranix.cafe.desktop.components.ComponentFactory.COMPONENT;
 
+@Slf4j
 @CafeComponent
 public final class MenuBarComponent implements Form, Component {
 
@@ -42,6 +44,7 @@ public final class MenuBarComponent implements Form, Component {
 
     @CafeHandler
     void onSelection(CafeMenuEvent cafeMenuEvent) {
+        log.trace("Receive menu item selection event : {}", cafeMenuEvent.menuId());
         eventHub.send(cafeMenuEvent, ApplicationComponent.class);
     }
 

@@ -52,6 +52,7 @@ final class DefaultApplicationComponent implements ApplicationComponent {
 
     @CafeHandler
     void onMenuItem(CafeMenuEvent event) {
+        log.trace("Received menu item event :{} ", event.menuId());
         String menuId = event.menuId();
         if ("file.exit".equals(menuId)) {
             event.getOrigin().doit = onClose();
@@ -99,16 +100,17 @@ final class DefaultApplicationComponent implements ApplicationComponent {
 
     @Override
     public Component getActiveComponent() {
-        Control activeControl = Arrays.stream(shell.getChildren())
-                .filter(Control::isFocusControl)
-                .findFirst()
-                .orElse(null);
-
-        if (activeControl != null) {
-            Object storedComponent = activeControl.getData(COMPONENT);
-            if (storedComponent instanceof Component component) {
-                return component;
+        Control focused = shell.getDisplay().getFocusControl();
+        while (focused != null && !focused.isDisposed()) {
+            if (focused.getParent() == shell) {
+                Object data = focused.getData(COMPONENT);
+                if (data instanceof Component c) {
+                    log.trace("Active component : {}", c);
+                    return c;
+                }
+                break;
             }
+            focused = focused.getParent();
         }
         return null;
     }

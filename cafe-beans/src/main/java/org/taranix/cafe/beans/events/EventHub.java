@@ -6,11 +6,7 @@ import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.annotations.methods.CafeHandler;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 
 /**
  * Runtime event bus backed by a {@link WeakHashMap} of registered listeners.
@@ -82,11 +78,8 @@ public class EventHub {
     }
 
     public void send(CafeEvent event, Object targetInstance) {
-        List<Method> methods;
-        synchronized (this) {
-            List<Method> found = listeners.get(targetInstance);
-            methods = found != null ? new ArrayList<>(found) : null;
-        }
+        List<Method> found = snapshot().get(targetInstance);
+        List<Method> methods = found != null ? new ArrayList<>(found) : null;
         if (methods != null) {
             methods.forEach(method -> tryInvoke(targetInstance, method, event));
         }

@@ -77,7 +77,7 @@ public class TextEditorTab implements Form, Component {
         }
     }
 
-    private void save() {
+    void save() {
         if (filePath == null) {
             saveAs();
             return;
@@ -85,7 +85,7 @@ public class TextEditorTab implements Form, Component {
         writeToFile(filePath);
     }
 
-    private void saveAs() {
+    void saveAs() {
         FileDialog dialog = new FileDialog(textWidget.getShell(), SWT.SAVE);
         dialog.setFilterExtensions(new String[]{"*.txt", "*.java", "*.xml", "*.*"});
         dialog.setFilterNames(new String[]{"Text Files", "Java Files", "XML Files", "All Files"});
