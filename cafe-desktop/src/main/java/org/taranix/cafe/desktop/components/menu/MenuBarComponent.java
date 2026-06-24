@@ -36,20 +36,22 @@ public final class MenuBarComponent implements Form, Component {
                 .orElseGet(() -> new Menu((Decorations) parent, SWT.BAR));
         ((Decorations) parent).setMenuBar(bar);
         bar.setData(COMPONENT, this);
-        bar.addDisposeListener(de -> {
-            this.dispose();
-        });
         return bar;
     }
 
+    /**
+     * This function re-route to Application Component
+     *
+     * @param cafeMenuEvent
+     */
     @CafeHandler
     void onSelection(CafeMenuEvent cafeMenuEvent) {
-        log.trace("Receive menu item selection event : {}", cafeMenuEvent.menuId());
+        log.trace("Receive menu item selection event : {}", cafeMenuEvent.getMenuId());
         eventHub.send(cafeMenuEvent, ApplicationComponent.class);
     }
 
     @Override
     public void dispose() {
-        // do not call widge dispose as flow is SWT widget(dispose) -> Component(dispose)
+        //nothing to do here
     }
 }

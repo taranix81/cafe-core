@@ -1,7 +1,7 @@
 package org.taranix.cafe.desktop.components.application;
 
 import org.taranix.cafe.desktop.components.Component;
-import org.taranix.cafe.desktop.components.containers.ContainerComponent;
+import org.taranix.cafe.desktop.components.ContainerComponent;
 
 import java.util.Optional;
 

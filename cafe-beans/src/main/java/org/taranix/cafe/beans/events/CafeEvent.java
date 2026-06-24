@@ -1,18 +1,9 @@
 package org.taranix.cafe.beans.events;
 
-public class CafeEvent {
+/**
+ * THis is the marker for Cafe Events
+ */
+public interface CafeEvent {
 
-    private final String id;
 
-    public CafeEvent(String id) {
-        this.id = id;
-    }
-
-    public CafeEvent() {
-        this("");
-    }
-
-    public String id() {
-        return id;
-    }
 }

@@ -3,6 +3,7 @@ package org.taranix.cafe.desktop.datasource;
 import java.net.URL;
 import java.nio.file.Path;
 
+@Deprecated
 public interface DataSourceFactory {
 
     <T> FileDataSource<T> fromFile(Path path, DataSerializer<T> serializer);

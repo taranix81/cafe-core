@@ -6,7 +6,8 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.desktop.components.containers.ctabfolder.CTabFolderContainer;
-import org.taranix.cafe.desktop.components.containers.ctabfolder.CTabFolderFileOperations;
+import org.taranix.cafe.desktop.components.containers.ctabfolder.CTabFolderFileExtension;
+import org.taranix.cafe.desktop.components.editors.StyledTextEditorComponent;
 import org.taranix.cafe.desktop.widgets.MessageBoxService;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @CafeSingleton
-public class NotebookFileOperations implements CTabFolderFileOperations {
+public class NotebookFileExtension implements CTabFolderFileExtension {
 
     @CafeInject
     private MessageBoxService messageBox;
@@ -23,7 +24,7 @@ public class NotebookFileOperations implements CTabFolderFileOperations {
 
     @Override
     public void newFile(CTabFolderContainer container) {
-        container.openTab("Untitled-" + (++untitledCount), TextEditorTab.class);
+        container.openTab("Untitled-" + (++untitledCount), StyledTextEditorComponent.class);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class NotebookFileOperations implements CTabFolderFileOperations {
         Path path = Path.of(chosen);
         try {
             String content = Files.readString(path);
-            TextEditorTab tab = container.openTab(path.getFileName().toString(), TextEditorTab.class);
+            StyledTextEditorComponent tab = container.openTab(path.getFileName().toString(), StyledTextEditorComponent.class);
             if (tab != null) {
                 tab.setFilePath(path);
                 tab.setContent(content);
@@ -53,8 +54,4 @@ public class NotebookFileOperations implements CTabFolderFileOperations {
     }
 
 
-    @Override
-    public void saveAll(CTabFolderContainer container) {
-        // TODO: implement when CTabFolderContainer exposes getComponents()
-    }
 }

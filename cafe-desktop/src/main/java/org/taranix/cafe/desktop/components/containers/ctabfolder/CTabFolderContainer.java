@@ -17,12 +17,15 @@ import org.taranix.cafe.beans.events.EventHub;
 import org.taranix.cafe.desktop.annotations.CafeComponent;
 import org.taranix.cafe.desktop.components.Component;
 import org.taranix.cafe.desktop.components.ComponentFactory;
+import org.taranix.cafe.desktop.components.ContainerComponent;
 import org.taranix.cafe.desktop.components.Form;
-import org.taranix.cafe.desktop.components.containers.ContainerComponent;
 import org.taranix.cafe.desktop.events.CafeMenuEvent;
 import org.taranix.cafe.desktop.widgets.MessageBoxService;
 
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.taranix.cafe.desktop.components.ComponentFactory.COMPONENT;
 
@@ -51,7 +54,7 @@ public class CTabFolderContainer implements ContainerComponent, Form {
     private MessageBoxService messageBoxService;
 
     @CafeInject
-    private Optional<CTabFolderFileOperations> folderFileOperations;
+    private Optional<CTabFolderFileExtension> folderFileOperations;
 
     @Override
     public Widget create(Composite parent) {
@@ -63,13 +66,14 @@ public class CTabFolderContainer implements ContainerComponent, Form {
             @Override
             public void close(CTabFolderEvent event) {
                 if (event.item instanceof CTabItem tabItem) {
-                    Object o = tabItem.getData(COMPONENT);
-                    if (o instanceof Component c) {
-                        c.dispose();
+                    Object o = tabItem.getControl().getData(COMPONENT);
+                    if (o instanceof Component component) {
+                        component.dispose();
                     }
                 }
             }
         });
+
 
         tabFolder.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -80,27 +84,40 @@ public class CTabFolderContainer implements ContainerComponent, Form {
         return tabFolder;
     }
 
-
     @Override
     public void dispose() {
+        getComponents().forEach(Component::dispose);
+    }
+
+    @CafeHandler
+    void onTabItemEvent(CafeTabItemEvent itemEvent) {
+        if (tabFolder == null || tabFolder.isDisposed()) return;
+        Arrays.stream(tabFolder.getItems())
+                .filter(item -> item != null && !item.isDisposed())
+                .filter(item -> {
+                    Control control = item.getControl();
+                    return control != null && !control.isDisposed()
+                            && control.getData(COMPONENT) == itemEvent.getComponent();
+                })
+                .findFirst()
+                .ifPresent(item -> item.setText(itemEvent.getTitle()));
     }
 
     @CafeHandler
     void onMenuEvent(CafeMenuEvent event) {
-        String menuID = event.menuId();
+        String menuID = event.getMenuId();
         log.debug("Received menu event : {}", menuID);
 
         if ("file.new".equals(menuID)) {
-            folderFileOperations.ifPresentOrElse(
-                    e -> e.newFile(this),
-                    () -> messageBoxService.showWarningDialog(tabFolder.getShell(), "No configuration for menu id : " + menuID, "Missing configuration")
+            folderFileOperations.ifPresent(
+                    e -> e.newFile(this)
             );
             return;
         }
 
         if ("file.open".equals(menuID)) {
-            folderFileOperations.ifPresentOrElse(e -> e.open(this),
-                    () -> messageBoxService.showWarningDialog(tabFolder.getShell(), "No configuration for menu id : " + menuID, "Missing configuration")
+            folderFileOperations.ifPresent(
+                    e -> e.open(this)
             );
             return;
         }
@@ -114,6 +131,21 @@ public class CTabFolderContainer implements ContainerComponent, Form {
                 .ifPresent(component -> eventHub.send(event, component));
     }
 
+
+    @Override
+    public Set<Component> getComponents() {
+        if (tabFolder != null && !tabFolder.isDisposed()) {
+            return Arrays.stream(tabFolder.getItems())
+                    .filter(cTabItem -> cTabItem != null && !cTabItem.isDisposed())
+                    .map(CTabItem::getControl)
+                    .filter(control -> control != null && !control.isDisposed())
+                    .map(control -> control.getData(COMPONENT))
+                    .filter(Component.class::isInstance)
+                    .map(Component.class::cast)
+                    .collect(Collectors.toSet());
+        }
+        return Set.of();
+    }
 
     @Override
     public Component getActiveComponent() {
@@ -139,6 +171,13 @@ public class CTabFolderContainer implements ContainerComponent, Form {
             CTabItem tabItem = new CTabItem(tabFolder, SWT.CLOSE);
             tabItem.setText(title);
             tabItem.setControl(control);
+            tabItem.addDisposeListener(e -> {
+                if (e.widget instanceof CTabItem tab) {
+                    if (tab.getControl() != null && !tab.getControl().isDisposed()) {
+                        tab.getControl().dispose();
+                    }
+                }
+            });
             tabFolder.setSelection(tabItem);
             return (T) w.getData(COMPONENT);
         } else {
@@ -146,10 +185,7 @@ public class CTabFolderContainer implements ContainerComponent, Form {
             w.dispose();
         }
         return null;
-
-
     }
-
 
     // ── Helpers ───────────────────────────────────────────────────────────
     private void updateActiveTab() {
@@ -157,14 +193,5 @@ public class CTabFolderContainer implements ContainerComponent, Form {
         CTabItem selected = tabFolder.getSelection();
         log.debug("Selects : {}", selected);
     }
-
-
-//    Set<Component> getComponents() {
-//        return Arrays.stream(tabFolder.getItems())
-//                .map(cTabItem -> cTabItem.getData("component"))
-//                .filter(o -> o instanceof Component)
-//                .map(Component.class::cast)
-//                .collect(Collectors.toSet());
-//    }
 
 }

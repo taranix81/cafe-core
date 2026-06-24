@@ -7,6 +7,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.Optional;
 
+@Deprecated
 @CafeSingleton
 class DefaultDataSourceFactory implements DataSourceFactory {
 

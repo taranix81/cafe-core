@@ -118,7 +118,7 @@ public class EventHub {
         CafeHandler ann = method.getAnnotation(CafeHandler.class);
         if (ann == null) return false;
         Class<?>[] params = method.getParameterTypes();
-        if (params.length != 1 || !params[0].equals(event.getClass())) return false;
-        return ann.id().equals(event.id());
+        return params.length == 1
+                && params[0].equals(event.getClass());
     }
 }

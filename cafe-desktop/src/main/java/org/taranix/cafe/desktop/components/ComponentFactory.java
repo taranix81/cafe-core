@@ -21,7 +21,6 @@ public class ComponentFactory {
         Form form = getForm(component, componentType);
         Widget widget = form.create(parent);
         widget.setData(COMPONENT, component);
-        //TODO here we need to bind events from Widget into components. TBC
         return widget;
     }
 

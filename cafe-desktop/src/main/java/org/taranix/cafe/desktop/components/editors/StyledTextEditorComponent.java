@@ -1,24 +1,25 @@
-package org.taranix.cafe.desktop.examples.notebook;
+package org.taranix.cafe.desktop.components.editors;
 
-import lombok.Setter;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ST;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Widget;
+import org.eclipse.swt.widgets.*;
+import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.beans.annotations.methods.CafeHandler;
 import org.taranix.cafe.desktop.annotations.CafeComponent;
 import org.taranix.cafe.desktop.components.Component;
 import org.taranix.cafe.desktop.components.Form;
 import org.taranix.cafe.desktop.events.CafeMenuEvent;
+import org.taranix.cafe.desktop.widgets.MessageBoxService;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 /**
  * Per-tab form for the Notebook MDI editor.
@@ -29,14 +30,19 @@ import java.nio.file.Path;
  * <p>
  * Undo/redo are handled natively by StyledText keyboard bindings (Ctrl+Z / Ctrl+Y).
  */
+@Slf4j
 @CafeComponent
-public class TextEditorTab implements Form, Component {
+public class StyledTextEditorComponent implements Form, Component {
 
     private StyledText textWidget;
-    @Setter
+    @Getter
     private Path filePath;
+    @Getter
     private boolean dirty;
-
+    @CafeInject
+    private MessageBoxService messageBoxService;
+    @CafeInject
+    private Optional<StyledTextEditorComponentExtension> extension;
 
     @Override
     public Widget create(Composite parent) {
@@ -51,7 +57,7 @@ public class TextEditorTab implements Form, Component {
     @CafeHandler
     public void onMenuEvent(CafeMenuEvent event) {
         if (textWidget == null || textWidget.isDisposed()) return;
-        switch (event.menuId()) {
+        switch (event.getMenuId()) {
             case "file.save" -> save();
             case "file.save-as" -> saveAs();
             case "edit.cut" -> textWidget.invokeAction(ST.CUT);
@@ -70,11 +76,16 @@ public class TextEditorTab implements Form, Component {
 
     // ── Internals ──────────────────────────────────────────────────────
 
+    public void setFilePath(Path path) {
+        this.filePath = path;
+        extension.ifPresent(e -> e.onFileNameChanged(this));
+    }
+
     private void onModified() {
         if (!dirty) {
             dirty = true;
-
         }
+        extension.ifPresent(e -> e.onContentChanged(this));
     }
 
     void save() {
@@ -83,6 +94,7 @@ public class TextEditorTab implements Form, Component {
             return;
         }
         writeToFile(filePath);
+        extension.ifPresent(e -> e.onContentChanged(this));
     }
 
     void saveAs() {
@@ -92,8 +104,9 @@ public class TextEditorTab implements Form, Component {
         if (filePath != null) dialog.setFileName(filePath.getFileName().toString());
         String chosen = dialog.open();
         if (chosen != null) {
-            filePath = Path.of(chosen);
+            setFilePath(Path.of(chosen));
             writeToFile(filePath);
+            extension.ifPresent(e -> e.onContentChanged(this));
         }
     }
 
@@ -115,10 +128,23 @@ public class TextEditorTab implements Form, Component {
         Font mono = new Font(parent.getDisplay(), "Consolas", height, SWT.NORMAL);
         textWidget.setFont(mono);
         textWidget.addDisposeListener(e -> mono.dispose());
+        textWidget.setLeftMargin(3);
+        textWidget.setRightMargin(3);
+
     }
+
 
     @Override
     public void dispose() {
+        if (dirty) {
+            Shell shell = textWidget.getShell();
+            if (shell == null || shell.isDisposed()) {
+                return;
+            }
 
+            if (messageBoxService.showYesNoDialog(shell, "Do you want to save file?", "File not saved")) {
+                save();
+            }
+        }
     }
 }

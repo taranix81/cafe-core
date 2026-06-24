@@ -10,7 +10,7 @@ import org.taranix.cafe.desktop.components.ComponentFactory;
 import org.taranix.cafe.desktop.components.application.ApplicationComponent;
 import org.taranix.cafe.desktop.components.application.extensions.ApplicationComponentConfigure;
 import org.taranix.cafe.desktop.components.containers.ctabfolder.CTabFolderContainer;
-import org.taranix.cafe.desktop.components.containers.ctabfolder.CTabFolderFileOperations;
+import org.taranix.cafe.desktop.components.containers.ctabfolder.CTabFolderFileExtension;
 
 import java.util.Optional;
 
@@ -26,7 +26,7 @@ public class NotebookShellConfig implements ApplicationComponentConfigure {
     private ComponentFactory factory;
 
     @CafeInject
-    private Optional<CTabFolderFileOperations> fileOperations;
+    private Optional<CTabFolderFileExtension> fileOperations;
 
     @Override
     public void configure(ApplicationComponent application) {

@@ -56,7 +56,6 @@ public class MenuBuilder {
             menuItem.setMenu(submenu);
             item.getMenu().getItems().forEach(sub -> buildMenuItem(sub, submenu));
         } else {
-            String actionId = item.getAction() != null ? item.getAction() : item.getId();
             String menuId = item.getId();
             menuItem.addSelectionListener(new SelectionAdapter() {
                 @Override

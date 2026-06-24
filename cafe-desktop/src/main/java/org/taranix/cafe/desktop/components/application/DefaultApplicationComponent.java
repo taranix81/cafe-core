@@ -7,7 +7,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Widget;
 import org.taranix.cafe.beans.annotations.classes.CafeSingleton;
 import org.taranix.cafe.beans.annotations.fields.CafeInject;
 import org.taranix.cafe.beans.annotations.fields.CafeProperty;
@@ -22,6 +21,8 @@ import org.taranix.cafe.desktop.widgets.MessageBoxService;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.taranix.cafe.desktop.components.ComponentFactory.COMPONENT;
 
@@ -52,21 +53,13 @@ final class DefaultApplicationComponent implements ApplicationComponent {
 
     @CafeHandler
     void onMenuItem(CafeMenuEvent event) {
-        log.trace("Received menu item event :{} ", event.menuId());
-        String menuId = event.menuId();
+        log.trace("Received menu item event :{} ", event.getMenuId());
+        String menuId = event.getMenuId();
         if ("file.exit".equals(menuId)) {
-            event.getOrigin().doit = onClose();
+            shell.close();
             return;
         }
         routeToActiveComponent(event);
-    }
-
-    private boolean onClose() {
-        boolean result = messageBoxService.showYesNoDialog(shell, "Do you want to exit", "Quit");
-        if (result) {
-            shutDown();
-        }
-        return result;
     }
 
     private void routeToActiveComponent(CafeMenuEvent event) {
@@ -89,14 +82,21 @@ final class DefaultApplicationComponent implements ApplicationComponent {
 
     @Override
     public void shutDown() {
-        if (shell != null) {
-            Arrays.stream(shell.getChildren()).forEach(Widget::dispose);
-            if (!shell.isDisposed()) {
-                shell.dispose();
-            }
-        }
+
     }
 
+
+    @Override
+    public Set<Component> getComponents() {
+        if (shell != null && !shell.isDisposed()) {
+            return Arrays.stream(shell.getChildren())
+                    .map(control -> control.getData(COMPONENT))
+                    .filter(Component.class::isInstance)
+                    .map(Component.class::cast)
+                    .collect(Collectors.toSet());
+        }
+        return Set.of();
+    }
 
     @Override
     public Component getActiveComponent() {
@@ -118,7 +118,7 @@ final class DefaultApplicationComponent implements ApplicationComponent {
 
     @Override
     public void dispose() {
-
+        // Nothing to do here
     }
 
 
@@ -142,7 +142,11 @@ final class DefaultApplicationComponent implements ApplicationComponent {
             shell.addShellListener(new ShellAdapter() {
                 @Override
                 public void shellClosed(ShellEvent e) {
-                    e.doit = onClose();
+                    e.doit = messageBoxService.showYesNoDialog(shell, "Do you want to close ?", "Closing");
+                    // Need to call dispose components before Shell entered into Dispose state
+                    if (e.doit) {
+                        getComponents().forEach(Component::dispose);
+                    }
                 }
             });
         }

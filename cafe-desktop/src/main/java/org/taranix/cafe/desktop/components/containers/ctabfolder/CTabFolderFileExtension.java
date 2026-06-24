@@ -1,10 +1,10 @@
 package org.taranix.cafe.desktop.components.containers.ctabfolder;
 
-public interface CTabFolderFileOperations {
+public interface CTabFolderFileExtension {
 
     void newFile(CTabFolderContainer container);
 
     void open(CTabFolderContainer container);
 
-    void saveAll(CTabFolderContainer container);
+
 }
